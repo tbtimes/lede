@@ -13,7 +13,7 @@ gulp.task('js', () => {
     // .pipe(sourcemaps.init())
     .pipe(babel({
       presets: ['es2015'],
-      plugins: ['add-module-exports']
+      plugins: ['add-module-exports', 'transform-class-properties']
     }))
     // .pipe(sourcemaps.write())
     .pipe(gulp.dest('./dist'))

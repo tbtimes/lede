@@ -3,6 +3,8 @@ const concat = require('../utils/bufferStreamPromise');
 import * as fs from 'fs';
 
 export default class SassCompiler {
+  options;
+  
   constructor(opts = {}) {
     const DEFAULTS = {
       includePaths: [], 
