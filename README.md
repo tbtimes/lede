@@ -19,7 +19,7 @@ A sweet tool to make cool web things ~~ motto pending
     * Build Lede AnalyzerComponent
     * Build FileSystemDeployer
     * Build FTPDeployer
-    * Build S3Depolyer
+    * Build S3Deployer
     * Build SCPDeployer
     * Build Lede main component to hook up analyzer, compilers and deployers
 * Documentation/tutorials
