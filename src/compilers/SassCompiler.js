@@ -3,11 +3,15 @@ const concat = require('../utils/bufferStreamPromise');
 import * as fs from 'fs';
 
 export default class SassCompiler {
-  constructor(includePaths = [], outputStyle = 'compact', comments = false, sourceMap = false) {
-    this.includes = includePaths;
-    this.outputStyle = outputStyle;
-    this.comments = comments;
-    this.sourceMap = sourceMap
+  constructor(opts = {}) {
+    const DEFAULTS = {
+      includePaths: [], 
+      outputStyle: 'compact', 
+      comments: false, 
+      sourceMap: false
+    };
+    
+    this.options = Object.assign({}, DEFAULTS, opts);
   }
   
   compileSingle(fullyQualifiedFilePath) {
@@ -29,10 +33,10 @@ export default class SassCompiler {
     return new Promise((resolve, reject) => {
       sass.render({
         data: data,
-        includePaths: this.includes,
-        outputStyle: this.outputStyle,
-        sourceMapEmbed: this.sourceMap,
-        sourceComments: this.comments
+        includePaths: this.options.includes,
+        outputStyle: this.options.outputStyle,
+        sourceMapEmbed: this.options.sourceMap,
+        sourceComments: this.options.comments
       }, (err, res) => {
         if (err) reject(err);
         else resolve(res.css);
