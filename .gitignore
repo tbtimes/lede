@@ -112,3 +112,4 @@ Temporary Items
 # PROJECT SPECIFIC
 dist/
 .idea/
+typings/

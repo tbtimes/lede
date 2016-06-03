@@ -1,0 +1,11 @@
+{
+  "name": "ledeTwo",
+  "dependencies": {
+  },
+  "globalDependencies": {
+    "jasmine": "registry:dt/jasmine#2.2.0+20160505161446",
+    "jasmine-node": "registry:dt/jasmine-node#1.14.5+20160316155526",
+    "node": "registry:dt/node#6.0.0+20160602155235",
+    "node-sass": "registry:dt/node-sass#0.0.0+20160316155526"
+  }
+}

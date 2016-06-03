@@ -1,28 +1,53 @@
 const gulp = require('gulp');
-const babel = require('gulp-babel');
-const sourcemaps = require('gulp-sourcemaps');
-const rmrf = require('rimraf');
+const ts = require('gulp-typescript');
+const merge = require('merge2');
 const watch = require('gulp-watch');
 
-gulp.task('clean', () => {
-  return rmrf.sync('./dist/**')
+const projectOpts = ts.createProject({
+  target: "es6",
+  module: "commonjs",
+  noImplicitAny: false,
+  declaration: true,
+  noExternalResolve: true
 });
 
-gulp.task('js', () => {
-  return gulp.src('./src/**/*.js')
-    // .pipe(sourcemaps.init())
-    .pipe(babel({
-      presets: ['es2015'],
-      plugins: ['add-module-exports', 'transform-class-properties']
-    }))
-    // .pipe(sourcemaps.write())
-    .pipe(gulp.dest('./dist'))
+const testOpts = ts.createProject({
+  target: "es6",
+  module: "commonjs",
+  noImplicitAny: false,
+  declaration: true,
+  noExternalResolve: true
 });
 
-gulp.task('dev', ['clean', 'js'], () => {
-  watch("src/**/*.js", null, () => {
-    gulp.start("js");
+gulp.task('source', () => {
+  let result = gulp.src(['src/**/*.ts', 'typings/**/*.ts'])
+    .pipe(ts(projectOpts));
+
+  return merge([
+    result.dts.pipe(gulp.dest('dist/definitions')),
+    result.js.pipe(gulp.dest('dist/'))
+  ])
+});
+
+gulp.task('copy', () => {
+  return gulp.src('tests/stubs/**/*')
+    .pipe(gulp.dest('spec/stubs'));
+})
+
+gulp.task('test', () => {
+  return gulp.src(['tests/**/*.ts', 'typings/**/*.ts', 'dist/**/*.ts'])
+    .pipe(ts(testOpts))
+    .js.pipe(gulp.dest('spec/'))
+});
+
+gulp.task('dev', ['source', 'test', 'copy'], () => {
+  watch('tests/**/*.ts', () => {
+    gulp.start('test');
+  });
+  watch('src/**/*.ts', () => {
+    gulp.start('source');
+  });
+  watch('test/stubs/**/*', () => {
+    gulp.start('copy');
   });
 });
-
-gulp.task('default', ['clean', 'js']);
