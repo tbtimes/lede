@@ -24,3 +24,4 @@ A sweet tool to make cool web things ~~ motto pending
     * Build Lede main component to hook up analyzer, compilers and deployers
 * Documentation/tutorials
 * CLI tooling
+* ~~Convert to typescript~~
