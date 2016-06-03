@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { readFileSync } from 'fs';
-import SassCompiler from "../../dist/compilers/SassCompiler";
+import { SassCompiler } from "../../dist/compilers/";
 
 
 declare var asyncSpecWait: Function;

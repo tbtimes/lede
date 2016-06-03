@@ -12,7 +12,7 @@ const projectOpts = ts.createProject({
 });
 
 const testOpts = ts.createProject({
-  target: "es6",
+  target: "es5",
   module: "commonjs",
   noImplicitAny: false,
   declaration: true,
@@ -47,7 +47,7 @@ gulp.task('dev', ['source', 'test', 'copy'], () => {
   watch('src/**/*.ts', () => {
     gulp.start('source');
   });
-  watch('test/stubs/**/*', () => {
+  watch('test/stubs/**/*(!.ts)', () => {
     gulp.start('copy');
   });
 });

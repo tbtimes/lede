@@ -1,7 +1,9 @@
 import { createReadStream } from 'fs';
 import { render, Options } from 'node-sass';
 
-export default class SassCompiler {
+import { CSSPreprocessor } from '../interfaces/compilers';
+
+export class SassCompiler implements CSSPreprocessor {
     private options: Options = {
         includePaths: [],
         outputStyle: 'compact',

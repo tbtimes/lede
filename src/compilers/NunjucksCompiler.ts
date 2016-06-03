@@ -3,8 +3,9 @@ import { join } from 'path';
 
 import NunjucksDefaultBaseContext from '../models/NunjucksDefaultBaseContext';
 import { CompilerOptions } from '../interfaces/nunjucks';
+import { HtmlTemplateAssembler } from '../interfaces/compilers';
 
-export default class NunjucksCompiler {
+export class NunjucksCompiler implements HtmlTemplateAssembler {
     private options: CompilerOptions;
     private env: Environment;
 

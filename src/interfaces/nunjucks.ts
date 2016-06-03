@@ -9,6 +9,6 @@ export interface CompilerOptions {
 
 export interface Filter {
     name: string;
-    func: Function;
+    func: (...args: any[]) => any;
     async: boolean;
 }
