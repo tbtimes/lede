@@ -7,4 +7,5 @@ export default class DefaultProjectSettings implements ProjectSettings {
     CSSPreprocessor = new SassCompiler();
     HtmlTemplateAssembler = new NunjucksCompiler();
     JSPreprocessor = null;
+    imageMap = null;
 }

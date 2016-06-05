@@ -1,7 +1,9 @@
+const path = require('path');
+
 class SettingsConfig {
   constructor() {
-    this.inheritanceChain = [];
-    this.inheritanceRoot = process.cwd();
+    this.inheritanceChain = ['test-proj2'];
+    this.inheritanceRoot = path.join(__dirname, '..');
   }
 }
 

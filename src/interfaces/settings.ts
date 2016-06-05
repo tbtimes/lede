@@ -6,4 +6,6 @@ export interface ProjectSettings {
     CSSPreprocessor?: CSSPreprocessor;
     JSPreprocessor?: JSPreprocessor;
     HtmlTemplateAssembler?: HtmlTemplateAssembler;
+    imageMap?: Object;
+    baseContext?: Object;
 }
