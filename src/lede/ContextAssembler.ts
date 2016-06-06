@@ -1,9 +1,23 @@
 import ProjectAnalyzer from './ProjectAnalyzer';
-import { ProjectSettings } from '../interfaces/settings'
+import { ProjectSettings } from '../interfaces/settings';
+
+class NamespaceErr extends Error {
+    name: string;
+    message: string;
+    stack: any;
+
+    constructor(msg) {
+        super();
+        this.name = "Namespace Error";
+        this.message = msg;
+        this.stack = (new Error()).stack;
+    }
+}
 
 export default class ContextAssembler {
     public projectSettings: ProjectSettings = null;
-    public orderedContextObjects: Array<Object> = [];
+    public context: Object;
+    public includePaths: Array<Array<string>>;
 
     constructor(public workingDir: string) {};
     
@@ -13,18 +27,31 @@ export default class ContextAssembler {
             return settings;
         }).then(settings => {
             let proms = [ProjectAnalyzer.gatherContext(this.workingDir)];
-            for (let inheritedContextPath of settings.inheritanceChain) {
-                let path = `${settings.inheritanceRoot}/${inheritedContextPath}`;
-                proms.push(ProjectAnalyzer.gatherContext(path));
+            for (let templateName of settings.inheritanceChain) {
+                let path = `${settings.inheritanceRoot}/${templateName}`;
+                proms.push(ProjectAnalyzer.gatherContext(path).then( ctx => [templateName, ctx] ));
             }
             return Promise.all(proms)
         }).then(contexts => {
-            this.orderedContextObjects = this.orderedContextObjects.concat(contexts);
-            return this
+            let mainCtx = contexts.shift();
+            this.includePaths = [[`${this.workingDir}`]];
+            for (let [contextName, context] of contexts) {
+                if (!mainCtx.hasOwnProperty(contextName)) {
+                    mainCtx[contextName] = context;
+                } else {
+                    throw new NamespaceErr(`Cannot load template ${contextName} because a property of that name already exists on base context.`)
+                }
+                let newIncludePaths = [];
+                for (let paths of this.includePaths) {
+                    for (let path of paths) {
+                        newIncludePaths.push(path);
+                    }
+                }
+                newIncludePaths.push(`${this.projectSettings.inheritanceRoot}/${contextName}`);
+                this.includePaths.push(newIncludePaths);
+            }
+            this.context = mainCtx;
+            return this;
         })
     };
-    
 }
-
-let f = new ContextAssembler("/Users/emurray/WebstormProjects/lede/spec/stubs/test-proj");
-f.assemble();
