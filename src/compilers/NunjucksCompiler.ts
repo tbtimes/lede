@@ -9,7 +9,9 @@ export class NunjucksCompiler implements HtmlTemplateAssembler {
     private options: CompilerOptions;
     private env: Environment;
 
-    constructor(templatePath = join(process.cwd(), '/templates'), opts = {}) {
+    constructor(){}
+
+    public configureEnv(templatePath = join(process.cwd(), '/templates'), opts = {}) {
         const DEFAULTS = {
             loaders: [new FileSystemLoader(templatePath, {watch: false, noCache: false})],
             envOpts: {
@@ -34,6 +36,8 @@ export class NunjucksCompiler implements HtmlTemplateAssembler {
         return new Promise((resolve, reject) => {
             this.env.render(templateName, context, (err, res) => {
                 if (err) reject(err);
+                console.log(err)
+                console.log(res)
                 resolve(res.toString());
             })
         })

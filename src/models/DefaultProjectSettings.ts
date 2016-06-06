@@ -8,4 +8,5 @@ export default class DefaultProjectSettings implements ProjectSettings {
     HtmlTemplateAssembler = new NunjucksCompiler();
     JSPreprocessor = null;
     imageMap = null;
+    contentLoop = null;
 }
