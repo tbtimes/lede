@@ -8,5 +8,5 @@ export interface ProjectSettings {
     HtmlTemplateAssembler?: HtmlTemplateAssembler;
     imageMap?: Object;
     baseContext?: Object;
-    contentLoop: Object|string|Array<Object>;
+    contentLoop: any;
 }

@@ -13,7 +13,7 @@ export default class Lede {
         return this.ctxAssembler.assemble()
             .then(ctx => {
                 console.log(ctx)
-            })
+            }) 
             .catch(x => console.log(x))
     }
 }

@@ -1,0 +1,1 @@
+export { NamespaceError } from './NamespaceError'
