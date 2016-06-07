@@ -1,10 +1,10 @@
 import { ILoader, ConfigureOptions } from 'nunjucks';
 
 export interface CompilerOptions {
-    loaders: Array<ILoader>;
-    envOpts: ConfigureOptions;
-    filters: Array<Filter>;
-    baseContext: Object;
+    loaders?: Array<ILoader>;
+    envOpts?: ConfigureOptions;
+    filters?: Array<Filter>;
+    baseContext?: Object;
 }
 
 export interface Filter {

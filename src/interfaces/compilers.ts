@@ -4,7 +4,8 @@ export interface CSSPreprocessor {
 }
 
 export interface HtmlTemplateAssembler {
-    renderTemplate(templateName: string, ctx: Object): Promise<string>;
+    configure(includePaths: string|Array<string>): this;
+    renderTemplate(ctx: any): Promise<string>;
 }
 
 export interface JSPreprocessor {

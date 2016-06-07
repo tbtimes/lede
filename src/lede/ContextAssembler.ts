@@ -52,7 +52,7 @@ export default class ContextAssembler {
             this.includePaths.push(`${this.projectSettings.inheritanceRoot}/${contextName}`);
         }
         this.context = mainCtx;
-        return null;
+        return this.context;
     }
     
     private static gatherContext(searchDir) {
@@ -142,39 +142,50 @@ export default class ContextAssembler {
     private static mergeProjSettingsWithDefault(customSettings) {
         let defaults = new DefaultProjectSettings();
         let merged = Object.assign({}, defaults);
+        
         for (let prop in customSettings) {
             if (defaults.hasOwnProperty(prop)) {
-                // If it's an array, concatenate it
-                if (isArray(defaults[prop])) {
-                    merged[prop] = defaults[prop].concat(customSettings[prop])
-                } else if (prop !== 'CSSPreprocessor' && prop !== 'HtmlTemplateAssembler' && prop !== 'JSPreprocessor'){
-                    // If it's not a compiler but it is an object, deep merge it
-                    if (isObject(defaults[prop])) {
-                        merged[prop] = mergeWith(defaults[prop], customSettings[prop], (dest, src) => {
-                            if (isArray(dest)) {
-                                return dest.concat(src);
-                            } else {
-                                if (src) return src;
-                                return dest;
+                switch(prop) {
+                    
+                    // Inheritance chain should be concatenated onto the default
+                    case 'inheritanceChain':
+                        merged[prop] = merged[prop].concat(customSettings[prop]);
+                        break;
+                    
+                    // All of these should override the default if they exist
+                    case 'HtmlTemplateAssembler':
+                    case 'JSPreprocessor':
+                    case 'CSSPreprocessor':
+                    case 'contentLoop':
+                    case 'imageMap':
+                    case 'inheritanceRoot':
+                    case 'shellPage':
+                        if (customSettings[prop]) {
+                            merged[prop] = customSettings[prop];
+                        }
+                        break;
+                    
+                    // Override defaults for specified mappings
+                    case 'inheritancePathMap':
+                        for (let key in defaults[prop]) {
+                            if (customSettings[prop][key]) {
+                                merged[prop][key] = customSettings[prop][key];
                             }
-                        })
-                    } else {
-                        // If it's not a compiler or object and it exists, overwrite default
+                        }
+                        break;
+                    
+                    // Use project debug setting unless it is undefined
+                    case 'debug':
                         if (!isUndefined(customSettings[prop])) {
                             merged[prop] = customSettings[prop]
                         }
-                    }
-                } else {
-                    // If it is a compiler, check if it exists and overwrite default
-                    if (customSettings[prop]) {
-                        merged[prop] = customSettings[prop];
-                    }
+                        break;
                 }
-            } else {
-                // If it doesn't exist on the default object, copy it over directly
-                defaults[prop] = customSettings[prop];
+            } else if (customSettings.hasOwnProperty(prop) && !isUndefined(customSettings[prop])) {
+                merged[prop] = customSettings[prop];
             }
         }
+        
         return merged;
     }
 }

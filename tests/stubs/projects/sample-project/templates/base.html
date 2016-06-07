@@ -2,23 +2,20 @@
 
 <html>
 <head>
-  <title>{{base.seo.title}}</title>
-  {% for item in base.seo.meta -%}
+  <title>{{seo.title}}</title>
+  {% for item in seo.meta -%}
   <meta{%if item.name %} name="{{item.name}}"{% endif %}{% if item.content %} content="{{item.content}}"{% endif %}{% if item.props | length %}{% for prop in item.props %} {{prop.prop}}="{{prop.val}}"{% endfor %}{% endif %} />
   {% endfor %}{% if debug -%}
   <meta NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
   {%- endif %}
-
-  {% block styles %}
-  {% endblock %}
-  {% block head_scripts %}
-  {% endblock %}
+  {% block styles -%}
+  {%- endblock %}
 </head>
 <body>
-{% block content %}
-{% endblock %}
+  {% block content -%}
+  {%- endblock %}
 
-{% block scripts %}
-{% endblock %}
+  {% block scripts -%}
+  {%- endblock %}
 </body>
 </html>

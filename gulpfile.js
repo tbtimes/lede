@@ -32,7 +32,7 @@ gulp.task('source', () => {
 gulp.task('copy', () => {
   return gulp.src('tests/stubs/**/*')
     .pipe(gulp.dest('spec/stubs'));
-})
+});
 
 gulp.task('test', () => {
   return gulp.src(['tests/**/*.ts', 'typings/**/*.ts', 'dist/**/*.ts'])
@@ -47,7 +47,7 @@ gulp.task('dev', ['source', 'test', 'copy'], () => {
   watch('src/**/*.ts', () => {
     gulp.start('source');
   });
-  watch('test/stubs/**/*(!.ts)', () => {
+  watch('test/stubs/**/*', () => {
     gulp.start('copy');
   });
 });
