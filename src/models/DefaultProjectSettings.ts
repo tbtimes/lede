@@ -21,6 +21,9 @@ export default class DefaultProjectSettings implements ProjectSettings {
         },
         js: (basePath) => {
             return basePath + '/scripts';
+        },
+        bits: (basePath) => {
+            return basePath + '/bits';
         }
     };
     shellPage = 'base.html'; 

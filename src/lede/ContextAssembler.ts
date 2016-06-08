@@ -11,7 +11,7 @@ import { NamespaceError } from '../errors';
 export default class ContextAssembler {
     public projectSettings: ProjectSettings;
     public context: any;
-    public includePaths: Array<string>;
+    public includePaths: Array<{searchDir: string, settings: ProjectSettings}>;
     
     constructor(public workingDir){};
 
@@ -25,7 +25,7 @@ export default class ContextAssembler {
     
     private getSettings() {
         return ContextAssembler.gatherProjSettings(this.workingDir).then(settings => {
-            this.projectSettings = settings;
+            this.includePaths = [{searchDir: this.workingDir, settings}];
             return settings
         });
     }
@@ -42,17 +42,24 @@ export default class ContextAssembler {
     private buildContext(contexts) {
         let mainCtx = contexts.shift();
         if (mainCtx.contentLoop) throw new NamespaceError('Property "contentLoop" cannot exist on base context object.');
-        this.includePaths = [this.workingDir];
-        for (let [contextName, context] of contexts) {
-            if (!mainCtx.hasOwnProperty(contextName)) {
-                mainCtx[contextName] = context;
-            } else {
-                throw new NamespaceError(`Cannot load template ${contextName} because a property of that name already exists on base context.`)
-            }
-            this.includePaths.push(`${this.projectSettings.inheritanceRoot}/${contextName}`);
-        }
         this.context = mainCtx;
-        return this.context;
+        
+        return new Promise((resolve, reject) => {
+            let settingsProms = [];
+            for (let [contextName, context] of contexts) {
+                if (!mainCtx.hasOwnProperty(contextName)) {
+                    mainCtx[contextName] = context;
+                } else {
+                    throw new NamespaceError(`Cannot load template ${contextName} because a property of that name already exists on base context.`)
+                }
+                let searchDir = `${this.projectSettings.inheritanceRoot}/${contextName}`;
+                settingsProms.push(
+                    ContextAssembler.gatherProjSettings(searchDir)
+                    .then(settings => this.includePaths.push({searchDir, settings}))
+                );
+            }
+            Promise.all(settingsProms).then(resolve);
+        });
     }
     
     private static gatherContext(searchDir) {
@@ -74,7 +81,7 @@ export default class ContextAssembler {
     }
     
     private buildContentLoop() {
-        let contentLoop = this.projectSettings.contentLoop;
+        let contentLoop = this.includePaths[0].settings.contentLoop;
         if (isArray(contentLoop)) {
             this.context.content = contentLoop
         } else if (isObject(contentLoop)) {
@@ -93,17 +100,22 @@ export default class ContextAssembler {
                     res.on('data', d => result += d);
                     res.on('error', e => reject(e));
                     res.on('end', () => {
-                        let parsedResult: any = JSON.parse(result);
-                        let plainUrl: string = parsedResult.exportLinks['text/plain'].slice(8);
+                        let parsableResult: any = JSON.parse(result);
+                        let plainUrl: string = parsableResult.exportLinks['text/plain'].slice(8);
                         options.hostname = plainUrl.split('/')[0];
                         options.path = `/${plainUrl.split('/').slice(1).join('/')}`;
                         request(options, res => {
-                            parsedResult = "";
-                            res.on('data', d => parsedResult += d);
+                            parsableResult = "";
+                            res.on('data', d => parsableResult += d);
                             res.on('error', e => reject(e));
                             res.on('end', () => {
-                                this.context.content = aml.load(parsedResult);
-                                resolve();
+                                // Have content - let's parse
+                                if (!contentLoop.parseFn) {
+                                    this.context.content = aml.load(parsableResult);
+                                    resolve();
+                                } else {
+                                    this.context.content = contentLoop.parseFn(parsableResult);
+                                }
                             })
                         }).end()
                     });
@@ -174,7 +186,7 @@ export default class ContextAssembler {
                         }
                         break;
                     
-                    // Use project debug setting unless it is undefined
+                    // Use project setting unless it is undefined
                     case 'debug':
                         if (!isUndefined(customSettings[prop])) {
                             merged[prop] = customSettings[prop]

@@ -3,9 +3,6 @@ import ContextAssembler from './ContextAssembler';
 export default class Lede {
     ctxAssembler: ContextAssembler;
     workingDir: string;
-    styleBlock: string;
-    contentBlock: string;
-    scriptBlock: string;
     
     constructor(wd?: string) {
         this.workingDir = wd ? wd : process.cwd();
@@ -15,8 +12,7 @@ export default class Lede {
     public buildProject() {
         return this.ctxAssembler.assemble()
             .then(ctx => {
-                let htmlProm = Lede.buildHtml(ctx);
-                htmlProm.then(console.log).catch(console.log);
+                
             })
             .catch(console.log)
     }

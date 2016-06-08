@@ -4,6 +4,7 @@ export interface InheritanceMap {
     html: (basePath: string) => string;
     css: (basePath: string) => string;
     js: (basePath: string) => string;
+    bits: (basePath: string) => string;
 }
 
 export interface ProjectSettings {
