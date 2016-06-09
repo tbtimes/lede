@@ -16,6 +16,19 @@ export class SassCompiler implements CSSPreprocessor {
             this.options = (<any>Object).assign(this.options, opts);
         }
     }
+    
+    public makeBits(projectCtx) {
+        
+    }
+    
+    public configure(index, paths) {
+        // Show this project's paths first
+        this.options.includePaths.push(
+            paths[index].settings.inheritancePathMap.css(paths[index].searchDir)
+        );
+
+
+    }
 
     public compileSingle(fullyQualifiedFilePath: string): Promise<string> {
         let stream = createReadStream(fullyQualifiedFilePath);

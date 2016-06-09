@@ -3,7 +3,7 @@ const fs = require('fs');
 
 class SettingsConfig {
   constructor() {
-    this.name = 1;
+    this.name = 2;
     
     // This property specifies the base path on which to look for projects in the inheritance chain.
     this.inheritanceRoot = path.join(__dirname, '..');
@@ -12,7 +12,7 @@ class SettingsConfig {
     // When compiling assets, the resolvers crawl this chain in order and pull the first matching asset name they find.
     // Projects listed here resolve to absolute path in the form of `${this.inheritanceRoot}/${this.projectName}` where
     // projectName is a string from inheritanceChain.
-    this.inheritanceChain = ['sample-project2'];
+    this.inheritanceChain = ['sample-project3', 'sample-project4'];
 
     // This property specifies which CSS Preprocessor the project uses. Leaving it null or undefined resolves to the
     // default, SassCompiler.
@@ -32,11 +32,7 @@ class SettingsConfig {
     // The ContextAssembler will fetch the specifie google doc and parse it using the specified parseFn. If no parseFn
     // is present, Lede will default to using the archieml parser and assign the result to the content property on the
     // project's context.
-    this.contentLoop = {
-      apiKey: fs.readFileSync(path.join(__dirname, '/googleapikey.txt')).toString(),
-      fileId: "1PokALcLuibzWcgOyLVCSpWvIrr9myRN-hH1IMxKE4EI",
-      parseFn: null
-    };
+    this.contentLoop = [];
 
     // This property specifies how the image resizer should map the outputs. It is currently unimplemented and has no defaults.
     this.imageMap = null;
