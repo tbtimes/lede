@@ -1,12 +1,15 @@
 import ContextAssembler from './ContextAssembler';
+import BitAssembler from "./BitAssembler";
 
 export default class Lede {
     ctxAssembler: ContextAssembler;
     workingDir: string;
+    bitAssembler: BitAssembler;
     
     constructor(wd?: string) {
         this.workingDir = wd ? wd : process.cwd();
         this.ctxAssembler = new ContextAssembler(this.workingDir);
+        this.bitAssembler = new BitAssembler(this.workingDir)
     }
     
     public buildProject() {
@@ -16,7 +19,7 @@ export default class Lede {
         //     })
         //     .catch(console.log)
         
-        this.ctxAssembler.assemble().then(console.log)
+        this.ctxAssembler.assemble().then(projReport => this.bitAssembler.assemble(projReport))
     }
     
     public static compileBits(ctx) {
