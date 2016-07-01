@@ -1,0 +1,6 @@
+{
+  "template": "tmpl.html",
+  "style": "style.scss",
+  "script": "interact.js",
+  "name": "test1"
+}

@@ -59,6 +59,7 @@ export default class ContextAssembler {
                                     resolve();
                                 } else {
                                     this.content = contentLoop.parseFn(parsableResult);
+                                    resolve();
                                 }
                             })
                         }).end()
@@ -89,7 +90,7 @@ export default class ContextAssembler {
             let leafReport = await ContextAssembler.reportOnNode(leaf);
             if (!settingsArr.indexOf(leafReport.settings) > -1) {
                 if (visited.indexOf(leafReport.node) > -1) {
-                    throw new Error();
+                    throw new CircularDepError(`${leafReport.node} is relying on a project which has a dependency on itself`);
                 }
                 settingsArr = await ContextAssembler.followLeaves(leafReport, settingsArr, visited);
             }
