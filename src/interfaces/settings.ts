@@ -9,13 +9,10 @@ export interface InheritanceMap {
 
 export interface ProjectSettings {
     inheritanceRoot: string;
-    inheritanceChain: Array<string>;
+    dependsOn: Array<string>;
     CSSPreprocessor?: CSSPreprocessor;
     JSPreprocessor?: JSPreprocessor;
     HtmlTemplateAssembler?: HtmlTemplateAssembler;
-    imageMap?: Object;
-    baseContext?: Object;
-    debug: Boolean;
     contentLoop: any;
     inheritancePathMap: InheritanceMap
 }

@@ -1,27 +1,18 @@
 # ledeTwo
 A sweet tool to make cool web things ~~ motto pending
 
-## Start contributing
-* Must be running latest stable version of node (v6.x) ([use nvm](https://github.com/creationix/nvm))
-* Npm install
-* Write tests!!!
+##Process
+### High level
+1. Lede is given a configuration file which specifies which comiplers and deployer it will use.
+2. Lede is given a project configuration file
+3. Lede uses that project config to resolve all dependencies and generates a project report
+4. Lede uses the project report to build a cache
+5. Lede uses the compilers on the cache to build the project assets
+6. Lede deploys the assets using the deployer.
 
-### Architecture
-* [06/02/2016](./docs/architecture_06-02-2016.JPG)
-
-### TODO
-* Build/test architecture
-    * ~~Build NunjucksCompiler~~
-    * ~~Build SassCompiler~~
-    * Build ES5Compiler
-    * Build ES6Compiler
-    * Build ImageResizeCompiler
-    * Build Lede AnalyzerComponent
-    * Build FileSystemDeployer
-    * Build FTPDeployer
-    * Build S3Deployer
-    * Build SCPDeployer
-    * Build Lede main component to hook up analyzer, compilers and deployers
-* Documentation/tutorials
-* CLI tooling
-* ~~Convert to typescript~~
+### Dependency Resolution
+1. A project config specifies `name` (mostly useful for debugging at this point), `inheritanceRoot` (root directory to search for dependencies from), `dependsOn` (list of dependencies), and a `contentResolver` (object that tells how content should be fetched) for the project.
+2. Dependencies are resolved and those dependencies' dependencies are resolved recursively. Each dependency is given a `dependedOnBy` property listing which dependencies rely on it when it is resolved.
+3. Dependencies' content is resolved according to the `contentResolver` and merged into a base `content` object.
+4. Dependencies' base contexts are resolved and merged into a `context` object.
+5. Once resolved, a project report is generated.
