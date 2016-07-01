@@ -12,7 +12,7 @@ const projectOpts = ts.createProject({
 });
 
 const testOpts = ts.createProject({
-  target: "es5",
+  target: "es6",
   module: "commonjs",
   noImplicitAny: false,
   declaration: true,

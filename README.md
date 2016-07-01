@@ -3,7 +3,7 @@ A sweet tool to make cool web things ~~ motto pending
 
 ##Process
 ### High level
-1. Lede is given a configuration file which specifies which comiplers and deployer it will use.
+1. A Lede instance is created with the compilers and deployer it will be using.
 2. Lede is given a project configuration file
 3. Lede uses that project config to resolve all dependencies and generates a project report
 4. Lede uses the project report to build a cache
