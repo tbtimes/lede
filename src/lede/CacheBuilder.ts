@@ -1,8 +1,8 @@
-import { copy, readJson, writeJson, stat, Stats, mkdir, ensureDir } from 'fs-extra';
+import { writeJson, stat, Stats, mkdir, ensureDir } from 'fs-extra';
 import * as rmrf from 'rimraf';
-import * as glob from 'glob';
 
 import { ProjectReport, Dependency } from '../interfaces';
+import { copyProm, globProm } from './utils';
 
 export class CacheBuilder {
   constructor(public project:ProjectReport) {
@@ -13,64 +13,52 @@ export class CacheBuilder {
     await CacheBuilder.createCache(cacheDir, this.project.dependencies);
 
     await CacheBuilder.buildDepCache(this.project.dependencies, cacheDir);
+    return `${this.project.workingDirectory}/.ledeCache/${this.project.dependencies[this.project.dependencies.length - 1].name}`
   }
 
-  async static buildDepCache(deps:Array<Dependency>, buildDir:string) {
+  async update(depName) {
+    let baseDep = this.project.dependencies.find(d => d.name === depName);
+    let updateDeps = this.project.dependencies.slice(this.project.dependencies.indexOf(baseDep));
+    await CacheBuilder.buildDepCache(updateDeps, `${this.project.workingDirectory}/.ledeCache`);
+    return `${this.project.workingDirectory}/.ledeCache/${this.project.dependencies[this.project.dependencies.length - 1].name}`
+  }
+
+  static async buildDepCache(deps:Array<Dependency>, buildDir:string) {
     for (let i = 0; i < deps.length; i++) {
       let cachePath = `${buildDir}/${deps[i].name}`;
-      
+
       // Bring in child deps
       if (i !== 0) {
         let prevPath = `${buildDir}/${deps[i - 1].name}`;
-        let prevStyles = await CacheBuilder.globProm(`${prevPath}/styles/*`);
-        let prevBits = await CacheBuilder.globProm(`${prevPath}/bits/*`);
-        let prevBlocks = await CacheBuilder.globProm(`${prevPath}/blocks/*`);
+        let prevStyles = await globProm(`${prevPath}/styles/*`);
+        let prevBits = await globProm(`${prevPath}/bits/*`);
+        let prevBlocks = await globProm(`${prevPath}/blocks/*`);
         for (let style of prevStyles) {
-          await CacheBuilder.copyProm(style, `${cachePath}/styles/${style.split('/')[style.split('/').length - 1]}`)
+          await copyProm(style, `${cachePath}/styles/${style.split('/')[style.split('/').length - 1]}`)
         }
         for (let bit of prevBits) {
-          await CacheBuilder.copyProm(bit, `${cachePath}/bits/${bit.split('/')[bit.split('/').length - 1]}`)
+          await copyProm(bit, `${cachePath}/bits/${bit.split('/')[bit.split('/').length - 1]}`)
         }
         for (let block of prevBlocks) {
-          await CacheBuilder.copyProm(block, `${cachePath}/blocks/${block.split('/')[block.split('/').length - 1]}`)
+          await copyProm(block, `${cachePath}/blocks/${block.split('/')[block.split('/').length - 1]}`)
         }
       }
-      
+
       // Copy over this deps' files
       let currPath = deps[i].workingDir;
-      let currStyles = await CacheBuilder.globProm(`${currPath}/styles/*`);
-      let currBits = await CacheBuilder.globProm(`${currPath}/bits/*`);
-      let currBlocks = await CacheBuilder.globProm(`${currPath}/blocks/*`);
+      let currStyles = await globProm(`${currPath}/styles/*`);
+      let currBits = await globProm(`${currPath}/bits/*`);
+      let currBlocks = await globProm(`${currPath}/blocks/*`);
       for (let style of currStyles) {
-        await CacheBuilder.copyProm(style, `${cachePath}/styles/${style.split('/')[style.split('/').length - 1]}`);
+        await copyProm(style, `${cachePath}/styles/${style.split('/')[style.split('/').length - 1]}`);
       }
       for (let bit of currBits) {
-        await CacheBuilder.copyProm(bit, `${cachePath}/bits/${bit.split('/')[bit.split('/').length - 1]}`);
+        await copyProm(bit, `${cachePath}/bits/${bit.split('/')[bit.split('/').length - 1]}`);
       }
       for (let block of currBlocks) {
-        await CacheBuilder.copyProm(block, `${cachePath}/blocks/${block.split('/')[block.split('/').length - 1]}`);
+        await copyProm(block, `${cachePath}/blocks/${block.split('/')[block.split('/').length - 1]}`);
       }
     }
-  }
-  
-  static copyProm(src, targ) {
-    return new Promise((resolve, reject) => {
-        copy(src, targ, {clobber: true}, (err) => {
-          if (err) reject(err);
-          resolve()
-        })
-    });
-  }
-
-  static globProm(path) {
-    return new Promise((resolve, reject) => {
-      glob(path, (err, paths) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(paths);
-      })
-    });
   }
 
   static createCache(cacheDir:string, deps:Array<Dependency>) {
@@ -85,9 +73,7 @@ export class CacheBuilder {
             createDirAndDeps(resolve);
           })
         } else {
-          mkdir(cacheDir, () => {
-            createDirAndDeps(resolve);
-          })
+          createDirAndDeps(resolve);
         }
       })
     });
@@ -103,7 +89,7 @@ export class CacheBuilder {
               throw err;
             }
             writeJson(`${cacheDir}/${dep.name}/.depCacheSettings.json`,
-                      {dependsOn: dep.dependsOn, dependedOnBy: dep.dependedOnBy}, (err) => {
+                      {dependedOnBy: dep.dependedOnBy}, (err) => {
                 if (err) {
                   throw err;
                 }

@@ -76,7 +76,7 @@ export class DependencyAssembler {
     visited.push(nodeReport.node);
     for (let leaf of nodeReport.leaves) {
       let leafReport = await DependencyAssembler.reportOnDep(leaf, nodeReport.node);
-      if (!settingsArr.indexOf(leafReport.settings) > -1) {
+      if (!(settingsArr.indexOf(leafReport.settings) > -1)) {
         if (visited.indexOf(leafReport.node) > -1) {
           throw new CircularDepError(`${leafReport.node} is relying on a project which has a dependency on itself`);
         }
