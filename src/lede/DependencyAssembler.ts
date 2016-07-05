@@ -16,7 +16,7 @@ export class DependencyAssembler {
    * This will create and return a ProjectReport
    * @returns {ProjectReport}
    */
-  async assemble():Promise<any>/*:ProjectReport */ {
+  async assemble():Promise<ProjectReport> {
     let deps = await DependencyAssembler.buildDependencies(this.workingDir);
     let context = await DependencyAssembler.buildContext(deps);
     let content = await DependencyAssembler.buildContent(deps);

@@ -16,3 +16,8 @@ A sweet tool to make cool web things ~~ motto pending
 3. Dependencies' content is resolved according to the `contentResolver` and merged into a base `content` object.
 4. Dependencies' base contexts are resolved and merged into a `context` object.
 5. Once resolved, a project report is generated.
+
+### Cache building
+1. Create a cachedir
+2. Build incremental cache folders for each dependency and post a cache settings with `dependsOn`, `dependedOnBy`. Each dependency copies  in child deps' cache first
+3. `updateCache` will rebuild cache by name and then rebuild all that depend on that cache
