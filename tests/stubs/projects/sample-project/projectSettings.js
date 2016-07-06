@@ -11,6 +11,9 @@ class SettingsConfig {
       fileId: "1PokALcLuibzWcgOyLVCSpWvIrr9myRN-hH1IMxKE4EI",
       parseFn: null
     };
+    this.styles = [];
+    this.scripts = [];
+    this.blocks = [];
   }
 }
 

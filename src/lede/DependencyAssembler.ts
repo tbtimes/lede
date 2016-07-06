@@ -16,7 +16,7 @@ export class DependencyAssembler {
    * This will create and return a ProjectReport
    * @returns {ProjectReport}
    */
-  async assemble():Promise<ProjectReport> {
+  async assemble(): Promise<ProjectReport> {
     let deps = await DependencyAssembler.buildDependencies(this.workingDir);
     let context = await DependencyAssembler.buildContext(deps);
     let content = await DependencyAssembler.buildContent(deps);
@@ -25,7 +25,10 @@ export class DependencyAssembler {
       workingDirectory: this.workingDir,
       content,
       context,
-      dependencies: deps
+      dependencies: deps,
+      styles: deps[deps.length - 1].styles,
+      scripts: deps[deps.length - 1].scripts,
+      blocks: deps[deps.length - 1].blocks
     }
   }
 
@@ -35,7 +38,7 @@ export class DependencyAssembler {
    * @param rootDepDir - directory for starting dependency
    * @returns {Dependency[]} - ordered list of dependencies
    */
-  static async buildDependencies(rootDepDir:string):Promise<Dependency[]> {
+  static async buildDependencies(rootDepDir: string): Promise<Dependency[]> {
     return await DependencyAssembler.reportOnDep(rootDepDir).then(r => DependencyAssembler.followLeaves(r, [], []))
   }
 
@@ -45,7 +48,8 @@ export class DependencyAssembler {
    * @param calledBy
    * @returns {{node: string, settings: Dependency, leaves: Array}}
    */
-  static async reportOnDep(dir:string, calledBy?:string):Promise<{node:string, settings:Dependency, leaves:string[]}> {
+  static async reportOnDep(dir: string,
+                           calledBy?: string): Promise<{node: string, settings: Dependency, leaves: string[]}> {
     let settings = await DependencyAssembler.gatherSettings(dir);
     let leaves = [];
     for (let proj of settings.dependsOn) {
@@ -71,8 +75,8 @@ export class DependencyAssembler {
    * @param visited
    * @returns {Array<Dependency>}
    */
-  static async followLeaves(nodeReport:{node:string, settings:Dependency, leaves:string[]},
-                            settingsArr:Array<Dependency>, visited:string[]):Promise<Dependency[]> {
+  static async followLeaves(nodeReport: {node: string, settings: Dependency, leaves: string[]},
+                            settingsArr: Array<Dependency>, visited: string[]): Promise<Dependency[]> {
     visited.push(nodeReport.node);
     for (let leaf of nodeReport.leaves) {
       let leafReport = await DependencyAssembler.reportOnDep(leaf, nodeReport.node);
@@ -94,17 +98,17 @@ export class DependencyAssembler {
    * @param dir
    * @returns {Promise<Dependency>}
    */
-  static gatherSettings(dir):Promise<Dependency> {
+  static gatherSettings(dir): Promise<Dependency> {
     return new Promise((resolve, reject) => {
       let path = `${dir}/projectSettings.js`;
-      stat(path, (err:any, stats:Stats) => {
+      stat(path, (err: any, stats: Stats) => {
         if (err && err.code !== 'ENOENT') {
           reject(err);
         }
         if (!err && stats.isFile()) {
           // Here we are importing a user-written module so we want to catch any errors it may throw
           try {
-            let SettingsConfig:ObjectConstructor = require(path).default;
+            let SettingsConfig: ObjectConstructor = require(path).default;
             resolve(DependencyAssembler.mergeDepWithDefault(<Dependency>new SettingsConfig()));
           } catch (e) {
             reject(e)
@@ -122,7 +126,7 @@ export class DependencyAssembler {
    * @param customSettings
    * @returns {Dependency}
    */
-  static mergeDepWithDefault(customSettings:Dependency):Dependency {
+  static mergeDepWithDefault(customSettings: Dependency): Dependency {
     let defaults = new DefaultDependency();
     let merged = Object.assign({}, defaults);
 
@@ -174,14 +178,14 @@ export class DependencyAssembler {
   static gatherContext(searchDir) {
     return new Promise((resolve, reject) => {
       let pathToContext = `${searchDir}/baseContext.js`;
-      stat(pathToContext, (err:any, stats:Stats) => {
+      stat(pathToContext, (err: any, stats: Stats) => {
         if (err) {
           reject(err);
         }
         if (!err && stats.isFile()) {
           // Here we are importing a user-written modules so we want to catch any errors it may throw
           try {
-            let Context:ObjectConstructor = require(pathToContext).default;
+            let Context: ObjectConstructor = require(pathToContext).default;
             resolve(new Context())
           } catch (e) {
             reject(e)
@@ -228,8 +232,8 @@ export class DependencyAssembler {
         res.on('data', d => result += d);
         res.on('error', e => reject(e));
         res.on('end', () => {
-          let parsableResult:any = JSON.parse(result);
-          let plainUrl:string = parsableResult.exportLinks['text/plain'].slice(8);
+          let parsableResult: any = JSON.parse(result);
+          let plainUrl: string = parsableResult.exportLinks['text/plain'].slice(8);
           options.hostname = plainUrl.split('/')[0];
           options.path = `/${plainUrl.split('/').slice(1).join('/')}`;
           request(options, res => {
