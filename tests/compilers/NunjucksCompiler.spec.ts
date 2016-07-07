@@ -11,7 +11,7 @@ describe("NunjucksCompiler", () => {
     let compiler = new NunjucksCompiler(TMPL_PATH);
     let COMPILED = readFileSync(TMPL_OUTPUT);
     
-    it("should compile a template", () => {
+    it("should compileGlobals a template", () => {
         compiler.renderTemplate('base.test.html').then((compiled) => {
             expect(compiled).toEqual(COMPILED.toString());
             asyncSpecDone()

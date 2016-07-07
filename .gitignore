@@ -114,4 +114,4 @@ dist/
 .idea/
 typings/
 spec/
-tests/stubs/projects/sample-project/googleapikey.txt
+tests/stubs/projects/myProject/googleapikey.txt

@@ -7,6 +7,6 @@ let compilers = {
 };
 
 let l = new Lede(compilers);
-l.buildProject("/Users/emurray/WebstormProjects/lede/spec/stubs/projects/sample-project")
+l.buildProject("/Users/emurray/WebstormProjects/lede/spec/stubs/projects/myProject")
  .then(console.log)
  .catch(console.log);

@@ -1,0 +1,7 @@
+{% block sideBar %}
+<div class="sidebar">
+  {% for link in sidebar %}
+  <a href="{{link.link}}">{{link.text}}</a>
+  {% endfor %}
+</div>
+{% endblock %}

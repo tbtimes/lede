@@ -13,7 +13,6 @@ export class CacheBuilder {
     await CacheBuilder.createCache(cacheDir, this.project.dependencies);
 
     await CacheBuilder.buildDepCache(this.project.dependencies, cacheDir);
-    return `${this.project.workingDirectory}/.ledeCache/`
   }
 
   static async buildDepCache(deps: Array<Dependency>, buildDir: string) {
@@ -24,22 +23,22 @@ export class CacheBuilder {
       let scripts = await globProm(`${currPath}/scripts/*`);
       let blocks = await globProm(`${currPath}/blocks/*`);
       let assets = await globProm(`${currPath}/assets/*`);
-
-      globalStyles.forEach(async(s) => {
+      
+      for (let s of globalStyles) {
         await copyProm(s, `${buildDir}/styles/${dep.name}/${s.split('/')[s.split('/').length - 1]}`)
-      });
-      bits.forEach(async(s) => {
+      }
+      for (let s of bits) {
         await copyProm(s, `${buildDir}/bits/${dep.name}/${s.split('/')[s.split('/').length - 1]}`)
-      });
-      scripts.forEach(async(s) => {
+      }
+      for (let s of scripts) {
         await copyProm(s, `${buildDir}/scripts/${dep.name}/${s.split('/')[s.split('/').length - 1]}`)
-      });
-      blocks.forEach(async(s) => {
+      }
+      for (let s of blocks) {
         await copyProm(s, `${buildDir}/blocks/${dep.name}/${s.split('/')[s.split('/').length - 1]}`)
-      });
-      assets.forEach(async(s) => {
+      }
+      for (let s of assets) {
         await copyProm(s, `${buildDir}/assets/${dep.name}/${s.split('/')[s.split('/').length - 1]}`)
-      });
+      }
     }
   }
 

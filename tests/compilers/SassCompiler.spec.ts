@@ -19,7 +19,7 @@ describe("SassCompiler", () => {
     let testFileResultThree = readFileSync(join(outputPath, 'test3.css'));
 
 
-    it("should compile a sassfile", () => {
+    it("should compileGlobals a sassfile", () => {
         compiler.compileSingle(testFileOne).then((output) => {
             expect(output.toString()).toEqual(testFileResultOne.toString());
             asyncSpecDone();
@@ -27,7 +27,7 @@ describe("SassCompiler", () => {
         asyncSpecWait();
     });
 
-    it("should compile multiple sassfiles", () => {
+    it("should compileGlobals multiple sassfiles", () => {
         compiler.run([testFileOne, testFileTwo, testFileThree]).then(([o1, o2, o3]) => {
             expect(o1.toString()).toEqual(testFileResultOne.toString());
             expect(o2.toString()).toEqual(testFileResultTwo.toString());
