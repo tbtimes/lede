@@ -18,7 +18,7 @@ export class DependencyAssembler {
    */
   async assemble(): Promise<ProjectReport> {
     let deps = await DependencyAssembler.buildDependencies(this.workingDir);
-    let context = merge(await DependencyAssembler.buildContext(deps), await DependencyAssembler.buildContent(deps));
+    let context = merge(await DependencyAssembler.buildContext(deps), { content: await DependencyAssembler.buildContent(deps) });
 
     return {
       workingDirectory: this.workingDir,
@@ -26,7 +26,8 @@ export class DependencyAssembler {
       dependencies: deps,
       styles: deps[deps.length - 1].styles,
       scripts: deps[deps.length - 1].scripts,
-      blocks: deps[deps.length - 1].blocks
+      blocks: deps[deps.length - 1].blocks,
+      bitLoop: deps[deps.length - 1].bitLoop
     }
   }
 

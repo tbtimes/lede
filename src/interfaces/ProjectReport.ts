@@ -6,5 +6,6 @@ export interface ProjectReport {
   context: any;
   styles: string[],
   scripts: string[],
-  blocks: string[]
+  blocks: string[],
+  bitLoop: string
 }

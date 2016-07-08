@@ -12,8 +12,9 @@ class SettingsConfig {
       parseFn: null
     };
     this.styles = ["baseProject/baseProjectStyles.scss", "myProject/myProjectStyles.scss"];
-    this.scripts = [];
-    this.blocks = ["baseProject/content.html", "myProject/sideBar.html"];
+    this.scripts = ["baseProject/logger.js"];
+    this.blocks = ["BITLOOP", "myProject/sideBar.html"];
+    this.bitLoop = "content"
   }
 }
 

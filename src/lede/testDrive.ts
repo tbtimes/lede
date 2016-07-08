@@ -1,9 +1,10 @@
 import { Lede } from './Lede';
-import { NunjucksCompiler, SassCompiler } from '../compilers';
+import { NunjucksCompiler, SassCompiler, Es6Compiler } from '../compilers';
 
 let compilers = {
   html: new NunjucksCompiler(),
-  css: new SassCompiler()
+  css: new SassCompiler(),
+  js: new Es6Compiler()
 };
 
 let l = new Lede(compilers);

@@ -10,4 +10,5 @@ export interface Dependency {
   scripts: string[];
   styles: string[];
   blocks: string[];
+  bitLoop?: string;
 }

@@ -1,5 +1,5 @@
 import * as glob from 'glob';
-import { copy, ensureDir, readJson } from 'fs-extra';
+import { copy, ensureDir, readJson, createReadStream } from 'fs-extra';
 
 export function copyProm(src, targ): Promise<{}> {
   return new Promise((resolve, reject) => {
@@ -34,7 +34,7 @@ export function createDir(path): Promise<{}> {
   });
 }
 
-export async function asyncMap(array, f) {
+export async function asyncMap(array, f): any[] {
   let returns = [];
   for (let item of array) {
     returns.push(await f(item));
@@ -48,5 +48,15 @@ export function readJsonProm(path) {
       if (err) throw err;
       resolve(r)
     })
+  });
+}
+
+export function readStreamProm(path) {
+  let data = "";
+  let stream = createReadStream(path);
+  return new Promise((resolve, reject) => {
+    stream.on('data', d => data += d.toString());
+    stream.on('end', () => resolve(data));
+    stream.on('error', e => reject(e));
   });
 }

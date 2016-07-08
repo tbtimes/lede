@@ -1,8 +1,7 @@
-import { createReadStream } from 'fs-extra';
-import { render, Options } from 'node-sass';
-
+import { createReadStream } from "fs-extra";
+import { render, Options } from "node-sass";
 import { ProjectReport } from "../interfaces/ProjectReport";
-import { asyncMap, globProm, readJsonProm } from '../utils';
+import { asyncMap, globProm } from "../utils";
 
 
 export class SassCompiler {
@@ -17,45 +16,36 @@ export class SassCompiler {
     };
     this.options = Object.assign({}, defaults, opts);
   }
-  
-  async compile(report: ProjectReport) {
-    let globals = await SassCompiler.compileGlobals(report, Object.assign({}, this.options));
-    let bits = await SassCompiler.compileBits(report, Object.assign({}, this.options));
-    
+
+  async compile(report: ProjectReport, bits) {
+    this.options.includePaths.push(`${report.workingDirectory}/.ledeCache.styles`);
+    let compiledGlobals = await SassCompiler.compileGlobals(report, Object.assign({}, this.options));
+    let compiledBits = await SassCompiler.compileBits(report, Object.assign({}, this.options), bits);
+
     return {
-      globals,
-      bits
+      globals: compiledGlobals,
+      bits: compiledBits.join('')
     }
   }
-  
-  static async compileBits(report: ProjectReport, options: Options) {
-    let projDirs = await globProm(`${report.workingDirectory}/.ledeCache/bits/*`);
-    let bitsReturn = {};
-    for (let proj of projDirs) {
-      let projName = proj.split('/')[proj.split('/').length - 1];
-      let bits = await globProm(`${proj}/*`);
-      for (let bit of bits) {
-        let bitName = bit.split('/')[bit.split('/').length - 1];
-        let cfg = await readJsonProm(`${bit}/bitConfig.json`);
-        let pathToRender = `${bit}/${cfg.style}`;
-        bitsReturn[`${projName}/${bitName}`] = await SassCompiler.renderFile(options, pathToRender);
-      }
-    }
-    return bitsReturn;
+
+  static async compileBits(report: ProjectReport, options: Options, bits) {
+    let bitPaths = bits.map(b => `${report.workingDirectory}/.ledeCache/bits/${b}/style.scss`);
+    return await asyncMap(bitPaths, async (b) => {
+      return await SassCompiler.renderFile(options, b)
+    });
   }
 
   static async compileGlobals(report: ProjectReport, options: Options) {
     let stylesDir = `${report.workingDirectory}/.ledeCache/styles`;
     let opts = Object.assign({}, options);
-    opts.includePaths.push(stylesDir);
-    
-    let styleSheets = await asyncMap(report.styles, async (f) => {
+
+    let styleSheets = await asyncMap(report.styles, async(f) => {
       return await SassCompiler.renderFile(opts, `${stylesDir}/${f}`)
     });
-    
+
     return styleSheets.join('');
   }
-  
+
   static renderFile(options, filePath) {
     let stream = createReadStream(filePath);
     let data = "";
@@ -70,10 +60,12 @@ export class SassCompiler {
             sourceComments: options.sourceComments,
             sourceMapEmbed: options.sourceMapEmbed
           }
-          ,(err, res) => {
-          if (err) reject(err);
-          resolve(res.css.toString())
-        })
+          , (err, res) => {
+            if (err) {
+              reject(err);
+            }
+            resolve(res.css.toString())
+          })
       })
     });
   }

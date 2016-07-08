@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 
-import { ProjectReport, Dependency } from '../interfaces';
+import { ProjectReport } from '../interfaces';
 import { DependencyAssembler } from './DependencyAssembler';
 import { CacheBuilder } from './CacheBuilder';
 
@@ -14,12 +14,10 @@ export class Lede {
     let projectReport: ProjectReport = await depAssembler.assemble();
     let cacheBuilder: CacheBuilder = new CacheBuilder(projectReport);
     await cacheBuilder.buildCache();
-    let globalStyles = await this.compilers.css.compile(projectReport);
-    return globalStyles
-    // await this.compilers.html.compileGlobals(projectReport);
+    let renderedPage = await this.compilers.html.compile(projectReport, {css: this.compilers.css, js: this.compilers.js});
+    // let styles = await this.compilers.css.compile(projectReport);
+    // let scripts = await this.compilers.js.compile(projectReport);
     
-    // console.log(cachePath)
-    // console.log(projectReport)
-    // await this.compilers.css.compileGlobals(cachePath, resolve(cachePath, '../dist'))
+    return renderedPage;
   }
 }
