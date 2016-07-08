@@ -152,7 +152,7 @@ export class DependencyAssembler {
       }
     }
 
-    return merged;
+    return <Dependency>merged;
   }
 
   /**

@@ -3,6 +3,8 @@
   "dependencies": {},
   "globalDependencies": {
     "browserify": "registry:dt/browserify#12.0.1+20160317120654",
+    "chalk": "registry:dt/chalk#0.4.0+20160317120654",
+    "commander": "registry:dt/commander#2.3.0+20160317120654",
     "fs-extra": "registry:dt/fs-extra#0.0.0+20160319124112",
     "glob": "registry:dt/glob#5.0.10+20160317120654",
     "jasmine": "registry:dt/jasmine#2.2.0+20160505161446",

@@ -34,7 +34,7 @@ export function createDir(path): Promise<{}> {
   });
 }
 
-export async function asyncMap(array, f): any[] {
+export async function asyncMap(array: Array<any>, f: (x: any) => any): Promise<Array<any>> {
   let returns = [];
   for (let item of array) {
     returns.push(await f(item));
