@@ -1,24 +1,33 @@
-import { isUndefined, merge } from 'lodash';
-import { stat, Stats } from 'fs-extra';
-import { request } from 'https';
-import * as aml from 'archieml';
+import { merge } from "lodash";
+import { stat, Stats } from "fs-extra";
+import { request } from "https";
+import * as aml from "archieml";
+import { DefaultDependency } from "../models/DefaultDependency";
+import { Dependency, ProjectReport } from "../interfaces";
+import { CircularDepError, NotAFile } from "../errors";
+import { ContentResolver } from "../interfaces/ContentResolver";
 
-import  { DefaultDependency } from '../models/DefaultDependency';
-import { Dependency, ProjectReport } from '../interfaces';
-import { CircularDepError } from '../errors';
+
+interface NodeReport {
+  node: string;
+  settings: Dependency;
+  leaves: string[];
+}
 
 
 export class DependencyAssembler {
-  constructor(public workingDir) {
+  constructor(public workingDir: string) {
   }
 
   /**
-   * This will create and return a ProjectReport
-   * @returns {ProjectReport}
+   * This will fetch all project dependencies, merge all baseContexts and fetch, parse, and merge all googleapis
+   * content.
+   * @returns {Promise<ProjectReport>}
    */
-  async assemble(): Promise<ProjectReport> {
+  public async assemble(): Promise<ProjectReport> {
     let deps = await DependencyAssembler.buildDependencies(this.workingDir);
-    let context = merge(await DependencyAssembler.buildContext(deps), { content: await DependencyAssembler.buildContent(deps) });
+    let context = merge(await DependencyAssembler.buildContext(deps),
+                        {content: await DependencyAssembler.buildContent(deps)});
 
     return {
       workingDirectory: this.workingDir,
@@ -32,23 +41,22 @@ export class DependencyAssembler {
   }
 
   /**
-   * This method will build dependencies recursively. ¯\_(ツ)_/¯
-   * Not intended to be part of the public interface of DependencyAssembler
+   * This method takes a rootDepDir string and returns a promise containing an ordered array of dependencies. Deps[0]
+   * is the most-basic dependency; Deps[Deps.length - 1] is the project in rootDepDir.
    * @param rootDepDir - directory for starting dependency
-   * @returns {Dependency[]} - ordered list of dependencies
+   * @returns {Promise<Dependency[]>} - ordered list of dependencies
    */
-  static async buildDependencies(rootDepDir: string): Promise<Dependency[]> {
+  public static async buildDependencies(rootDepDir: string): Promise<Dependency[]> {
     return await DependencyAssembler.reportOnDep(rootDepDir).then(r => DependencyAssembler.followLeaves(r, [], []))
   }
 
   /**
-   * Generates a report on a dependency and it's child dependencies.
+   * Generates a Node on the dependency tree.
    * @param dir
    * @param calledBy
-   * @returns {{node: string, settings: Dependency, leaves: Array}}
+   * @returns {Promise<NodeReport>}
    */
-  static async reportOnDep(dir: string,
-                           calledBy?: string): Promise<{node: string, settings: Dependency, leaves: string[]}> {
+  private static async reportOnDep(dir: string, calledBy?: string): Promise<NodeReport> {
     let settings = await DependencyAssembler.gatherSettings(dir);
     let leaves = [];
     for (let proj of settings.dependsOn) {
@@ -68,20 +76,21 @@ export class DependencyAssembler {
   }
 
   /**
-   * This method recursively follows all the child dependencies specified on a node report.
+   * This method creates an ordered array of dependencies by following the specified node all the way to it's root
    * @param nodeReport
    * @param settingsArr
    * @param visited
+   * @throws CircularDepError - thrown when a $currNode has a dependency on a node that depends on $currNode
    * @returns {Array<Dependency>}
    */
-  static async followLeaves(nodeReport: {node: string, settings: Dependency, leaves: string[]},
-                            settingsArr: Array<Dependency>, visited: string[]): Promise<Dependency[]> {
+  private static async followLeaves(nodeReport: NodeReport, settingsArr: Array<Dependency>,
+                                    visited: string[]): Promise<Dependency[]> {
     visited.push(nodeReport.node);
     for (let leaf of nodeReport.leaves) {
       let leafReport = await DependencyAssembler.reportOnDep(leaf, nodeReport.node);
       if (!(settingsArr.indexOf(leafReport.settings) > -1)) {
         if (visited.indexOf(leafReport.node) > -1) {
-          throw new CircularDepError(`${leafReport.node} is relying on a project which has a dependency on itself`);
+          throw new CircularDepError(leafReport.node);
         }
         settingsArr = await DependencyAssembler.followLeaves(leafReport, settingsArr, visited);
       } else {
@@ -92,19 +101,43 @@ export class DependencyAssembler {
     return settingsArr
   }
 
+  public static gatherContext(searchDir: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let pathToContext = `${searchDir}/baseContext.js`;
+      stat(pathToContext, (err: any, stats: Stats) => {
+        if (err.code === 'ENOENT') {
+          resolve({});
+        } else if (err) {
+          reject(err);
+        } else if (!err && stats.isFile()) {
+          // Here we are importing a user-written modules so we want to catch any errors it may throw
+          try {
+            let Context: ObjectConstructor = require(pathToContext).default;
+            resolve(new Context())
+          } catch (e) {
+            reject(e)
+          }
+        } else if (!stats.isFile()) {
+          reject(new NotAFile(pathToContext))
+        }
+      })
+    });
+  }
+
   /**
-   * Gathers projectSettings file from specified directory
+   * Gathers projectSettings file from specified directory and initializes then merges with default
    * @param dir
    * @returns {Promise<Dependency>}
    */
-  static gatherSettings(dir): Promise<Dependency> {
+  public static gatherSettings(dir): Promise<Dependency> {
     return new Promise((resolve, reject) => {
       let path = `${dir}/projectSettings.js`;
       stat(path, (err: any, stats: Stats) => {
-        if (err && err.code !== 'ENOENT') {
-          reject(err);
-        }
-        if (!err && stats.isFile()) {
+        if ((err && err.code === 'ENOENT') || !stats.isFile()) {
+          reject(new NotAFile(path));
+        } else if (err) {
+          reject(err)
+        } else {
           // Here we are importing a user-written module so we want to catch any errors it may throw
           try {
             let SettingsConfig: ObjectConstructor = require(path).default;
@@ -112,24 +145,24 @@ export class DependencyAssembler {
           } catch (e) {
             reject(e)
           }
-        } else {
-          // Could not find any projectSettings, using defaultSettings
-          resolve(new DefaultDependency());
         }
       })
     });
   }
 
   /**
-   * This will merge a custom projectSetting with the default
+   * This merges a custom dependency with the default effectively assuring that necessary properties are initialized.
    * @param customSettings
    * @returns {Dependency}
    */
-  static mergeDepWithDefault(customSettings: Dependency): Dependency {
+  private static mergeDepWithDefault(customSettings: Dependency): Dependency {
     let defaults = new DefaultDependency();
     let merged = Object.assign({}, defaults);
 
     for (let prop in customSettings) {
+      if (!customSettings.hasOwnProperty(prop)) {
+        continue
+      }
       if (defaults.hasOwnProperty(prop)) {
         switch (prop) {
 
@@ -147,7 +180,7 @@ export class DependencyAssembler {
             }
             break;
         }
-      } else if (customSettings.hasOwnProperty(prop) && !isUndefined(customSettings[prop])) {
+      } else {
         merged[prop] = customSettings[prop];
       }
     }
@@ -156,15 +189,24 @@ export class DependencyAssembler {
   }
 
   /**
-   * Grabs context from all dependencies and merges them into one object
+   * Takes and array of dependencies, gathers baseContext (if any), and then merges child contexts onto root context.
    * @param deps
-   * @returns {Promise<Any>}
+   * @returns {Promise<any>}
    */
-  static async buildContext(deps) {
+  public static async buildContext(deps: Array<Dependency>): Promise<any> {
     let contexts = [];
     for (let dep of deps) {
-      let context = await DependencyAssembler.gatherContext(dep.workingDir);
-      contexts.push(context);
+      try {
+        let context = await DependencyAssembler.gatherContext(dep.workingDir);
+        contexts.push(context);
+      } catch (e) {
+        if (e.code === 'NotAFile') {
+          // Here would be a good time to use an event emitter or logger
+        } else {
+          throw e;
+        }
+      }
+
     }
     return merge(...contexts)
   }
@@ -173,15 +215,17 @@ export class DependencyAssembler {
    * Gathers and returns context object for a dependency
    * @param searchDir
    * @returns {Promise<Any>}
+   *
    */
-  static gatherContext(searchDir) {
+  public static gatherContext(searchDir: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let pathToContext = `${searchDir}/baseContext.js`;
       stat(pathToContext, (err: any, stats: Stats) => {
-        if (err) {
+        if ((err && err.code === 'ENOENT') || !stats.isFile()) {
+          resolve(new NotAFile(pathToContext));
+        } else if (err) {
           reject(err);
-        }
-        if (!err && stats.isFile()) {
+        } else if (!err && stats.isFile()) {
           // Here we are importing a user-written modules so we want to catch any errors it may throw
           try {
             let Context: ObjectConstructor = require(pathToContext).default;
@@ -189,8 +233,6 @@ export class DependencyAssembler {
           } catch (e) {
             reject(e)
           }
-        } else if (!stats.isFile()) {
-          reject(new Error(`Expected ${pathToContext} to be a file`))
         }
       })
     });
@@ -201,7 +243,7 @@ export class DependencyAssembler {
    * @param deps
    * @returns {Promise<Any>}
    */
-  static async buildContent(deps) {
+  public static async buildContent(deps: Dependency[]): Promise<any> {
     let contents = [];
     for (let dep of deps) {
       if (dep.contentResolver) {
@@ -218,7 +260,7 @@ export class DependencyAssembler {
    * @param resolver - Dependency content resolver taken from projectSettings.js for a project
    * @returns {Promise<Any>}
    */
-  static fetchContent(resolver) {
+  public static fetchContent(resolver: ContentResolver): Promise<any> {
     return new Promise((resolve, reject) => {
       let options = {
         hostname: 'www.googleapis.com',
@@ -231,12 +273,12 @@ export class DependencyAssembler {
         res.on('data', d => result += d);
         res.on('error', e => reject(e));
         res.on('end', () => {
-          let parsableResult: any = JSON.parse(result);
+          let parsableResult: {exportLinks: string} = JSON.parse(result);
           let plainUrl: string = parsableResult.exportLinks['text/plain'].slice(8);
           options.hostname = plainUrl.split('/')[0];
           options.path = `/${plainUrl.split('/').slice(1).join('/')}`;
           request(options, res => {
-            parsableResult = "";
+            let parsableResult = "";
             res.on('data', d => parsableResult += d);
             res.on('error', e => reject(e));
             res.on('end', () => {

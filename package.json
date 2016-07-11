@@ -11,6 +11,7 @@
     "prepublish": "./node_modules/.bin/gulp source",
     "install": "dist/npm-scripts/install.js"
   },
+  "typings": "dist/",
   "author": "Tampa Bay Times Data Team",
   "license": "MIT",
   "engines": {
@@ -33,10 +34,12 @@
   },
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-typedoc": "^2.0.0",
     "gulp-typescript": "^2.13.6",
     "gulp-watch": "^4.3.6",
     "jasmine-node": "^1.14.5",
     "merge2": "^1.0.2",
+    "typedoc": "^0.4.4",
     "typescript": "^1.8.10"
   }
 }

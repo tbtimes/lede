@@ -2,6 +2,7 @@ const gulp = require('gulp');
 const ts = require('gulp-typescript');
 const merge = require('merge2');
 const watch = require('gulp-watch');
+const typedoc = require('gulp-typedoc');
 
 const projectOpts = ts.createProject({
   target: "es6",
@@ -19,12 +20,23 @@ const testOpts = ts.createProject({
   noExternalResolve: true
 });
 
+gulp.task("docs", () => {
+  return gulp.src('src/**/*.ts')
+    .pipe(typedoc({
+                   module: "commonjs",
+                   target: "es6",
+                   includeDeclarations: true,
+                   out: "docs/",
+                   ignoreCompilerErrors: true
+                 }))
+})
+
 gulp.task('source', () => {
   let result = gulp.src(['src/**/*.ts', 'typings/**/*.ts'])
     .pipe(ts(projectOpts));
 
   return merge([
-    result.dts.pipe(gulp.dest('dist/definitions')),
+    result.dts.pipe(gulp.dest('dist/')),
     result.js.pipe(gulp.dest('dist/'))
   ])
 });

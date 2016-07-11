@@ -1,12 +1,12 @@
 export class CircularDepError extends Error {
-    name: string;
+    code: string;
     message: string;
     stack: any;
 
-    constructor(msg) {
+    constructor(depName: string) {
         super();
-        this.name = "Circular Dependency Error";
-        this.message = msg;
+        this.code = "CircularDepError";
+        this.message = `${depName}`;
         this.stack = (new Error()).stack;
     }
 }
