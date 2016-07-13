@@ -7,6 +7,10 @@ import { Dependency, ProjectReport } from "../interfaces";
 import { CircularDepError, NotAFile } from "../errors";
 import { ContentResolver } from "../interfaces/ContentResolver";
 
+declare module aml {
+  export function load(input: string): any;
+}
+
 
 interface NodeReport {
   node: string;
@@ -28,15 +32,17 @@ export class DependencyAssembler {
     let deps = await DependencyAssembler.buildDependencies(this.workingDir);
     let context = merge(await DependencyAssembler.buildContext(deps),
                         {content: await DependencyAssembler.buildContent(deps)});
+    
+    let origDep = deps[deps.length - 1];
 
     return {
       workingDirectory: this.workingDir,
       context,
       dependencies: deps,
-      styles: deps[deps.length - 1].styles,
-      scripts: deps[deps.length - 1].scripts,
-      blocks: deps[deps.length - 1].blocks,
-      bitLoop: deps[deps.length - 1].bitLoop
+      styles: origDep.styles,
+      scripts: origDep.scripts,
+      blocks: origDep.blocks,
+      bitLoop: origDep.bitLoop
     }
   }
 
@@ -175,6 +181,10 @@ export class DependencyAssembler {
           case 'name':
           case 'inheritanceRoot':
           case 'contentResolver':
+          case 'blocks':
+          case 'scripts':
+          case 'styles':
+          case 'BITLOOP':
             if (customSettings[prop]) {
               merged[prop] = customSettings[prop];
             }

@@ -1,36 +1,45 @@
 #!/usr/bin/env node
-import { homedir } from 'os';
-import {} from 'fs-extra';
-import * as cmd from 'commander';
+import { homedir } from "os";
+import * as minimist from "minimist";
 import * as chalk from 'chalk';
 
+import { newCommand, lsCommand, cdCommand, buildCommand, devCommand } from './cli/';
 
+
+let args = minimist(process.argv.slice(2));
 const ledeHome = process.env.LEDE_HOME ? process.env.LEDE_HOME : `${homedir()}/LedeProjects`;
+handleCommand(args);
 
-cmd.version('0.0.1');
-   
+async function handleCommand(args) {
+  let command = args["_"].shift();
+  let workingDir = args['path'] || args['p'] || ledeHome;
 
-cmd
-  .command("new [type] [name]")
-  .description("Create a new [project|bit] with [name]")
-  .option("-p, --path [path]", "optionally a path to create the [project|bit]")
-  .action(function (type, name, options) {
-    let path = options.path || ledeHome;
-    
-    if (!type || !name) {
-      console.log(chalk.red("[type] and [name] are required parameters") + " -- type lede new -h for help")
-    } else {
-      switch(type){
-        case ('project'):
-          break;
-        case ('bit'):
-          break;
-        default:
-          console.log(`${chalk.red(type)} is not a valid [type] param -- type lede new -h for help`)
+  switch (command) {
+    case 'new':
+      await newCommand(args, workingDir);
+      process.exit(0);
+      break;
+    case 'ls':
+      await lsCommand(args, workingDir);
+      process.exit(0);
+      break;
+    case 'cd':
+      let res = await cdCommand(args, workingDir);
+      if (!res.err) {
+        console.log(res.data)
       }
-    }
-  });
-
-cmd.parse(process.argv);
-
-
+      process.exit(0);
+      break;
+    case 'build':
+      await buildCommand(args, workingDir);
+      process.exit(0);
+      break;
+    case 'dev':
+      await devCommand(args, workingDir);
+      break;
+    default:
+      console.log(`Command "${chalk.red(command)}" not recognized`);
+      process.exit(0);
+      break;
+  }
+}

@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 
-import { ProjectReport } from '../interfaces';
+import { ProjectReport, CompiledPage } from '../interfaces';
 import { DependencyAssembler } from './DependencyAssembler';
 import { CacheBuilder } from './CacheBuilder';
 
@@ -9,15 +9,23 @@ export class Lede {
   constructor(public compilers: any) {
   }
 
-  async buildProject(projectRoot: string): Promise<any> {
+  async compileProject(projectRoot: string): Promise<{report: ProjectReport, compiledPage: CompiledPage}> {
     let depAssembler: DependencyAssembler = new DependencyAssembler(projectRoot);
     let projectReport: ProjectReport = await depAssembler.assemble();
     let cacheBuilder: CacheBuilder = new CacheBuilder(projectReport);
     await cacheBuilder.buildCache();
-    let renderedPage = await this.compilers.html.compile(projectReport, {css: this.compilers.css, js: this.compilers.js});
-    // let styles = await this.compilers.css.compile(projectReport);
-    // let scripts = await this.compilers.js.compile(projectReport);
+    let compiledPage = await this.compilers.html.compile(projectReport, {css: this.compilers.css, js: this.compilers.js});
     
-    return renderedPage;
+    return {
+      report: projectReport,
+      compiledPage,
+      cachePath: `${projectRoot}/.ledeCache`
+    };
+  }
+
+  async deployProject(projectRoot: string, deployer: {deploy: (CompiledPage) => Promise<any>}): Promise<any> {
+    let compiledProject = await this.compileProject(projectRoot);
+    await deployer.deploy(compiledProject);
+    return true;
   }
 }

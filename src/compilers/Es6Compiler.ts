@@ -1,4 +1,5 @@
 import * as browserify from 'browserify';
+import * as babelify from 'babelify';
 
 import { ProjectReport } from "../interfaces/ProjectReport";
 import { globProm } from '../utils';
@@ -38,10 +39,10 @@ export class Es6Compiler {
       let b = browserify();
       b.require(requireable);
       b.add(toAdd);
-      b.transform("babelify", {presets: ["es2015"]});
+      b.transform(babelify, {presets: require('babel-preset-es2015')});
       b.bundle((err, res) => {
-        if (err) reject(err);
-        resolve(res.toString())
+        if (err) return reject(err);
+        return resolve(res.toString())
       })
     });
   }

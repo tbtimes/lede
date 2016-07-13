@@ -38,7 +38,6 @@ export class SassCompiler {
   static async compileGlobals(report: ProjectReport, options: Options) {
     let stylesDir = `${report.workingDirectory}/.ledeCache/styles`;
     let opts = Object.assign({}, options);
-
     let styleSheets = await asyncMap(report.styles, async(f) => {
       return await SassCompiler.renderFile(opts, `${stylesDir}/${f}`)
     });
@@ -52,6 +51,9 @@ export class SassCompiler {
     return new Promise((resolve, reject) => {
       stream.on('data', d => data += d.toString());
       stream.on('end', () => {
+        if (!data) {
+          return resolve("")
+        }
         render(
           {
             data,
@@ -62,9 +64,9 @@ export class SassCompiler {
           }
           , (err, res) => {
             if (err) {
-              reject(err);
+              return reject(err);
             }
-            resolve(res.css.toString())
+            return resolve(res.css.toString())
           })
       })
     });

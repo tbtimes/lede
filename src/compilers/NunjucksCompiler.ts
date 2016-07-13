@@ -1,5 +1,4 @@
 import { Environment, FileSystemLoader, Template } from "nunjucks";
-import { ProjectReport } from "../interfaces/ProjectReport";
 import { readStreamProm } from "../utils";
 
 
@@ -7,42 +6,45 @@ export class NunjucksCompiler {
 
   constructor() {}
 
-  async compile(report: ProjectReport, compilers) {
+  async compile(report, compilers) {
     let bits = NunjucksCompiler.getUsedBits(report);
     let stylesBlock = await NunjucksCompiler.createStyleBlock(report, bits, compilers.css);
     let scriptsBlock = await NunjucksCompiler.createScriptsBlock(report, bits, compilers.js);
     let shell = await NunjucksCompiler.createShell(report, stylesBlock, scriptsBlock);
-    return await NunjucksCompiler.renderTemplate(report, shell);
-    // let stylesBlock = await NunjucksCompiler.createStyleBlock(report, styles);
-    // let shell = await NunjucksCompiler.createShell(report, stylesBlock);
-    // return await NunjucksCompiler.renderTemplate(report, shell);
+    return {
+      index: await NunjucksCompiler.renderTemplate(report, shell),
+      scripts: scriptsBlock,
+      styles: stylesBlock,
+      cachePath: `${report.workingDirectory}/.ledeCache`
+    };
   }
   
-  static async createScriptsBlock(report: ProjectReport, bits, compiler) {
+  static async createScriptsBlock(report, bits, compiler) {
     let scripts = await compiler.compile(report, bits);
-    return `
-<!--Globals-->
-<script>
+    return {
+      file: 'globalScripts.js',
+      data: `
+// GLOBALS
 ${scripts.globals}
-</script>
-<!--Bits-->
-<script>
+// BITS
 ${scripts.bits}
-</script>
 `
+    }
   }
   
-  static getUsedBits (report: ProjectReport) {
+  static getUsedBits (report) {
     let visitedBits = [];
-    for (let bit of report.context.content[report.bitLoop]) {
-      if (!(visitedBits.indexOf(bit.tmpl) > -1)) {
-        visitedBits.push(bit.tmpl);
+    if (report.context.content.BITLOOP) {
+      for (let bit of report.context.content.BITLOOP) {
+        if (!(visitedBits.indexOf(bit.tmpl) > -1)) {
+          visitedBits.push(bit.tmpl);
+        }
       }
     }
     return visitedBits;
   }
 
-  static async renderTemplate(report: ProjectReport, template) {
+  static async renderTemplate(report, template) {
     let env = new Environment(new FileSystemLoader(`${report.workingDirectory}/.ledeCache/bits`, {
       watch: false,
       noCache: true
@@ -51,35 +53,19 @@ ${scripts.bits}
     return tmpl.render(report.context);
   }
 
-  static async createStyleBlock(report: ProjectReport, bits, compiler) {
+  static async createStyleBlock(report, bits, compiler) {
     let styles = await compiler.compile(report, bits);
-    return `
-<!--Globals-->
-<style>
+    return {
+      file: 'globalStyles.css',
+      data: `
+/* GLOBALS */
 ${styles.globals}
-</style>
-<!--Bits-->
-<style>
+/* BITS */
 ${styles.bits}
-</style>
-`;
-    // let styleBlock = `{% block styles %}
-    // <style>
-    // ${styles.globals}
-    // </style>
-    // `;
-    // let visitedBits = [];
-    // for (let bit of report.context.content[report.bitLoop]) {
-    //   if (!(visitedBits.indexOf(bit.tmpl) > -1)) {
-    //     styleBlock += `<style>${styles.bits[bit.tmpl]}</style>`;
-    //     visitedBits.push(bit.tmpl);
-    //   }
-    // }
-    // styleBlock += "{% endblock %}";
-    // return styleBlock
+`};
   }
 
-  static async createShell(report: ProjectReport, stylesBlock, scriptsBlock) {
+  static async createShell(report, stylesBlock, scriptsBlock) {
     let pageTop = `
 <!DOCTYPE html>
 
@@ -88,15 +74,20 @@ ${styles.bits}
   <title>{{seo.title}}</title>
   {% for item in seo.meta -%}
   <meta{%if item.name %} name="{{item.name}}"{% endif %}{% if item.content %} content="{{item.content}}"{% endif %}{% if item.props | length %}{% for prop in item.props %} {{prop.prop}}="{{prop.val}}"{% endfor %}{% endif %} />
-  {% endfor %}{% if debug -%}
+  {% endfor %}{% if $debug -%}
   <meta NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
   {%- endif %}
-  ${stylesBlock}
+  <link rel="stylesheet" type="text/css" href="${stylesBlock.file}">
 </head>
 <body>
 `;
     let pageBottom = `
-  ${scriptsBlock}
+  <script type="text/javascript" src="${scriptsBlock.file}"></script>
+  {%if $debug %}
+<script>
+  document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
+  ':35729/livereload.js?snipver=1"></' + 'script>')
+</script>{% endif %}
 </body>
 </html>
 `;
@@ -106,7 +97,7 @@ ${styles.bits}
         middle += await readStreamProm(`${report.workingDirectory}/.ledeCache/blocks/${block}`);
       } else {
         middle += `
-          {% for bit in content.${report.bitLoop} %}{% include bit.tmpl + "/tmpl.html" %}
+          {% for bit in content.BITLOOP %}{% include bit.tmpl + "/tmpl.html" %}
           {% endfor %}
         `
       }
