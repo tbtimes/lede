@@ -3,7 +3,7 @@ import * as connect from 'connect';
 import * as serveStatic from 'serve-static';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
-import { exec } from 'child_process';
+import { readFileSync } from "fs-extra";
 
 import { existsProm } from '../utils';
 import { DependencyAssembler, CacheBuilder } from '../lede';
@@ -12,6 +12,7 @@ import { FileSystemDeployer } from '../deployers';
 import { ProjectReport } from "../../dist/interfaces/ProjectReport";
 import { CompiledPage } from '../interfaces';
 import { asyncMap } from "../../dist/utils";
+
 
 let fileServer = connect();
 let lrServer: any = livereload.createServer();
@@ -42,7 +43,6 @@ export async function devCommand(args, workingDir) {
   fileServer.use(serveStatic(servePath));
 
   await buildFromGroundUp(buildPath, servePath, port);
-  
 
   lrServer.watch(servePath);
   fileServer.listen(8000);
@@ -55,8 +55,8 @@ async function buildFromGroundUp(buildPath, servePath, port) {
     let pr = await assembleDeps(depAssembler);
     await buildCache(pr);
     let compiledPage = await compilePage(pr);
-    servePage(servePath, port, pr, compiledPage);
-    createWatcher(pr, servePath, port, buildPath);
+    await servePage(servePath, port, pr, compiledPage);
+    await createWatcher(pr, servePath, port, buildPath);
   } catch(e) {
     console.log(e);
   }
@@ -108,16 +108,14 @@ async function createWatcher(projectReport: ProjectReport, servePath, port, buil
     ignored: [/[\/\\]\./, /\/(baseContext|projectSettings).js/]
   });
   let configWatcher = chokidar.watch(cfgs, {
-    persistant: true,
-    awaitWriteFinish: true
+    persistant: true
   });
 
   configWatcher.on('change', path => {
     assetWatcher.close();
     configWatcher.close();
     console.log(`Detected change to ${chalk.blue(path)}`);
-    // buildFromGroundUp(buildPath, servePath, port);
-    // process.exit(0)
+    buildFromGroundUp(buildPath, servePath, port)
   });
 
   assetWatcher.on('change', (path, stats) =>{
