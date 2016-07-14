@@ -3,6 +3,7 @@ const ts = require('gulp-typescript');
 const merge = require('merge2');
 const watch = require('gulp-watch');
 const typedoc = require('gulp-typedoc');
+const chmod = require('gulp-chmod');
 
 const projectOpts = ts.createProject({
   target: "es6",
@@ -37,7 +38,19 @@ gulp.task('source', () => {
 
   return merge([
     result.dts.pipe(gulp.dest('dist/')),
-    result.js.pipe(gulp.dest('dist/'))
+    result.js.pipe(chmod({
+                           owner: {
+                             read: true,
+                             write: true,
+                             execute: true
+                           },
+                           group: {
+                             execute: true
+                           },
+                           others: {
+                             execute: true
+                           }
+                         })).pipe(gulp.dest('dist/'))
   ])
 });
 
