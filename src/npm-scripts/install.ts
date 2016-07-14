@@ -15,7 +15,7 @@ async function build() {
   // Copy over base templates here
   var coreDir = resolve(__dirname, '../../templates/core');
   await copyProm(coreDir, `${ledeHome}/core`)
-  await npmInstall(coreDir)
+  // await npmInstall(coreDir)
     
 }
 build();

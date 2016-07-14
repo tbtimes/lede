@@ -34,7 +34,7 @@ export class DependencyAssembler {
                         {content: await DependencyAssembler.buildContent(deps)});
     
     let origDep = deps[deps.length - 1];
-
+    
     return {
       workingDirectory: this.workingDir,
       context,
@@ -140,16 +140,16 @@ export class DependencyAssembler {
       let path = `${dir}/projectSettings.js`;
       stat(path, (err: any, stats: Stats) => {
         if ((err && err.code === 'ENOENT') || !stats.isFile()) {
-          reject(new NotAFile(path));
+          return reject(new NotAFile(path));
         } else if (err) {
-          reject(err)
+          return reject(err)
         } else {
           // Here we are importing a user-written module so we want to catch any errors it may throw
           try {
             let SettingsConfig: ObjectConstructor = require(path).default;
-            resolve(DependencyAssembler.mergeDepWithDefault(<Dependency>new SettingsConfig()));
+            return resolve(DependencyAssembler.mergeDepWithDefault(<Dependency>new SettingsConfig()));
           } catch (e) {
-            reject(e)
+            return reject(e)
           }
         }
       })

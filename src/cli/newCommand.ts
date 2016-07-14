@@ -40,8 +40,8 @@ Options: -p --path
           console.log("Creating project");
           await copyProm(`${resolve(__dirname, '../..')}/templates/project`, `${workingDir}/${name}`);
           await writeProm(makeSettings(name, workingDir, contentSrc, apiKey), `${workingDir}/${name}/projectSettings.js`);
-          console.log("Installing dependencies (this could take a few seconds)");
-          await npmInstall(`${workingDir}/${name}`)
+          // console.log("Installing dependencies (this could take a few seconds)");
+          // await npmInstall(`${workingDir}/${name}`)
           console.log(`Created ${chalk.green(`${workingDir}/${name}`)}`)
         } catch(e) {
           console.log(e)
