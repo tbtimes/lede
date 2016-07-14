@@ -146,7 +146,6 @@ export class DependencyAssembler {
         } else {
           // Here we are importing a user-written module so we want to catch any errors it may throw
           try {
-            delete require.cache[require.resolve(path)];
             let SettingsConfig: ObjectConstructor = require(path).default;
             return resolve(DependencyAssembler.mergeDepWithDefault(<Dependency>new SettingsConfig()));
           } catch (e) {

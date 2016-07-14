@@ -114,12 +114,14 @@ async function createWatcher(projectReport: ProjectReport, servePath, port, buil
   configWatcher.on('change', path => {
     assetWatcher.close();
     configWatcher.close();
+    delete require.cache[require.resolve(path)];
     console.log(`Detected change to ${chalk.blue(path)}`);
     buildFromGroundUp(buildPath, servePath, port)
   });
 
   assetWatcher.on('change', (path, stats) =>{
     console.log(`Detected change to ${chalk.blue(path)}`);
+    delete require.cache[require.resolve(path)];
     buildCache(projectReport).then(() => {
       compilePage(projectReport).then((compiledPage) => {
         servePage(servePath, port, projectReport, compiledPage);
