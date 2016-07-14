@@ -18,7 +18,7 @@ export class SassCompiler {
   }
 
   async compile(report: ProjectReport, bits) {
-    this.options.includePaths.push(`${report.workingDirectory}/.ledeCache.styles`);
+    this.options.includePaths.push(`${report.workingDirectory}/.ledeCache/styles`);
     let compiledGlobals = await SassCompiler.compileGlobals(report, Object.assign({}, this.options));
     let compiledBits = await SassCompiler.compileBits(report, Object.assign({}, this.options), bits);
 

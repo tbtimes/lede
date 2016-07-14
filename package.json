@@ -9,7 +9,7 @@
     "build": "./node_modules/.bin/gulp",
     "dev": "./node_modules/.bin/tsc",
     "prepublish": "./node_modules/.bin/gulp source",
-    "install": "dist/npm-scripts/install.js"
+    "install": "./node_modules/.bin/gulp source && node ./dist/npm-scripts/install.js"
   },
   "typings": "dist/",
   "author": "Tampa Bay Times Data Team",

@@ -14,10 +14,11 @@ import { CompiledPage } from '../interfaces';
 import { asyncMap } from "../../dist/utils";
 
 
-let fileServer = connect();
-let lrServer: any = livereload.createServer();
+
 
 export async function devCommand(args, workingDir) {
+  let fileServer = connect();
+  let lrServer: any = livereload.createServer();
   let name = args['n'] || args['name'];
   let port = args['x'] || args['port'] || 8000;
   let servePath = `${workingDir}/.builtProjects/${name}`;
