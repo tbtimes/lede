@@ -84,6 +84,7 @@ class SettingsConfig {
     this.styles = [];
     this.scripts = [];
     this.blocks = ["BITLOOP"];
+    this.assets = [];
     this.contentResolver = {
       apiKey: "${apiKey}",
       fileId: "${fileId}",
