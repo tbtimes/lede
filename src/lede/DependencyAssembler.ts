@@ -2,10 +2,11 @@ import { merge } from "lodash";
 import { stat, Stats } from "fs-extra";
 import { request } from "https";
 import * as aml from "archieml";
+import { resolve as presolve } from 'path';
+
 import { DefaultDependency } from "../models/DefaultDependency";
-import { Dependency, ProjectReport } from "../interfaces";
+import { Dependency, ProjectReport, ContentResolver } from "../interfaces";
 import { CircularDepError, NotAFile } from "../errors";
-import { ContentResolver } from "../interfaces/ContentResolver";
 
 declare module aml {
   export function load(input: string): any;
@@ -66,7 +67,7 @@ export class DependencyAssembler {
     let settings = await DependencyAssembler.gatherSettings(dir);
     let leaves = [];
     for (let proj of settings.dependsOn) {
-      leaves.push(`${settings.inheritanceRoot}/${proj}`)
+      leaves.push(presolve(settings.inheritanceRoot, proj))
     }
     if (!settings.dependedOnBy) {
       if (calledBy) {
@@ -109,7 +110,7 @@ export class DependencyAssembler {
 
   public static gatherContext(searchDir: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      let pathToContext = `${searchDir}/baseContext.js`;
+      let pathToContext = presolve(searchDir, 'baseContext.js');
       stat(pathToContext, (err: any, stats: Stats) => {
         if (err.code === 'ENOENT') {
           resolve({});
@@ -137,7 +138,7 @@ export class DependencyAssembler {
    */
   public static gatherSettings(dir): Promise<Dependency> {
     return new Promise((resolve, reject) => {
-      let path = `${dir}/projectSettings.js`;
+      let path = presolve(dir, 'projectSettings.js');
       stat(path, (err: any, stats: Stats) => {
         if ((err && err.code === 'ENOENT') || !stats.isFile()) {
           return reject(new NotAFile(path));
@@ -194,7 +195,6 @@ export class DependencyAssembler {
         merged[prop] = customSettings[prop];
       }
     }
-
     return <Dependency>merged;
   }
 

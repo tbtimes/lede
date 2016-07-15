@@ -13,9 +13,11 @@ export function copyProm(src, targ): Promise<{}> {
   });
 }
 
-export function globProm(path): Promise<Array<string>> {
+export function globProm(path, cwd?): Promise<Array<string>> {
   return new Promise((resolve, reject) => {
-    glob(path, (err, paths) => {
+    glob(path, {
+      cwd: cwd ? cwd: process.cwd()
+    }, (err, paths) => {
       if (err) {
         return reject(err);
       }

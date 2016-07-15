@@ -8,14 +8,12 @@ import { npmInstall } from '../utils'
 import { createDir, copyProm } from '../utils';
 
 
-let ledeHome = process.env.LEDE_HOME ? process.env.LEDE_HOME : `${homedir()}/LedeProjects/`;
+let ledeHome = process.env.LEDE_HOME ? resolve(homedir(), process.env.LEDE_HOME) : resolve(homedir(), "LedeProjects");
 
 async function build() {
   await createDir(ledeHome);
   // Copy over base templates here
   var coreDir = resolve(__dirname, '../../templates/core');
-  await copyProm(coreDir, `${ledeHome}/core`)
-  // await npmInstall(coreDir)
-    
+  await copyProm(coreDir, resolve(ledeHome, 'core'));
 }
 build();

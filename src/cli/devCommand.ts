@@ -4,6 +4,7 @@ import * as serveStatic from 'serve-static';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import { readFileSync } from "fs-extra";
+import { resolve, basename } from 'path';
 
 import { existsProm } from '../utils';
 import { DependencyAssembler, CacheBuilder } from '../lede';
@@ -25,10 +26,9 @@ export async function devCommand(args, workingDir) {
   let buildPath = `${workingDir}/${name}`;
   if (!name) {
     try {
-      let res = await existsProm(`${process.cwd()}/projectSettings.js`);
-      if(res.file) {
-        let projName = process.cwd().split('/')[process.cwd().split('/').length - 1];
-        servePath = `${workingDir}/.builtProjects/${projName}`;
+      let res = await existsProm(resolve(process.cwd(), 'projectSettings.js'));
+      if (res.file) {
+        servePath = resolve(workingDir, '.builtProjects', basename(process.cwd()));
         buildPath = process.cwd();
       }
     } catch (e) {

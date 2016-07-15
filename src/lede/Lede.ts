@@ -28,4 +28,8 @@ export class Lede {
     await deployer.deploy(compiledProject);
     return true;
   }
+
+  async compileWindows(projectRoot: string): Promise<{report: ProjectReport, compiledPage: CompiledPage}> {
+    
+  }
 }
