@@ -46,8 +46,7 @@ export async function devCommand(args, workingDir) {
   await buildFromGroundUp(buildPath, servePath, port);
 
   lrServer.watch(servePath);
-  fileServer.listen(8000);
-  
+  fileServer.listen(port);
 }
 
 async function buildFromGroundUp(buildPath, servePath, port) {
