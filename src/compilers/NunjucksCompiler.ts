@@ -1,4 +1,6 @@
 import { Environment, FileSystemLoader, Template } from "nunjucks";
+import { join } from 'path';
+
 import { readStreamProm } from "../utils";
 
 
@@ -15,7 +17,7 @@ export class NunjucksCompiler {
       index: await NunjucksCompiler.renderTemplate(report, shell),
       scripts: scriptsBlock,
       styles: stylesBlock,
-      cachePath: `${report.workingDirectory}/.ledeCache`
+      cachePath: join(report.workingDirectory, '.ledeCache')
     };
   }
   
@@ -34,8 +36,8 @@ ${scripts.bits}
   
   static getUsedBits (report) {
     let visitedBits = [];
-    if (report.context.content.BITLOOP) {
-      for (let bit of report.context.content.BITLOOP) {
+    if (report.context.content.ARTICLE) {
+      for (let bit of report.context.content.ARTICLE) {
         if (!(visitedBits.indexOf(bit.tmpl) > -1)) {
           visitedBits.push(bit.tmpl);
         }
@@ -45,7 +47,7 @@ ${scripts.bits}
   }
 
   static async renderTemplate(report, template) {
-    let env = new Environment(new FileSystemLoader(`${report.workingDirectory}/.ledeCache/bits`, {
+    let env = new Environment(new FileSystemLoader(join(report.workingDirectory, '.ledeCache', 'bits'), {
       watch: false,
       noCache: true
     }));
@@ -93,11 +95,11 @@ ${styles.bits}
 `;
     let middle = '';
     for (let block of report.blocks) {
-      if (block !== 'BITLOOP') {
-        middle += await readStreamProm(`${report.workingDirectory}/.ledeCache/blocks/${block}`);
+      if (block !== 'ARTICLE') {
+        middle += await readStreamProm(join(report.workingDirectory, '.ledeCache', 'blocks', block));
       } else {
         middle += `
-          {% for bit in content.BITLOOP %}{% include bit.tmpl + "/tmpl.html" %}
+          {% for bit in content.ARTICLE %}{% include bit.tmpl + "/tmpl.html" %}
           {% endfor %}
         `
       }

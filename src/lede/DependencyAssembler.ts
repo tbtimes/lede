@@ -185,7 +185,7 @@ export class DependencyAssembler {
           case 'blocks':
           case 'scripts':
           case 'styles':
-          case 'BITLOOP':
+          case 'ARTICLE':
             if (customSettings[prop]) {
               merged[prop] = customSettings[prop];
             }
