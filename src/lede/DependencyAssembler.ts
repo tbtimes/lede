@@ -92,10 +92,15 @@ export class DependencyAssembler {
         settingsArr = await DependencyAssembler.followLeaves(leafReport, settingsArr, visited);
       }
     }
-    settingsArr.push(nodeReport.settings)
+    settingsArr.push(nodeReport.settings);
     return settingsArr;
   }
 
+  /**
+   * Looks for and resolves a baseContext.js file if it exists in the directory. If ENOENT, resolves with an empty object.
+   * @param searchDir
+   * @returns {Promise<any>}
+   */
   public static gatherContext(searchDir: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let pathToContext = presolve(searchDir, 'baseContext.js');
