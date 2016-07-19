@@ -85,14 +85,14 @@ export class DependencyAssembler {
     visited.push(nodeReport.node);
     for (let leaf of nodeReport.leaves) {
       let leafReport = await DependencyAssembler.reportOnDep(leaf);
-      if (settingsArr.indexOf(leafReport.settings) === -1) {
+      if (!(settingsArr.map(x => x.name).indexOf(leafReport.settings.name) > -1)) {
         if (visited.indexOf(leafReport.node) > -1) {
           console.log('err')
         }
         settingsArr = await DependencyAssembler.followLeaves(leafReport, settingsArr, visited);
       }
     }
-    settingsArr.push(nodeReport.settings);
+    settingsArr.push(nodeReport.settings)
     return settingsArr;
   }
 
