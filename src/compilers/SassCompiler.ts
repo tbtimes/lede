@@ -1,5 +1,7 @@
 import { createReadStream } from "fs-extra";
 import { render, Options } from "node-sass";
+import { join } from 'path';
+
 import { ProjectReport } from "../interfaces/ProjectReport";
 import { asyncMap, globProm } from "../utils";
 
@@ -18,7 +20,7 @@ export class SassCompiler {
   }
 
   async compile(report: ProjectReport, bits) {
-    this.options.includePaths.push(`${report.workingDirectory}/.ledeCache/styles`);
+    this.options.includePaths.push(join(report.workingDirectory, '.ledeCache', 'styles'));
     let compiledGlobals = await SassCompiler.compileGlobals(report, Object.assign({}, this.options));
     let compiledBits = await SassCompiler.compileBits(report, Object.assign({}, this.options), bits);
 
@@ -29,17 +31,17 @@ export class SassCompiler {
   }
 
   static async compileBits(report: ProjectReport, options: Options, bits) {
-    let bitPaths = bits.map(b => `${report.workingDirectory}/.ledeCache/bits/${b}/style.scss`);
+    let bitPaths = bits.map(b => join(report.workingDirectory, '.ledeCache', 'bits', b, 'style.scss'));
     return await asyncMap(bitPaths, async (b) => {
       return await SassCompiler.renderFile(options, b)
     });
   }
 
   static async compileGlobals(report: ProjectReport, options: Options) {
-    let stylesDir = `${report.workingDirectory}/.ledeCache/styles`;
+    let stylesDir = join(report.workingDirectory, '.ledeCache', 'styles');
     let opts = Object.assign({}, options);
     let styleSheets = await asyncMap(report.styles, async(f) => {
-      return await SassCompiler.renderFile(opts, `${stylesDir}/${f}`)
+      return await SassCompiler.renderFile(opts, join(stylesDir, f))
     });
 
     return styleSheets.join('');
