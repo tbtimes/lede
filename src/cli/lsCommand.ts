@@ -1,4 +1,5 @@
 import * as chalk from 'chalk';
+import { resolve, basename } from 'path';
 
 import { globProm, asyncMap, existsProm } from "../utils";
 
@@ -7,9 +8,9 @@ export async function lsCommand(args, workingDir) {
   let projects = await globProm(`${workingDir}/*`);
   let existingProjects = await asyncMap(projects, async (p) => {
     try {
-      let file = await existsProm(`${p}/projectSettings.js`);
+      let file = await existsProm(resolve(p, 'projectSettings.js'));
       if (file.file) {
-        return p.split('/')[p.split('/').length -1]
+        return basename(p)
       }
     } catch(e) {
       if (e.code !== 'ENOENT') {

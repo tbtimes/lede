@@ -4,6 +4,7 @@ const merge = require('merge2');
 const watch = require('gulp-watch');
 const typedoc = require('gulp-typedoc');
 const chmod = require('gulp-chmod');
+const srcmap = require('gulp-sourcemaps');
 
 const projectOpts = ts.createProject({
   target: "es6",
@@ -34,6 +35,7 @@ gulp.task("docs", () => {
 
 gulp.task('source', () => {
   let result = gulp.src(['src/**/*.ts', 'typings/**/*.ts'])
+    .pipe(srcmap.init())
     .pipe(ts(projectOpts));
 
   return merge([
@@ -50,7 +52,9 @@ gulp.task('source', () => {
                            others: {
                              execute: true
                            }
-                         })).pipe(gulp.dest('dist/'))
+                         }))
+      .pipe(srcmap.write())
+      .pipe(gulp.dest('dist/'))
   ])
 });
 

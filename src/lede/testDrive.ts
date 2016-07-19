@@ -8,9 +8,9 @@ let compilers = {
   js: new Es6Compiler()
 };
 
-let deployer = new FileSystemDeployer("/Users/emurray/WebstormProjects/lede/spec/stubs/projects/myProject/build")
+let deployer = new FileSystemDeployer("C:\Users\emurray\Desktop\GitHub\ledeTwo\spec\stubs\projects\myProject")
 
 let l = new Lede(compilers);
-l.deployProject("/Users/emurray/WebstormProjects/lede/spec/stubs/projects/myProject", deployer)
+l.deployProject("C:\Users\emurray\Desktop\GitHub\ledeTwo\spec\stubs\projects\myProject", deployer)
  .then(console.log)
  .catch(console.log);

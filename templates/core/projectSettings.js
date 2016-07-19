@@ -1,10 +1,11 @@
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
 class SettingsConfig {
   constructor() {
     this.name = "core";
-    this.inheritanceRoot = path.join(__dirname, '..');
+    this.inheritanceRoot = process.env.LEDE_HOME ? path.resolve(os.homedir(), process.env.LEDE_HOME) : path.resolve(os.homedir(), "LedeProjects");
     this.dependsOn = [];
     this.styles = [];
     this.scripts = [];

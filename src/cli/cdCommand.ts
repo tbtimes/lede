@@ -1,4 +1,5 @@
 import * as chalk from 'chalk';
+import { resolve } from 'path';
 
 import { existsProm } from "../utils";
 
@@ -19,7 +20,7 @@ This command is meant to be used like so:
       console.log(`${chalk.red(`${workingDir}/${name}`)} is not a directory`)
       return {err: true}
     } else {
-      return {err: null, data: `${workingDir}/${name}`};
+      return {err: null, data: resolve(workingDir, name)};
     }
   } catch(e) {
     if (e.code !== 'ENOENT') {
