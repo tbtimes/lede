@@ -33,9 +33,9 @@ export class DependencyAssembler {
     let deps = await DependencyAssembler.buildDependencies(this.workingDir);
     let context = merge(await DependencyAssembler.buildContext(deps),
                         {content: await DependencyAssembler.buildContent(deps)});
-    
+
     let origDep = deps[deps.length - 1];
-    
+
     return {
       workingDirectory: this.workingDir,
       context,
