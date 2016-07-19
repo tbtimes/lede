@@ -42,8 +42,7 @@ export class DependencyAssembler {
       dependencies: deps,
       styles: origDep.styles,
       scripts: origDep.scripts,
-      blocks: origDep.blocks,
-      bitLoop: origDep.bitLoop
+      blocks: origDep.blocks
     }
   }
 
@@ -181,11 +180,10 @@ export class DependencyAssembler {
           // Should override the default if they exist
           case 'name':
           case 'inheritanceRoot':
-          case 'contentResolver':
           case 'blocks':
           case 'scripts':
           case 'styles':
-          case 'ARTICLE':
+          case 'googleFileId':
             if (customSettings[prop]) {
               merged[prop] = customSettings[prop];
             }
@@ -256,8 +254,11 @@ export class DependencyAssembler {
   public static async buildContent(deps: Dependency[]): Promise<any> {
     let contents = [];
     for (let dep of deps) {
-      if (dep.contentResolver) {
-        let content = await DependencyAssembler.fetchContent(dep.contentResolver);
+      if (dep.googleFileId) {
+        if (!process.env.GAPI_KEY) {
+          throw new Error("Must have a googleapis key saved in the env variable GAPI_KEY to access documents stored on google drive.")
+        }
+        let content = await DependencyAssembler.fetchContent({fileId: dep.googleFileId, apiKey: process.env.GAPI_KEY, parseFn: null});
         contents.push(content)
       }
     }

@@ -6,8 +6,7 @@ import { globProm, copyProm, writeProm, existsProm, npmInstall } from "../utils"
 export async function newCommand(args, workingDir) {
   let type = args['_'][0];
   let name = args['_'][1];
-  let contentSrc = args['c'] || args['content'] || "1PokALcLuibzWcgOyLVCSpWvIrr9myRN-hH1IMxKE4EI";
-  let apiKey = args['a'] || args['api'] || process.env.GAPI_KEY
+  let contentSrc = args['c'] || args['content'] || "1kLHE2F-ydeTiQtnHKX4PhQy9oSLCTYS0CsoNr5zjx1c";
 
   // Check for help/all args present
   if (args['h'] || args['help']) {
@@ -26,10 +25,6 @@ Options: -p --path
       'lede new -h')} for help`);
     return;
   }
-  if (!apiKey) {
-    console.log(chalk.red("You must have a google api key to create a lede project. You can pass it in with the -a flag or set it to GAPI_KEY environment variable"));
-    process.exit(1);
-  }
 
   // Creation logic
   switch (type.toLowerCase()) {
@@ -45,7 +40,7 @@ Options: -p --path
           console.log("Creating project");
           await copyProm(resolve(__dirname, '../..', 'templates/project'), resolve(workingDir, name));
           await writeProm(
-            makeSettings(name, "process.env.LEDE_HOME ? path.resolve(os.homedir(), process.env.LEDE_HOME) : path.resolve(os.homedir(), \"LedeProjects\");", contentSrc, apiKey), 
+            makeSettings(name, contentSrc),
             resolve(workingDir, name, 'projectSettings.js')
          );
           console.log(`Created ${chalk.green(resolve(workingDir, name))}`)
@@ -76,26 +71,18 @@ Options: -p --path
   }
 }
 
-function makeSettings(name, inheritanceRoot, fileId, apiKey) {
-  return `const path = require('path');
-const fs = require('fs');
-const os = require('os');
+function makeSettings(name, fileId) {
+  return `
 
 class SettingsConfig {
   constructor() {
     this.name = "${name}";
-    this.inheritanceRoot = ${inheritanceRoot};
     this.dependsOn = ["core"];
-    this.contentResolver = null;
     this.styles = [];
     this.scripts = [];
-    this.blocks = ["BITLOOP"];
+    this.blocks = ["ARTICLE"];
     this.assets = [];
-    this.contentResolver = {
-      apiKey: "${apiKey}",
-      fileId: "${fileId}",
-      parseFn: null
-    };
+    this.googleFileId = "${fileId}";
   }
 }
 
