@@ -47,10 +47,6 @@ export async function devCommand(args, workingDir) {
 
   lrServer.watch(servePath);
   fileServer.listen(port);
-<<<<<<< HEAD
-=======
-  
->>>>>>> 8e74c98fb813fb8a69297014a0d65a7383aa49d4
 }
 
 async function buildFromGroundUp(buildPath, servePath, port) {
@@ -133,4 +129,3 @@ async function createWatcher(projectReport: ProjectReport, servePath, port, buil
     });
   });
 }
-

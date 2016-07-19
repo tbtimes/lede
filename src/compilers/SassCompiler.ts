@@ -23,7 +23,6 @@ export class SassCompiler {
     this.options.includePaths.push(join(report.workingDirectory, '.ledeCache', 'styles'));
     let compiledGlobals = await SassCompiler.compileGlobals(report, Object.assign({}, this.options));
     let compiledBits = await SassCompiler.compileBits(report, Object.assign({}, this.options), bits);
-
     return {
       globals: compiledGlobals,
       bits: compiledBits.join('')
