@@ -12,5 +12,5 @@ export class DefaultDependency implements Dependency {
   styles = [];
   blocks = ['ARTICLE'];
   assets = [];
-  googleFileId = "1kLHE2F-ydeTiQtnHKX4PhQy9oSLCTYS0CsoNr5zjx1c";
+  googleFileId = "";
 }
