@@ -2,9 +2,9 @@ const path = require('path');
 
 class SettingsConfig {
   constructor() {
-    this.name = "proj1";
+    this.name = "proj3";
     this.inheritanceRoot = path.resolve(__dirname, "..");
-    this.dependsOn = [];
+    this.dependsOn = ["proj4", "proj5"];
     this.styles = [];
     this.scripts = [];
     this.blocks = [];

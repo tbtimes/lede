@@ -2,7 +2,7 @@ const path = require('path');
 
 class SettingsConfig {
   constructor() {
-    this.name = "proj1";
+    this.name = "proj5";
     this.inheritanceRoot = path.resolve(__dirname, "..");
     this.dependsOn = [];
     this.styles = [];

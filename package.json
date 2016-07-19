@@ -4,12 +4,20 @@
   "description": "A tool for building pretty story pages",
   "main": "dist/index.js",
   "bin": "dist/cli.js",
+  "ava": {
+    "files": [
+      "test/**/*.js"
+    ],
+    "source": [
+      "src/**/*.ts"
+    ]
+  },
   "scripts": {
-    "test": "./node_modules/.bin/jasmine-node .",
-    "build": "./node_modules/.bin/gulp",
-    "dev": "./node_modules/.bin/tsc",
-    "prepublish": "./node_modules/.bin/gulp source",
-    "install": "./node_modules/.bin/gulp source && node ./dist/npm-scripts/install.js"
+    "test": "ava",
+    "build": "gulp source",
+    "dev": "gulp dev",
+    "prepublish": "gulp source",
+    "install": "gulp source && node ./dist/npm-scripts/install.js"
   },
   "typings": "dist/",
   "author": "Tampa Bay Times Data Team",
@@ -37,13 +45,13 @@
     "serve-static": "^1.11.1"
   },
   "devDependencies": {
+    "ava": "^0.15.2",
     "gulp": "^3.9.1",
     "gulp-chmod": "^1.3.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typedoc": "^2.0.0",
     "gulp-typescript": "^2.13.6",
     "gulp-watch": "^4.3.6",
-    "jasmine-node": "^1.14.5",
     "merge2": "^1.0.2",
     "typedoc": "^0.4.4",
     "typescript": "^1.8.10"
