@@ -98,10 +98,14 @@ ${styles.bits}
       if (block !== 'ARTICLE') {
         middle += await readStreamProm(join(report.workingDirectory, '.ledeCache', 'blocks', block));
       } else {
-        middle += `
-          {% for bit in content.ARTICLE %}{% include bit.tmpl + "/tmpl.html" %}
-          {% endfor %}
-        `
+        middle += `<article id="ledeRoot" class="container">
+          <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 main-column">
+            {% for bit in content.ARTICLE %}{% include bit.tmpl + "/tmpl.html" %}
+            {% endfor %}
+            </div>
+          </div>
+        </article>`
       }
 
     }
