@@ -62,20 +62,11 @@ export class DependencyAssembler {
    * @param calledBy
    * @returns {Promise<NodeReport>}
    */
-  private static async reportOnDep(dir: string, calledBy?: string): Promise<NodeReport> {
+  private static async reportOnDep(dir: string): Promise<NodeReport> {
     let settings = await DependencyAssembler.gatherSettings(dir);
     let leaves = [];
     for (let proj of settings.dependsOn) {
       leaves.push(presolve(settings.inheritanceRoot, proj))
-    }
-    if (!settings.dependedOnBy) {
-      if (calledBy) {
-        settings.dependedOnBy = [calledBy]
-      } else {
-        settings.dependedOnBy = []
-      }
-    } else {
-      settings.dependedOnBy.push(calledBy)
     }
     settings.workingDir = dir;
     return {node: dir, settings, leaves}
@@ -93,18 +84,16 @@ export class DependencyAssembler {
                                     visited: string[]): Promise<Dependency[]> {
     visited.push(nodeReport.node);
     for (let leaf of nodeReport.leaves) {
-      let leafReport = await DependencyAssembler.reportOnDep(leaf, nodeReport.node);
-      if (!(settingsArr.indexOf(leafReport.settings) > -1)) {
+      let leafReport = await DependencyAssembler.reportOnDep(leaf);
+      if (settingsArr.indexOf(leafReport.settings) === -1) {
         if (visited.indexOf(leafReport.node) > -1) {
-          throw new CircularDepError(leafReport.node);
+          console.log('err')
         }
         settingsArr = await DependencyAssembler.followLeaves(leafReport, settingsArr, visited);
-      } else {
-        settingsArr[settingsArr.indexOf(leafReport.settings)].dependedOnBy.push(nodeReport.node);
       }
     }
     settingsArr.push(nodeReport.settings);
-    return settingsArr
+    return settingsArr;
   }
 
   public static gatherContext(searchDir: string): Promise<any> {
