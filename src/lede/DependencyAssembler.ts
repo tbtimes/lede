@@ -87,41 +87,13 @@ export class DependencyAssembler {
       let leafReport = await DependencyAssembler.reportOnDep(leaf);
       if (!(settingsArr.map(x => x.name).indexOf(leafReport.settings.name) > -1)) {
         if (visited.indexOf(leafReport.node) > -1) {
-          console.log('err')
+          throw new CircularDepError(leafReport.node)
         }
         settingsArr = await DependencyAssembler.followLeaves(leafReport, settingsArr, visited);
       }
     }
     settingsArr.push(nodeReport.settings);
     return settingsArr;
-  }
-
-  /**
-   * Looks for and resolves a baseContext.js file if it exists in the directory. If ENOENT, resolves with an empty object.
-   * @param searchDir
-   * @returns {Promise<any>}
-   */
-  public static gatherContext(searchDir: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let pathToContext = presolve(searchDir, 'baseContext.js');
-      stat(pathToContext, (err: any, stats: Stats) => {
-        if (err.code === 'ENOENT') {
-          resolve({});
-        } else if (err) {
-          reject(err);
-        } else if (!err && stats.isFile()) {
-          // Here we are importing a user-written modules so we want to catch any errors it may throw
-          try {
-            let Context: ObjectConstructor = require(pathToContext).default;
-            resolve(new Context())
-          } catch (e) {
-            reject(e)
-          }
-        } else if (!stats.isFile()) {
-          reject(new NotAFile(pathToContext))
-        }
-      })
-    });
   }
 
   /**
@@ -212,29 +184,29 @@ export class DependencyAssembler {
     }
     return merge(...contexts)
   }
-
   /**
-   * Gathers and returns context object for a dependency
+   * Looks for and resolves a baseContext.js file if it exists in the directory. If ENOENT, resolves with an empty object.
    * @param searchDir
-   * @returns {Promise<Any>}
-   *
+   * @returns {Promise<any>}
    */
   public static gatherContext(searchDir: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      let pathToContext = `${searchDir}/baseContext.js`;
+      let pathToContext = presolve(searchDir, 'baseContext.js');
       stat(pathToContext, (err: any, stats: Stats) => {
-        if ((err && err.code === 'ENOENT') || !stats.isFile()) {
-          resolve(new NotAFile(pathToContext));
+        if (err && err.code === 'ENOENT') {
+          return resolve({});
         } else if (err) {
-          reject(err);
+          return reject(err);
         } else if (!err && stats.isFile()) {
           // Here we are importing a user-written modules so we want to catch any errors it may throw
           try {
             let Context: ObjectConstructor = require(pathToContext).default;
-            resolve(new Context())
+            return resolve(new Context())
           } catch (e) {
-            reject(e)
+            return reject(e)
           }
+        } else if (!stats.isFile()) {
+          return reject(new NotAFile(pathToContext))
         }
       })
     });

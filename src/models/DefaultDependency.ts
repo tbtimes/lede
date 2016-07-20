@@ -8,7 +8,6 @@ export class DefaultDependency implements Dependency {
                                                                                                 "LedeProjects");
   name = 'defaultLedeProject';
   dependsOn = [];
-  contentResolver = null;
   scripts = [];
   styles = [];
   blocks = ['ARTICLE'];

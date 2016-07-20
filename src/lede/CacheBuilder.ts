@@ -11,7 +11,7 @@ export class CacheBuilder {
 
   async buildCache() {
     let cacheDir = join(this.project.workingDirectory, '.ledeCache');
-    await CacheBuilder.createCache(cacheDir, this.project.dependencies);
+    await CacheBuilder.createCache(this.project.dependencies, cacheDir);
     await CacheBuilder.buildDepCache(this.project.dependencies, cacheDir);
   }
 
@@ -25,7 +25,7 @@ export class CacheBuilder {
       let assets = await globProm("assets/*", currPath);
       
       for (let s of globalStyles) {
-        await copyProm(s, join(buildDir, "styles", dep.name, basename(s)))
+        await copyProm(join(currPath, s), join(buildDir, "styles", dep.name, basename(s)))
       }
       for (let s of bits) {
         await copyProm(join(currPath, s), join(buildDir, "bits", dep.name, basename(s)))
@@ -42,7 +42,7 @@ export class CacheBuilder {
     }
   }
 
-  static createCache(cacheDir: string, deps: Array<Dependency>) {
+  static createCache(deps: Array<Dependency>, cacheDir: string) {
     return new Promise((resolve, reject) => {
       stat(cacheDir, (err: any, stats: Stats) => {
         if (err && err.code !== 'ENOENT') {

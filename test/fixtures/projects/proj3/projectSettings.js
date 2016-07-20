@@ -4,7 +4,7 @@ class SettingsConfig {
   constructor() {
     this.name = "proj3";
     this.inheritanceRoot = path.resolve(__dirname, "..");
-    this.dependsOn = ["proj4", "proj5"];
+    this.dependsOn = ["proj5"];
     this.styles = [];
     this.scripts = [];
     this.blocks = [];
