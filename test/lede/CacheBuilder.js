@@ -91,9 +91,11 @@ test.serial("CacheBuilder.buildDepCache", async t => {
   let styleTest = await existsProm(resolve(buildDir, 'styles', 'proj1', 'foo.scss'));
   let scriptsTest = await existsProm(resolve(buildDir, 'scripts', 'proj2', 'bar.js'));
   let bitsTest = await existsProm(resolve(buildDir, 'bits', 'proj3', 'text'));
+  let blocksTest = await existsProm(resolve(buildDir, 'blocks', 'proj4', 'baz.html'))
 
   t.true(assetTest.file);
   t.true(styleTest.file);
   t.true(scriptsTest.file);
   t.true(bitsTest.dir);
+  t.true(blocksTest.file);
 });
