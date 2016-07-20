@@ -3,12 +3,12 @@ import { resolve } from 'path';
 import { DependencyAssembler } from '../../dist/lede';
 import { CircularDepError } from '../../dist/errors';
 
-let pathToProj1 = resolve(__dirname, "../fixtures/projects/proj1");
-let pathToCirc1 = resolve(__dirname, "../fixtures/projects/circ1");
+let pathToProj1 = resolve(__dirname, "..", "fixtures", "projects", "proj1");
+let pathToCirc1 = resolve(__dirname, "..", "fixtures", "projects", "circ1");
 let p1NodeReport = {
   node: pathToProj1,
   settings: {
-    inheritanceRoot: resolve(__dirname, "../fixtures/projects"),
+    inheritanceRoot: resolve(__dirname, "..", "fixtures", "projects"),
     name: 'proj1',
     dependsOn: ['proj2'],
     scripts: [],
@@ -18,11 +18,11 @@ let p1NodeReport = {
     googleFileId: '',
     workingDir: pathToProj1
   },
-  leaves: [ resolve(__dirname, "../fixtures/projects/proj2") ]
+  leaves: [ resolve(__dirname, "..", "fixtures", "projects", "proj2") ]
 };
 let p1SettingsArr = [
   {
-    workingDir: resolve(__dirname, "../fixtures/projects/proj5"),
+    workingDir: resolve(__dirname, "..", "fixtures", "projects", "proj5"),
     name: 'proj5',
     dependsOn: [],
     scripts: [],
@@ -30,10 +30,10 @@ let p1SettingsArr = [
     blocks: [],
     assets: [],
     googleFileId: '',
-    inheritanceRoot: resolve(__dirname, "../fixtures/projects")
+    inheritanceRoot: resolve(__dirname, "..", "fixtures", "projects")
   },
   {
-    workingDir: resolve(__dirname, "../fixtures/projects/proj3"),
+    workingDir: resolve(__dirname, "..", "fixtures", "projects", "proj3"),
     name: 'proj3',
     dependsOn: ['proj5'],
     scripts: [],
@@ -41,10 +41,10 @@ let p1SettingsArr = [
     blocks: [],
     assets: [],
     googleFileId: '',
-    inheritanceRoot: resolve(__dirname, "../fixtures/projects")
+    inheritanceRoot: resolve(__dirname, "..", "fixtures", "projects")
   },
   {
-    workingDir: resolve(__dirname, "../fixtures/projects/proj4"),
+    workingDir: resolve(__dirname, "..", "fixtures", "projects", "proj4"),
     name: 'proj4',
     dependsOn: ['proj3', 'proj5'],
     scripts: [],
@@ -52,10 +52,10 @@ let p1SettingsArr = [
     blocks: [],
     assets: [],
     googleFileId: '',
-    inheritanceRoot: resolve(__dirname, "../fixtures/projects")
+    inheritanceRoot: resolve(__dirname, "..", "fixtures", "projects")
   },
   {
-    workingDir: resolve(__dirname, "../fixtures/projects/proj2"),
+    workingDir: resolve(__dirname, "..", "fixtures", "projects", "proj2"),
     name: 'proj2',
     dependsOn: ['proj4'],
     scripts: [],
@@ -63,10 +63,10 @@ let p1SettingsArr = [
     blocks: [],
     assets: [],
     googleFileId: '',
-    inheritanceRoot: resolve(__dirname, "../fixtures/projects")
+    inheritanceRoot: resolve(__dirname, "..", "fixtures", "projects")
   },
   {
-    workingDir: resolve(__dirname, "../fixtures/projects/proj1"),
+    workingDir: resolve(__dirname, "..", "fixtures", "projects", "proj1"),
     name: 'proj1',
     dependsOn: ['proj2'],
     scripts: [],
@@ -74,7 +74,7 @@ let p1SettingsArr = [
     blocks: [],
     assets: [],
     googleFileId: '',
-    inheritanceRoot: resolve(__dirname, "../fixtures/projects")
+    inheritanceRoot: resolve(__dirname, "..", "fixtures", "projects")
   },
 ];
 
@@ -137,15 +137,14 @@ test("DependencyAssembler.gatherContext", async t => {
 
   ctx = await DependencyAssembler.gatherContext(pathToCirc1);
   t.deepEqual(ctx, {});
-
-  t.throws(DependencyAssembler.gatherContext(resolve(__dirname, '../fixtures'),
-                                             new CircularDepError(resolve(__dirname, "../fixtures/baseContext.js"))))
+  t.throws(DependencyAssembler.gatherContext(resolve(__dirname, "..", "fixtures"),
+                                             new CircularDepError(resolve(__dirname, "..", "fixtures", "baseContext.js"))))
 });
 
 test("DependencyAssembler.gatherSettings", async t => {
   let settings = await DependencyAssembler.gatherSettings(pathToProj1);
   t.deepEqual(settings, {
-    inheritanceRoot: resolve(__dirname, "../fixtures/projects"),
+    inheritanceRoot: resolve(__dirname, "..", "fixtures", "projects"),
     name: 'proj1',
     dependsOn: ['proj2'],
     scripts: [],
@@ -155,8 +154,8 @@ test("DependencyAssembler.gatherSettings", async t => {
     googleFileId: ''
   });
 
-  t.throws(DependencyAssembler.gatherSettings(resolve(__dirname, "../fixtures"),
-                                              new CircularDepError(resolve(__dirname, "../fixtures/projectSettings.js"))))
+  t.throws(DependencyAssembler.gatherSettings(resolve(__dirname, "..", "fixtures"),
+                                              new CircularDepError(resolve(__dirname, "..", "fixtures", "projectSettings.js"))))
 });
 
 test("DependencyAssembler.buildContext", async t => {

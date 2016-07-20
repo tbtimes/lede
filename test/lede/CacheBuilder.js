@@ -5,10 +5,10 @@ import { CacheBuilder } from '../../dist/lede';
 import { createDir, globProm, existsProm } from '../../dist/utils';
 
 
-let buildDir = resolve(__dirname, '../../cacheTestTmp');
+let buildDir = resolve(__dirname, "..", "..", "cacheTestTmp");
 let p1SettingsArr = [
   {
-    workingDir: resolve(__dirname, "../fixtures/projects/proj5"),
+    workingDir: resolve(__dirname, "..", "fixtures", "projects", "proj5"),
     name: 'proj5',
     dependsOn: [],
     scripts: [],
@@ -16,10 +16,10 @@ let p1SettingsArr = [
     blocks: [],
     assets: [],
     googleFileId: '',
-    inheritanceRoot: resolve(__dirname, "../fixtures/projects")
+    inheritanceRoot: resolve(__dirname, "..", "fixtures", "projects")
   },
   {
-    workingDir: resolve(__dirname, "../fixtures/projects/proj3"),
+    workingDir: resolve(__dirname, "..", "fixtures", "projects", "proj3"),
     name: 'proj3',
     dependsOn: ['proj5'],
     scripts: [],
@@ -27,10 +27,10 @@ let p1SettingsArr = [
     blocks: [],
     assets: [],
     googleFileId: '',
-    inheritanceRoot: resolve(__dirname, "../fixtures/projects")
+    inheritanceRoot: resolve(__dirname, "..", "fixtures", "projects")
   },
   {
-    workingDir: resolve(__dirname, "../fixtures/projects/proj4"),
+    workingDir: resolve(__dirname, "..", "fixtures", "projects", "proj4"),
     name: 'proj4',
     dependsOn: ['proj3', 'proj5'],
     scripts: [],
@@ -38,10 +38,10 @@ let p1SettingsArr = [
     blocks: [],
     assets: [],
     googleFileId: '',
-    inheritanceRoot: resolve(__dirname, "../fixtures/projects")
+    inheritanceRoot: resolve(__dirname, "..", "fixtures", "projects")
   },
   {
-    workingDir: resolve(__dirname, "../fixtures/projects/proj2"),
+    workingDir: resolve(__dirname, "..", "fixtures", "projects", "proj2"),
     name: 'proj2',
     dependsOn: ['proj4'],
     scripts: [],
@@ -49,10 +49,10 @@ let p1SettingsArr = [
     blocks: [],
     assets: [],
     googleFileId: '',
-    inheritanceRoot: resolve(__dirname, "../fixtures/projects")
+    inheritanceRoot: resolve(__dirname, "..", "fixtures", "projects")
   },
   {
-    workingDir: resolve(__dirname, "../fixtures/projects/proj1"),
+    workingDir: resolve(__dirname, "..", "fixtures", "projects", "proj1"),
     name: 'proj1',
     dependsOn: ['proj2'],
     scripts: [],
@@ -60,7 +60,7 @@ let p1SettingsArr = [
     blocks: [],
     assets: [],
     googleFileId: '',
-    inheritanceRoot: resolve(__dirname, "../fixtures/projects")
+    inheritanceRoot: resolve(__dirname, "..", "fixtures", "projects")
   },
 ];
 
