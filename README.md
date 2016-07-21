@@ -3,8 +3,10 @@
 
 Lede is a cross-platform build tool designed to make it simple for news organizations to build pretty story pages. Lede aims to be flexible enough that an experienced designer/developer can quickly throw together a non-traditional story page (like a media slider) but simple enough that non-developers (web editors) can build story pages from predefined pieces of functionality called bits and blocks. If your newsroom has developers, they can create new bits and blocks for use in any project.
 
+__This project is under active development and is, at the moment, incomplete. Breaking changes are likely.__
+
 ## Owners manual
-_This documentation assumes you are using a unix system for the terminal. If you are on windows, you can try [git for windows](https://git-for-windows.github.io/) or [cygwin](https://www.cygwin.com/) or just translate the bash syntax into windows cmd syntax_
+_This documentation assumes you are using a unix system for the terminal. If you are on windows, you can try [git for windows](https://git-for-windows.github.io/) or [cygwin](https://www.cygwin.com/) or just translate the bash syntax into windows cmd syntax._
 
 Projects in Lede have a few parts. First is the Lede CLI which you will use to create a project. A project is a directory that contains that contains a file called `projectSettings.js` which holds configuration information for the project — more on that later. First, though, let's install Lede and get it working.
 
