@@ -21,7 +21,7 @@ test.before("Create .ledeCache", async t => {
 });
 
 test.after.cb("Remove .ledeCache", t => {
-  rmrf.default(resolve(__dirname, "../fixtures/.ledeCache"), t.end);
+  rmrf.default(pathToCache, t.end);
 });
 
 test("Es6Compiler.getRequirablePaths", async t => {
