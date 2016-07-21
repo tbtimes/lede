@@ -1,6 +1,6 @@
 import { test } from 'ava';
 import { resolve } from 'path';
-import { readFileSync, writeFileSync } from 'fs-extra';
+import { readFileSync, readJsonSync, writeJsonSync } from 'fs-extra';
 import { CacheBuilder } from '../../dist/lede';
 import { Es6Compiler } from '../../dist/compilers';
 import projectReport from '../fixtures/projectReport';
@@ -13,6 +13,7 @@ let expectedRequirable = [
 ];
 let expectedBits = readFileSync(resolve(__dirname, "..", "fixtures", "rendered", "bundledJSBits.js")).toString();
 let expectedGlobals = readFileSync(resolve(__dirname, "..", "fixtures", "rendered", "bundledJSGlobals.js")).toString();
+let expectedCompile = readJsonSync(resolve(__dirname, "..", "fixtures", "rendered", "compiledjs.json"));
 
 projectReport.workingDirectory = resolve(pathToCache, "..");
 
@@ -37,4 +38,10 @@ test("Es6Compiler.bundleBits", async t => {
 test("Es6Compiler.bundleGlobals", async t => {
   let bundledGlobals = await Es6Compiler.bundleGlobals(projectReport, expectedRequirable);
   t.deepEqual(bundledGlobals, expectedGlobals);
+});
+
+test("Es6Compiler.compile", async t => {
+  let ec = new Es6Compiler();
+  let output = await ec.compile(projectReport, ["proj2/loadjs"]);
+  t.deepEqual(output, expectedCompile);
 });

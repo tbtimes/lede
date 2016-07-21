@@ -25,15 +25,16 @@ export class SassCompiler {
     let compiledBits = await SassCompiler.compileBits(report, Object.assign({}, this.options), bits);
     return {
       globals: compiledGlobals,
-      bits: compiledBits.join('')
+      bits: compiledBits
     }
   }
 
   static async compileBits(report: ProjectReport, options: Options, bits) {
     let bitPaths = bits.map(b => join(report.workingDirectory, '.ledeCache', 'bits', b, 'style.scss'));
-    return await asyncMap(bitPaths, async (b) => {
+    let compiledBits = await asyncMap(bitPaths, async (b) => {
       return await SassCompiler.renderFile(options, b)
     });
+    return compiledBits.join('');
   }
 
   static async compileGlobals(report: ProjectReport, options: Options) {

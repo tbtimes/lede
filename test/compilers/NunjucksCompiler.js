@@ -1,6 +1,6 @@
 import { test } from 'ava';
 import { resolve } from 'path';
-import { readFileSync, writeFileSync } from 'fs-extra';
+import { readFileSync } from 'fs-extra';
 import * as rmrf from 'rimraf';
 import { NunjucksCompiler } from '../../dist/compilers'
 

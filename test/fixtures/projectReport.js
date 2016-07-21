@@ -98,7 +98,7 @@ let projectReport = {
       inheritanceRoot: resolve(__dirname, "projects")
     },
   ],
-  styles: [],
+  styles: ["proj3/includeTest.scss"],
   scripts: ["proj5/globalScript.js"],
   blocks: ['proj4/baz.html', 'ARTICLE']
 };
