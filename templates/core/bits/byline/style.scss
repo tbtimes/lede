@@ -1,0 +1,15 @@
+@import 'test/typography';
+
+.byline {
+  font-weight: 700;
+  padding: .5em 0 1em;
+}
+.byline, .dateline {
+  color: #777;
+  @include open-sans-condensed();
+}
+.dateline {
+  float: right;
+  font-weight: normal;
+  color: #000;
+}

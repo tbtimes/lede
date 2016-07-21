@@ -1,0 +1,25 @@
+footer {
+  // display: flex;
+  color: $graymedium;
+  // background-color: white;
+  padding: $portal-padding-mobile;
+  height: 140px;
+  border-top: 1px solid $grayaccent;
+  @media screen and (min-width: $screen-sm-min) {
+    padding: $portal-padding-desktop;
+    height: 160px;
+  }
+  .copyright {
+    font-size: .875em;
+    text-align: center;
+    padding: 0 10px 20px;
+  }
+}
+#componentDivFooter {
+  margin: 20px auto;
+  width: 270px;
+  img {
+    margin: 0 10px;
+    // width: 50%;
+  }
+}
