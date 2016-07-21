@@ -1,0 +1,35 @@
+figure {
+  background-color: $gray-lightest;
+  padding: 1em 0;
+  border: 1px dotted #ccc;
+  border-width: 1px 0;
+}
+.credit {
+  font-size: 11px;
+  text-align: right;
+}
+.caption {
+  font-size: 14px;
+  padding: 5px 0;
+}
+.lede figure {
+  padding: 0;
+  border-width: 0;
+  max-height: 85vh;
+  overflow: hidden;
+  .headline-overlay {
+    position: absolute;
+    padding: 2em 3em 1em;
+    bottom: 5vh;
+    left: 7vw;
+    // background-color: rgba(0,0,0,.4);
+    color: white;
+    letter-spacing: -.12em;
+    h1 {
+      font-size: calc(2.5vw * 1 + 20px);
+    }
+    h2 {
+      font-size: calc(1.5vw * 1 + 20px);
+    }
+  }
+}

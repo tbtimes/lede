@@ -1,0 +1,41 @@
+header {
+  width: 100%;
+  height: 40px;
+  padding: $portal-padding-mobile;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: $brickred;
+  // @media screen and (min-width: $screen-sm-min) {
+  @include media-breakpoint-up(sm) {
+    height: 50px;
+    padding: $portal-padding-desktop;
+  }
+}
+.header-logo-link {
+  display: inline-block;
+}
+.header-logo {
+  height: 23px;
+  position: relative;
+  top: 8px;
+  &.hidden-xs-down {
+    height: 30px;
+    top: 12px;
+  }
+}
+.header-social {
+  float: right;
+  position: relative;
+  top: 10px;
+  img {
+    margin: 0 3px;
+  }
+  // @media screen and (min-width: $screen-sm-min) {
+  @include media-breakpoint-up(sm) {
+    // top: 14px;
+    img {
+      margin: 0 5px;
+    }
+  }
+}
