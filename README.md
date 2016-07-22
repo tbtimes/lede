@@ -17,5 +17,25 @@ _As of right now, the CLI is only available on github and requires a bit of manu
 
 With node installed, you are ready to install Lede.
 
-Go ahead and clone this repo and then cd into it. From inside the root directory, run `npm install`. This will probably take a couple of minutes. After it has finished, run `npm run build && npm run install && npm link`. This command will build the source code, create a LedeProjects directory and install a package with core functionality, and then put the CLI binary on your path.
+Go ahead and clone this repo and then cd into it. From inside the root directory, run `npm install`. This will probably take a couple of minutes. After it has finished, run `npm run build && npm run install && npm link`. This command will build the source code, create a LedeProjects directory in your home directory and install a package with core functionality, and then put the CLI binary on your path. If you don't want Lede to set up LedeProjects in your home directory, you can set the environment variable LEDE_HOME to either an absolute path or a path relative to your home directory and rerun `npm run install`.
 
+### Using the CLI
+The Lede CLI exposes a few commands to help you create, test, and deploy Lede projects.
+
+* `lede new project <name>` will scaffold a new project and put it in your LedeProjects directory (or wherever LEDE_HOME points to)
+* `lede dev` from inside a project directory will serve your current project.
+* `lede ls` will list all projects.
+* `lede cd <name>` will return the path of project <name>. You can use it with cd to change directly into a project (``cd `lede cd <name>` ``)
+
+### Anatomy of a project
+A project in Lede is a collection of files that work together to create a single page.
+
+#### Directory structure
+* <projectname>
+    * assets
+    * bits
+    * blocks
+    * scripts
+    * styles
+    * baseContext.js
+    * projectSettings.js
