@@ -1,13 +1,13 @@
 <div class="fs">
-  <figure class="{% if bit.style %}{{ bit.style }}{% endif %}">
-    <img {% if bit.alt %} alt="{{ bit.alt }}" {% endif %} src="/assets/test/img/600/{{ bit.src }}.jpg" srcset="
-      /assets/test/img/480/{{ bit.src }}.jpg 480w,
-      /assets/test/img/480/{{ bit.src }}-2x.jpg 960w,
-      /assets/test/img/600/{{ bit.src }}.jpg 600w,
-      /assets/test/img/1024/{{ bit.src }}.jpg 1024w,
-      /assets/test/img/600/{{ bit.src }}-2x.jpg 1500w,
-      /assets/test/img/1024/{{ bit.src }}-2x.jpg 2048w,
-      /assets/test/img/1200/{{ bit.src }}-2x.jpg 3000w
+  <figure class="{% if bit.class %}{{ bit.class }}{% endif %}">
+    <img {% if bit.alt %} alt="{{ bit.alt }}" {% endif %} src="{{ bit.srcpath }}img/600/{{ bit.src }}.jpg" srcset="
+      {{ bit.srcpath }}img/480/{{ bit.src }}.jpg 480w,
+      {{ bit.srcpath }}img/480/{{ bit.src }}-2x.jpg 960w,
+      {{ bit.srcpath }}img/600/{{ bit.src }}.jpg 600w,
+      {{ bit.srcpath }}img/1024/{{ bit.src }}.jpg 1024w,
+      {{ bit.srcpath }}img/600/{{ bit.src }}-2x.jpg 1500w,
+      {{ bit.srcpath }}img/1024/{{ bit.src }}-2x.jpg 2048w,
+      {{ bit.srcpath }}img/1500/{{ bit.src }}-2x.jpg 3000w
     " sizes="
       (max-width: 479px) 480px,
       (min-width: 480px) and (max-width: 599px) 600px,
