@@ -25,4 +25,17 @@ The Lede CLI exposes a few commands to help you create, test, and deploy Lede pr
 * `lede new project <name>` will scaffold a new project and put it in your LedeProjects directory (or wherever LEDE_HOME points to)
 * `lede dev` from inside a project directory will serve your current project.
 * `lede ls` will list all projects.
-* `lede cd <name>` will return the path of project <name>. You can use it with cd to change directly into a project (`cd \`lede cd <name>\``)
+* `lede cd <name>` will return the path of project <name>. You can use it with cd to change directly into a project (``cd `lede cd <name>` ``)
+
+### Anatomy of a project
+A project in Lede is a collection of files that work together to create a single page.
+
+#### Directory structure
+* <projectname>
+    * assets
+    * bits
+    * blocks
+    * scripts
+    * styles
+    * baseContext.js
+    * projectSettings.js
