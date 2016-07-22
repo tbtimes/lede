@@ -85,7 +85,7 @@ $border-width:               1px !default;
 //
 // Settings for the `<body>` element.
 
-$body-bg:                    $gray-lightest !default;
+$body-bg:                    #fff !default;
 $body-color:                 $gray-dark !default;
 
 
@@ -135,15 +135,14 @@ $container-max-widths: (
 // Set the number of columns and specify the width of the gutters.
 
 $grid-columns:               12 !default;
-// $grid-gutter-width:          1.875rem !default; // 30px
-$grid-gutter-width:          3.75rem !default; // 60px
+$grid-gutter-width:          1.875rem !default; // 30px
 
 
 // Typography
 //
 // Font, line-height, and color for body text, headings, and more.
 
-$font-family-sans-serif:     "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
+$font-family-sans-serif:     "Helvetica Neue", Helvetica, Arial, sans-serif !default;
 $font-family-serif:          Georgia, "Times New Roman", Times, serif !default;
 $font-family-monospace:      Menlo, Monaco, Consolas, "Courier New", monospace !default;
 $font-family-base:           $font-family-sans-serif !default;
@@ -175,9 +174,7 @@ $display4-weight:             300 !default;
 
 $line-height:                1.5 !default;
 
-// $headings-margin-bottom:     ($spacer / 2) !default;
-$headings-margin-bottom:     ($spacer) !default;
-$headings-margin-top:        ($spacer) !default;
+$headings-margin-bottom:     ($spacer / 2) !default;
 $headings-font-family:       inherit !default;
 $headings-font-weight:       500 !default;
 $headings-line-height:       1.1 !default;
