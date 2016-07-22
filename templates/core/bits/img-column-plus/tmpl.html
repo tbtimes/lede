@@ -1,12 +1,12 @@
 <figure class="column-plus{% if bit.style %} {{ bit.style }}{% endif %}">
   <img
     {% if bit.alt %} alt="{{ bit.alt }}"{% endif %}
-    src="/assets/test/img/600/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}"
+    src="{{ bit.srcpath }}img/600/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}"
     srcset="
-      /assets/test/img/480/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 480w,
-      /assets/test/img/480/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 960w,
-      /assets/test/img/600/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 600w,
-      /assets/test/img/600/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1200w
+      {{ bit.srcpath }}img/480/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 480w,
+      {{ bit.srcpath }}img/480/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 960w,
+      {{ bit.srcpath }}img/600/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 600w,
+      {{ bit.srcpath }}img/600/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1200w
     "
     sizes="
       (max-width: 480px) 480px,
