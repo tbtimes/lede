@@ -30,7 +30,7 @@ The Lede CLI exposes a few commands to help you create, test, and deploy Lede pr
 ### Anatomy of a project
 A project in Lede is a collection of files that work together to create a single page.
 
-#### Directory structure
+###### Directory structure
 * \<projectname\>
     * assets
     * bits
@@ -40,26 +40,26 @@ A project in Lede is a collection of files that work together to create a single
     * baseContext.js
     * projectSettings.js
 
-#### assets directory
+###### assets directory
 The assets directory is where you store any assets that aren't stylesheets or javascript such as images or json that you will load with ajax.
 
-#### bits
+###### bits
 The bits directory stores bits which are reusable pieces of functionality that can be carried from project to project. Bits have a special integration with googledocs. Read more about bits in the section [Anatomy of a bit](#anatomy-of-a-bit).
 
-#### blocks
+###### blocks
 The blocks directory contains chunks of html (blocks) that can be reused across projects. Headers, footers, sidebars are excellent candidates for blocks. By default, Lede expects blocks to be written using the [Nunjucks templating language](https://mozilla.github.io/nunjucks/). Nunjucks is a javascript port of Jinja so Django users should feel write at home writing templates.
 
-#### scripts
+###### scripts
 Scripts you want on the page should be kept in the scripts directory. By default, all scripts are run through babel and browserify before being served so they can be written in es6.
 
-#### styles
+###### styles
 Global stylesheets are stored in the styles directory. By default, Lede expects stylesheets to be written in Sass and will transpile them to css before being served.
 
 ###### baseContext.js
 baseContext.js allows you to set values that will be injected into the context when Lede renders the Nunjucks templates.
 
-##### projectSettings.js
+###### projectSettings.js
 projectSettings.js holds configuration information for a project. We will dive more indepth into projectSettings in a minute, but first you should know about inheritance.
 
 #### Inheritance
-A project gooble garble
+A project tktktktktktktktkt
