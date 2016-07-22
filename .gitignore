@@ -114,4 +114,5 @@ dist/
 .idea/
 typings/
 spec/
-tests/stubs/projects/myProject/googleapikey.txt
+coverage
+.nyc_output

@@ -1,7 +1,7 @@
 # Lede
 [![Build Status](https://travis-ci.org/tbtimes/ledeTwo.svg?branch=master)](https://travis-ci.org/tbtimes/ledeTwo)
 
-Lede is a cross-platform build tool designed to make it simple for news organizations to build pretty story pages. Lede aims to be flexible enough that an experienced designer/developer can quickly throw together a non-traditional story page (like a media slider) but simple enough that non-developers (web editors) can build story pages from predefined pieces of functionality called bits and blocks. If your newsroom has developers, they can create new bits and blocks for use in any project.
+Lede is a cross-platform build tool designed to make it simple for news organizations to build pretty story pages. Lede aims to be flexible enough that an experienced designer/developer can quickly throw together a non-traditional story page (like a media slider) but simple enough that non-developers (reporters and web editors) can build story pages from predefined pieces of functionality called bits and blocks. If your newsroom has developers, they can create new bits and blocks for use in any project.
 
 __This project is under active development and is, at the moment, incomplete. Breaking changes are likely.__
 
@@ -30,8 +30,8 @@ The Lede CLI exposes a few commands to help you create, test, and deploy Lede pr
 ### Anatomy of a project
 A project in Lede is a collection of files that work together to create a single page.
 
-#### Directory structure
-* <projectname>
+###### Directory structure
+* \<projectname\>
     * assets
     * bits
     * blocks
@@ -39,3 +39,27 @@ A project in Lede is a collection of files that work together to create a single
     * styles
     * baseContext.js
     * projectSettings.js
+
+###### assets directory
+The assets directory is where you store any assets that aren't stylesheets or javascript such as images or json that you will load with ajax.
+
+###### bits
+The bits directory stores bits which are reusable pieces of functionality that can be carried from project to project. Bits have a special integration with googledocs. Read more about bits in the section [Anatomy of a bit](#anatomy-of-a-bit).
+
+###### blocks
+The blocks directory contains chunks of html (blocks) that can be reused across projects. Headers, footers, sidebars are excellent candidates for blocks. By default, Lede expects blocks to be written using the [Nunjucks templating language](https://mozilla.github.io/nunjucks/). Nunjucks is a javascript port of Jinja so Django users should feel write at home writing templates.
+
+###### scripts
+Scripts you want on the page should be kept in the scripts directory. By default, all scripts are run through babel and browserify before being served so they can be written in es6.
+
+###### styles
+Global stylesheets are stored in the styles directory. By default, Lede expects stylesheets to be written in Sass and will transpile them to css before being served.
+
+###### baseContext.js
+baseContext.js allows you to set values that will be injected into the context when Lede renders the Nunjucks templates.
+
+###### projectSettings.js
+projectSettings.js holds configuration information for a project. We will dive more indepth into projectSettings in a minute, but first you should know about inheritance.
+
+### Inheritance
+Part of Lede's "special sauce" is the concept of inheritance. tktktktkt
