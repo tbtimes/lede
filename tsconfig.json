@@ -1,7 +1,0 @@
-{
-  "target": "es6",
-  "module": "commonjs",
-  "noImplicitAny": false,
-  "declaration": true,
-  "noExternalResolve": true
-}
