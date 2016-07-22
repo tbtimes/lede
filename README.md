@@ -61,5 +61,5 @@ baseContext.js allows you to set values that will be injected into the context w
 ###### projectSettings.js
 projectSettings.js holds configuration information for a project. We will dive more indepth into projectSettings in a minute, but first you should know about inheritance.
 
-#### Inheritance
-A project tktktktktktktktkt
+### Inheritance
+Part of Lede's "special sauce" is the concept of inheritance. tktktktkt
