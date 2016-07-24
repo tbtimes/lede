@@ -3,7 +3,8 @@ import { resolve } from 'path';
 
 import { globProm, copyProm, writeProm, existsProm, npmInstall } from "../utils";
 
-export async function newCommand(args, workingDir) {
+export async function newCommand(config) {
+  let { args, workingDir } = config;
   let type = args['_'][0];
   let name = args['_'][1];
   let contentSrc = args['c'] || args['content'] || "1kLHE2F-ydeTiQtnHKX4PhQy9oSLCTYS0CsoNr5zjx1c";

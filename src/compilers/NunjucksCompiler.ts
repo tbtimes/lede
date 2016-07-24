@@ -4,7 +4,7 @@ import { join } from 'path';
 import { readStreamProm } from "../utils";
 
 
-export class NunjucksCompiler {
+export default class NunjucksCompiler {
 
   constructor() {}
 

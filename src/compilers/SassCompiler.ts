@@ -6,7 +6,7 @@ import { ProjectReport } from "../interfaces/ProjectReport";
 import { asyncMap, globProm } from "../utils";
 
 
-export class SassCompiler {
+export default class SassCompiler {
   options: Options;
 
   constructor(opts: Options = {}) {

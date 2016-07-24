@@ -12,8 +12,15 @@ let ledeHome = process.env.LEDE_HOME ? resolve(homedir(), process.env.LEDE_HOME)
 
 async function build() {
   await createDir(ledeHome);
-  // Copy over base templates here
-  var coreDir = resolve(__dirname, '../../templates/core');
+  await createDir(resolve(ledeHome, "compilers"));
+  await createDir(resolve(ledeHome, 'logs'));
+
+  var coreDir = resolve(__dirname, "..", "..", "templates", "core");
+  let compilersDir = resolve(ledeHome, "compilers");
   await copyProm(coreDir, resolve(ledeHome, 'core'));
+  await copyProm(resolve(__dirname, "..", "..", "templates", "compilerConfig.js"), resolve(compilersDir, "compilerConfig.js"));
+  await copyProm(resolve(__dirname, "..", "..", "dist", "compilers", "NunjucksCompiler.js"), resolve(compilersDir, "NunjucksCompiler.js"));
+  await copyProm(resolve(__dirname, "..", "..", "dist", "compilers", "SassCompiler.js"), resolve(compilersDir, "SassCompiler.js"));
+  await copyProm(resolve(__dirname, "..", "..", "dist", "compilers", "Es6Compiler.js"), resolve(compilersDir, "Es6Compiler.js"));
 }
 build();

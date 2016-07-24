@@ -3,50 +3,79 @@ import * as connect from 'connect';
 import * as serveStatic from 'serve-static';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
-import { readFileSync } from "fs-extra";
 import { resolve, basename } from 'path';
 
 import { existsProm } from '../utils';
-import { DependencyAssembler, CacheBuilder } from '../lede';
+import { DependencyAssembler, CacheBuilder, Lede } from '../lede';
 import { NunjucksCompiler, SassCompiler, Es6Compiler } from '../compilers';
 import { FileSystemDeployer } from '../deployers';
-import { ProjectReport } from "../../dist/interfaces/ProjectReport";
-import { CompiledPage } from '../interfaces';
-import { asyncMap } from "../../dist/utils";
+import { CompiledPage, ProjectReport } from '../interfaces';
+import { asyncMap, readStreamProm } from "../utils";
 
 
 
 
-export async function devCommand(args, workingDir) {
-  let fileServer = connect();
-  let lrServer: any = livereload.createServer();
+export async function devCommand(config) {
+  let { workingDir, args, logger } = config;
   let name = args['n'] || args['name'];
   let port = args['x'] || args['port'] || 8000;
-  let servePath = `${workingDir}/.builtProjects/${name}`;
-  let buildPath = `${workingDir}/${name}`;
-  if (!name) {
-    try {
-      let res = await existsProm(resolve(process.cwd(), 'projectSettings.js'));
-      if (res.file) {
-        servePath = resolve(workingDir, '.builtProjects', basename(process.cwd()));
-        buildPath = process.cwd();
-      }
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        console.log(`Cannot find project. Please specify a ${chalk.blue('-n [name]')} option or change into a project directory. Type ${chalk.blue('lede dev -h')} for help`);
-        process.exit(1);
-      } else {
-        console.error(e);
-        process.exit(1);
-      }
-    }
-  }
+  let { servePath, buildPath } = await getPaths(workingDir, name, logger);
+  let compilerPath = args['c'] || args['compilers'] || resolve(workingDir, "compilers", "compilerConfig.js");
+  let compilers = await getCompilers(compilerPath, logger);
+  let lede = new Lede(buildPath, compilers, new FileSystemDeployer(servePath), logger);
+
+  let fileServer = connect();
+  let lrServer: any = livereload.createServer();
+
   fileServer.use(serveStatic(servePath));
 
   await buildFromGroundUp(buildPath, servePath, port);
 
   lrServer.watch(servePath);
   fileServer.listen(port);
+}
+
+async function getCompilers(configPath, logger) {
+  try {
+    let compilerTypes = require(configPath).compilers;
+    let comps = {
+      html: null,
+      css: null,
+      js: null
+    };
+    for (let type in compilerTypes) {
+      let compiler: any = require(compilerTypes[type].path).default;
+      comps[type] = new compiler(compilerTypes[type].options)
+    }
+    return comps;
+  } catch(e) {
+    logger.error({err: e}, "Error loading compilers. Check logs for more info.")
+  }
+}
+
+async function getPaths(workingDir, name, logger) {
+  if (name) {
+    return {
+      servePath: resolve(workingDir,".builtProjects", name),
+      buildPath: resolve(workingDir, name)
+    }
+  }
+  try {
+    let res = await existsProm(resolve(process.cwd(), 'projectSettings.js'));
+    if (res.file) {
+      return {
+        servePath: resolve(workingDir,'.buildProjects', basename(process.cwd())),
+        buildPath: resolve(workingDir, basename(process.cwd()))
+      }
+    }
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      logger.error({err: e}, `Cannot find project. Please specify a ${chalk.blue('-n [name]')} option or change into a project directory. Type ${chalk.blue('lede dev -h')} for help`);
+    } else {
+      logger.error({err: e}, `An error occurred while opening ${chalk.blue(resolve(workingDir, 'projectSettings.js'))}. It is likely that there is a syntax error in the file.`)
+    }
+    process.exit(1);
+  }
 }
 
 async function buildFromGroundUp(buildPath, servePath, port) {

@@ -6,7 +6,7 @@ import { ProjectReport } from "../interfaces/ProjectReport";
 import { globProm } from '../utils';
 
 
-export class Es6Compiler {
+export default class Es6Compiler {
   constructor() {};
 
   async compile(report: ProjectReport, usedBits) {
