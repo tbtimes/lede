@@ -16,7 +16,7 @@
       (min-width: 1024px) 1500px,
       100vw
   ">
-    <div class="headline-overlay"{% if bit.textbackground %} style="background-color: rgba(0, 0, 0, 0.4);"{% endif %}>
+    <div class="headline-overlay{% if bit.textbackground %} textbackground{% endif %}{% if bit.textshadow %} textshadow{% endif %}{% if bit.texttop %} texttop{% endif %}{% if bit.textright %} textright{% endif %}">
       <h2{% if bit.textcolor %} style="color: {{ bit.textcolor }};"{% endif %}>Lorem ipsum dolor sit amet</h2>
       <h1{% if bit.textcolor %} style="color: {{ bit.textcolor }};"{% endif %}>Eum ea etiam</h1>
     </div>
