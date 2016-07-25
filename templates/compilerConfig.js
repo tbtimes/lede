@@ -1,6 +1,7 @@
 let path = require('path');
 let os = require('os');
 let S = require('string');
+let slug = require('slug');
 
 let ledeHome = process.env.LEDE_HOME ? path.resolve(os.homedir(), process.env.LEDE_HOME) : path.resolve(os.homedir(), "LedeProjects");
 
@@ -20,6 +21,12 @@ module.exports = {
                 .filter(x => x.trim().length)
                 .map(x => S(x).wrapHTML('p').s)
                 .join("\n")
+            }
+          },
+          {
+            name: "slugify",
+            fn: function(txt, opts) {
+              return slug(txt, opts);
             }
           }
         ]
