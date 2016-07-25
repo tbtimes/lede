@@ -4,6 +4,7 @@ const watch = require('gulp-watch');
 const typedoc = require('gulp-typedoc');
 const chmod = require('gulp-chmod');
 const srcmap = require('gulp-sourcemaps');
+const path = require('path');
 
 const projectOpts = ts.createProject({
   target: "es6",
@@ -16,12 +17,13 @@ const projectOpts = ts.createProject({
 gulp.task("docs", () => {
   return gulp.src('src/**/*.ts')
     .pipe(typedoc({
-                   module: "commonjs",
-                   target: "es6",
-                   includeDeclarations: true,
-                   out: "docs/",
-                   ignoreCompilerErrors: true
-                 }))
+       module: "commonjs",
+       target: "es6",
+       includeDeclarations: true,
+       out: "docs/",
+       ignoreCompilerErrors: true,
+
+     }))
 });
 
 gulp.task('source', () => {
@@ -43,7 +45,7 @@ gulp.task('source', () => {
                     execute: true
                   }
                 }))
-    .pipe(srcmap.write())
+    .pipe(srcmap.write({sourceRoot: path.resolve(__dirname, "src")}))
     .pipe(gulp.dest('dist/'))
 });
 
