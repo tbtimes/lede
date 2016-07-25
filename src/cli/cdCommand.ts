@@ -4,31 +4,26 @@ import { resolve } from 'path';
 import { existsProm } from "../utils";
 
 
-export async function cdCommand(args, workingDir) {
+export async function cdCommand(config) {
+  let {args, workingDir} = config;
   let name = args['_'][0];
   if (args['h'] || args['help']) {
-    return {
-      err: null,
-      data: `\n${chalk.blue('lede cd [name]')} is a helper command that returns a full path to project ${chalk.blue('name')}.
+      console.log(`\n${chalk.blue('lede cd [name]')} is a helper command that returns a full path to project ${chalk.blue('name')}.
 This command is meant to be used like so:
-  cd \`${chalk.blue('lede cd myProject')}\`\n`
-    }
+  cd \`${chalk.blue('lede cd myProject')}\`\n`)
   }
   try {
-    let status = await existsProm(`${workingDir}/${name}`);
+    let status = await existsProm(resolve(workingDir, name));
     if (!status.dir) {
       console.log(`${chalk.red(`${workingDir}/${name}`)} is not a directory`)
-      return {err: true}
     } else {
-      return {err: null, data: resolve(workingDir, name)};
+      console.log(resolve(workingDir, name));
     }
   } catch(e) {
     if (e.code !== 'ENOENT') {
       console.log(e);
-      return {err: true}
     } else {
       console.log(`Project "${chalk.red(name)}" does not exist. See existing projects with the ${chalk.blue('lede ls')} command`)
-      return {err: true}
     }
   }
   

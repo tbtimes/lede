@@ -1,13 +1,27 @@
 import * as browserify from 'browserify';
 import * as babelify from 'babelify';
 import { basename, resolve } from 'path';
+import * as glob from 'glob';
 
 import { ProjectReport } from "../interfaces/ProjectReport";
-import { globProm } from '../utils';
 
 
-export class Es6Compiler {
-  constructor() {};
+function globProm(path, cwd?): Promise<Array<string>> {
+  return new Promise((resolve, reject) => {
+    glob(path, {
+      cwd: cwd ? cwd: process.cwd()
+    }, (err, paths) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(paths);
+    })
+  });
+}
+
+
+export default class Es6Compiler {
+  constructor(public options) {};
 
   async compile(report: ProjectReport, usedBits) {
     let requireable = await Es6Compiler.getRequirablePaths(resolve(report.workingDirectory, ".ledeCache", "scripts"));

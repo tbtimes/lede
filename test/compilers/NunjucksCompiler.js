@@ -2,7 +2,7 @@ import { test } from 'ava';
 import { resolve } from 'path';
 import { readFileSync } from 'fs-extra';
 import * as rmrf from 'rimraf';
-import { NunjucksCompiler } from '../../dist/compilers'
+import NunjucksCompiler from '../../dist/compilers/NunjucksCompiler';
 
 import { CacheBuilder } from "../../dist/lede"
 import projectReport from "../fixtures/projectReport";
@@ -52,12 +52,12 @@ test("NunjucksCompiler.createShell", async t => {
 });
 
 test("NunjucksCompiler.renderTemplate", async t => {
-  let index = await NunjucksCompiler.renderTemplate(projectReport, compiledShell);
+  let index = await NunjucksCompiler.renderTemplate(projectReport, compiledShell, {watch: false, noCache: true});
   t.deepEqual(index, compiledIndex);
 });
 
 test("NunjucksCompiler.compile", async t => {
-  let compiler = new NunjucksCompiler();
+  let compiler = new NunjucksCompiler({watch: false, noCache: true});
   let compiledPage = await compiler.compile(projectReport, {css: fakeCompiler, js: fakeCompiler});
   t.deepEqual(compiledPage, {
     index: compiledIndex,

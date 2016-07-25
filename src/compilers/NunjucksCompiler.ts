@@ -1,12 +1,21 @@
 import { Environment, FileSystemLoader, Template } from "nunjucks";
 import { join } from 'path';
+import { createReadStream } from 'fs-extra';
 
-import { readStreamProm } from "../utils";
 
+function readStreamProm(path) {
+  let data = "";
+  let stream = createReadStream(path);
+  return new Promise((resolve, reject) => {
+    stream.on('data', d => data += d.toString());
+    stream.on('end', () => resolve(data));
+    stream.on('error', e => reject(e));
+  });
+}
 
-export class NunjucksCompiler {
+export default class NunjucksCompiler {
 
-  constructor() {}
+  constructor(public opts) {}
 
   async compile(report, compilers) {
     let bits = NunjucksCompiler.getUsedBits(report);
@@ -14,7 +23,7 @@ export class NunjucksCompiler {
     let scriptsBlock = await NunjucksCompiler.createScriptsBlock(report, bits, compilers.js);
     let shell = await NunjucksCompiler.createShell(report, stylesBlock, scriptsBlock);
     return {
-      index: await NunjucksCompiler.renderTemplate(report, shell),
+      index: await NunjucksCompiler.renderTemplate(report, shell, this.opts),
       scripts: scriptsBlock,
       styles: stylesBlock,
       cachePath: join(report.workingDirectory, '.ledeCache')
@@ -46,11 +55,13 @@ ${scripts.bits}
     return visitedBits;
   }
 
-  static async renderTemplate(report, template) {
-    let env = new Environment(new FileSystemLoader(join(report.workingDirectory, '.ledeCache', 'bits'), {
-      watch: false,
-      noCache: true
-    }));
+  static async renderTemplate(report, template, opts) {
+    let env = new Environment(new FileSystemLoader(join(report.workingDirectory, '.ledeCache', 'bits'), opts));
+    if (opts.filters) {
+      for (let f of opts.filters) {
+        env.addFilter(f.name, f.fn)
+      }
+    }
     let tmpl = new Template(template, env);
     return tmpl.render(report.context);
   }

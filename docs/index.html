@@ -65,32 +65,57 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<h1 id="ledetwo">ledeTwo</h1>
-				<p>A sweet tool to make cool web things ~~ motto pending</p>
-				<p>##Process</p>
-				<h3 id="high-level">High level</h3>
-				<ol>
-					<li>A Lede instance is created with the compilers and deployer it will be using.</li>
-					<li>Lede is given a project configuration file</li>
-					<li>Lede uses that project config to resolve all dependencies and generates a project report</li>
-					<li>Lede uses the project report to build a cache</li>
-					<li>Lede uses the compilers on the cache to build the project assets</li>
-					<li>Lede deploys the assets using the deployer.</li>
-				</ol>
-				<h3 id="dependency-resolution">Dependency Resolution</h3>
-				<ol>
-					<li>A project config specifies <code>name</code> (mostly useful for debugging at this point), <code>inheritanceRoot</code> (root directory to search for dependencies from), <code>dependsOn</code> (list of dependencies), and a <code>contentResolver</code> (object that tells how content should be fetched) for the project.</li>
-					<li>Dependencies are resolved and those dependencies&#39; dependencies are resolved recursively. Each dependency is given a <code>dependedOnBy</code> property listing which dependencies rely on it when it is resolved.</li>
-					<li>Dependencies&#39; content is resolved according to the <code>contentResolver</code> and merged into a base <code>content</code> object.</li>
-					<li>Dependencies&#39; base contexts are resolved and merged into a <code>context</code> object.</li>
-					<li>Once resolved, a project report is generated.</li>
-				</ol>
-				<h3 id="cache-building">Cache building</h3>
-				<ol>
-					<li>Create a cachedir</li>
-					<li>Build incremental cache folders for each dependency and post a cache settings with <code>dependsOn</code>, <code>dependedOnBy</code>. Each dependency copies  in child deps&#39; cache first</li>
-					<li><code>updateCache</code> will rebuild cache by name and then rebuild all that depend on that cache</li>
-				</ol>
+				<h1 id="lede">Lede</h1>
+				<p><a href="https://travis-ci.org/tbtimes/ledeTwo"><img src="https://travis-ci.org/tbtimes/ledeTwo.svg?branch=master" alt="Build Status"></a></p>
+				<p>Lede is a cross-platform build tool designed to make it simple for news organizations to build pretty story pages. Lede aims to be flexible enough that an experienced designer/developer can quickly throw together a non-traditional story page (like a media slider) but simple enough that non-developers (reporters and web editors) can build story pages from predefined pieces of functionality called bits and blocks. If your newsroom has developers, they can create new bits and blocks for use in any project.</p>
+				<p><strong>This project is under active development and is, at the moment, incomplete. Breaking changes are likely.</strong></p>
+				<h2 id="owners-manual">Owners manual</h2>
+				<p><em>This documentation assumes you are using a unix system for the terminal. If you are on windows, you can try <a href="https://git-for-windows.github.io/">git for windows</a> or <a href="https://www.cygwin.com/">cygwin</a> or just translate the bash syntax into windows cmd syntax.</em></p>
+				<p>Projects in Lede have a few parts. First is the Lede CLI which you will use to create a project. A project is a directory that contains that contains a file called <code>projectSettings.js</code> which holds configuration information for the project — more on that later. First, though, let&#39;s install Lede and get it working.</p>
+				<p>The first thing you&#39;ll need to run Lede is the latest stable version of Nodejs and npm. The simplest way to meet these requirements is by using <a href="https://github.com/creationix/nvm">nvm</a> to manage your node versions (on windows use <a href="https://github.com/coreybutler/nvm-windows">this</a>). Follow the installation instructions (or use the windows installer) to get nvm and then open a new terminal window. In that terminal, run the commands <code>nvm install stable</code> to install the latest version of node and npm (v6.3.0 as of this writing).</p>
+				<h3 id="installing-the-cli">Installing the CLI</h3>
+				<p><em>As of right now, the CLI is only available on github and requires a bit of manual work to install. In the future you&#39;ll be able to download and install it using npm.</em></p>
+				<p>With node installed, you are ready to install Lede.</p>
+				<p>Go ahead and clone this repo and then cd into it. From inside the root directory, run <code>npm install</code>. This will probably take a couple of minutes. After it has finished, run <code>npm run build &amp;&amp; npm run install &amp;&amp; npm link</code>. This command will build the source code, create a LedeProjects directory in your home directory and install a package with core functionality, and then put the CLI binary on your path. If you don&#39;t want Lede to set up LedeProjects in your home directory, you can set the environment variable LEDE_HOME to either an absolute path or a path relative to your home directory and rerun <code>npm run install</code>.</p>
+				<h3 id="using-the-cli">Using the CLI</h3>
+				<p>The Lede CLI exposes a few commands to help you create, test, and deploy Lede projects.</p>
+				<ul>
+					<li><code>lede new project &lt;name&gt;</code> will scaffold a new project and put it in your LedeProjects directory (or wherever LEDE_HOME points to)</li>
+					<li><code>lede dev</code> from inside a project directory will serve your current project.</li>
+					<li><code>lede ls</code> will list all projects.</li>
+					<li><code>lede cd &lt;name&gt;</code> will return the path of project <name>. You can use it with cd to change directly into a project (<code>cd `lede cd &lt;name&gt;` </code>)</li>
+				</ul>
+				<h3 id="anatomy-of-a-project">Anatomy of a project</h3>
+				<p>A project in Lede is a collection of files that work together to create a single page.</p>
+				<h6 id="directory-structure">Directory structure</h6>
+				<ul>
+					<li>\<projectname\><ul>
+								<li>assets</li>
+								<li>bits</li>
+								<li>blocks</li>
+								<li>scripts</li>
+								<li>styles</li>
+								<li>baseContext.js</li>
+								<li>projectSettings.js</li>
+							</ul>
+					</li>
+				</ul>
+				<h6 id="assets-directory">assets directory</h6>
+				<p>The assets directory is where you store any assets that aren&#39;t stylesheets or javascript such as images or json that you will load with ajax.</p>
+				<h6 id="bits">bits</h6>
+				<p>The bits directory stores bits which are reusable pieces of functionality that can be carried from project to project. Bits have a special integration with googledocs. Read more about bits in the section <a href="#anatomy-of-a-bit">Anatomy of a bit</a>.</p>
+				<h6 id="blocks">blocks</h6>
+				<p>The blocks directory contains chunks of html (blocks) that can be reused across projects. Headers, footers, sidebars are excellent candidates for blocks. By default, Lede expects blocks to be written using the <a href="https://mozilla.github.io/nunjucks/">Nunjucks templating language</a>. Nunjucks is a javascript port of Jinja so Django users should feel write at home writing templates.</p>
+				<h6 id="scripts">scripts</h6>
+				<p>Scripts you want on the page should be kept in the scripts directory. By default, all scripts are run through babel and browserify before being served so they can be written in es6.</p>
+				<h6 id="styles">styles</h6>
+				<p>Global stylesheets are stored in the styles directory. By default, Lede expects stylesheets to be written in Sass and will transpile them to css before being served.</p>
+				<h6 id="basecontext-js">baseContext.js</h6>
+				<p>baseContext.js allows you to set values that will be injected into the context when Lede renders the Nunjucks templates.</p>
+				<h6 id="projectsettings-js">projectSettings.js</h6>
+				<p>projectSettings.js holds configuration information for a project. We will dive more indepth into projectSettings in a minute, but first you should know about inheritance.</p>
+				<h3 id="inheritance">Inheritance</h3>
+				<p>Part of Lede&#39;s &quot;special sauce&quot; is the concept of inheritance. tktktktkt</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -101,6 +126,24 @@
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_cli_.html">"cli"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_cli_cdcommand_.html">"cli/cd<wbr>Command"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_cli_devcommand_.html">"cli/dev<wbr>Command"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_cli_index_.html">"cli/index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_cli_logger_.html">"cli/logger"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_cli_lscommand_.html">"cli/ls<wbr>Command"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_cli_newcommand_.html">"cli/new<wbr>Command"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_compilers_es6compiler_.html">"compilers/<wbr>Es6<wbr>Compiler"</a>
@@ -115,6 +158,12 @@
 						<a href="modules/_compilers_index_.html">"compilers/index"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
+						<a href="modules/_deployers_filesystemdeployer_.html">"deployers/<wbr>File<wbr>System<wbr>Deployer"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_deployers_index_.html">"deployers/index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
 						<a href="modules/_errors_circulardeperror_.html">"errors/<wbr>Circular<wbr>Dep<wbr>Error"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
@@ -125,6 +174,9 @@
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_index_.html">"index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_interfaces_compiledpage_.html">"interfaces/<wbr>Compiled<wbr>Page"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_interfaces_contentresolver_.html">"interfaces/<wbr>Content<wbr>Resolver"</a>
@@ -148,7 +200,7 @@
 						<a href="modules/_lede_lede_.html">"lede/<wbr>Lede"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_lede_testdrive_.html">"lede/test<wbr>Drive"</a>
+						<a href="modules/_lede_index_.html">"lede/index"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_models_defaultdependency_.html">"models/<wbr>Default<wbr>Dependency"</a>

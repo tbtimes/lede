@@ -4,40 +4,46 @@ import { resolve } from 'path';
 import * as minimist from "minimist";
 import * as chalk from 'chalk';
 
-import { newCommand, lsCommand, cdCommand, devCommand } from './cli/';
+import { newCommand, lsCommand, cdCommand, devCommand, makeLogger } from './cli/';
 
 
 let args = minimist(process.argv.slice(2));
-let ledeHome = process.env.LEDE_HOME ? resolve(homedir(), process.env.LEDE_HOME) : resolve(homedir(), "LedeProjects");
+
 handleCommand(args);
 
 async function handleCommand(args) {
   let command = args["_"].shift();
-  let workingDir = args['path'] || args['p'] || ledeHome;
+  let ledeHome = process.env.LEDE_HOME ? resolve(homedir(), process.env.LEDE_HOME) : resolve(homedir(), "LedeProjects");
+
+  let logger = makeLogger(args['path'] || args['p'] || ledeHome,
+                          args['log-level'] || args['l'] || "info"
+  );
+
+  let config = {
+    gapiKey: process.env.GAPI_KEY,
+    workingDir: args['path'] || args['p'] || ledeHome,
+    args,
+    logger
+  };
+
+  logger.debug({gapiKey: config.gapiKey, workingDir: config.workingDir});
 
   switch (command) {
     case 'new':
-       await newCommand(args, workingDir);
+       await newCommand(config);
        break;
     case 'ls':
-      await lsCommand(args, workingDir);
+      await lsCommand(config);
       break;
     case 'cd':
-      let res = await cdCommand(args, workingDir);
-      if (!res.err) {
-        console.log(res.data)
-      }
+      await cdCommand(config);
       break;
     case 'dev':
-    try {
-      await devCommand(args, workingDir);
-    } catch(e) {
-      console.log(e)
-    }
+      await devCommand(config);
       
       break;
     default:
-      console.log(`Command "${chalk.red(command)}" not recognized`);
+      console.error(`Command "${chalk.red(command)}" not recognized`);
       break;
   }
 }
