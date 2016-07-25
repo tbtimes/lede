@@ -12,18 +12,33 @@ export class Lede {
   constructor(public workingDir, public compilers: any, public deployers: any, public logger: any) {
   }
 
-  static async deployPage(deployPath: string, projReport: ProjectReport, compiledPage: CompiledPage, logger) {
-    logger.info({ deployPath, projReport, compiledPage }, "Deploying project.");
+  async deploy(deployer: string, debug = true, pr?: ProjectReport | Promise<ProjectReport>): Promise<ProjectReport> {
+    if (!pr) {
+      pr = await Lede.assembleDeps(this.workingDir, this.logger);
+    }
+    if (debug) {
+      pr.context.$debug = true;
+    }
+    await Lede.buildCache(<ProjectReport>pr, this.logger);
+    let compiledPage = await Lede.compilePage(this.compilers, pr, this.logger);
+    deployer = <any>this.deployers[deployer];
+    await Lede.deployPage(deployer, <ProjectReport>pr, compiledPage, this.logger);
+    return <ProjectReport>pr;
+  }
+
+  static async deployPage(deployer, projReport: ProjectReport, compiledPage: CompiledPage, logger) {
+    logger.debug({ deployer, projReport, compiledPage });
+    logger.info("Deploying project.");
     try {
-      let deployer = new FileSystemDeployer(deployPath);
       await deployer.deploy({report: projReport, compiledPage});
     } catch(e) {
       logger.error({err: e}, "Error deploying project.");
     }
   }
 
-  static async compilePage(compilers, proj: ProjectReport, logger): CompiledPage {
-    logger.info({ projectReport: proj}, "Compiling project.");
+  static async compilePage(compilers, proj: ProjectReport, logger) {
+    logger.info("Compiling project.");
+    logger.debug({ projectReport: proj});
     try {
       return compilers.html.compile(proj, { css: compilers.css, js: compilers.js });
     } catch(e) {
@@ -31,9 +46,10 @@ export class Lede {
     }
   }
 
-  static async getProjectReport(workingDir: string, logger) {
+  static async assembleDeps(workingDir: string, logger) {
     try {
-      logger.info({ workingDir }, "Assembling dependencies");
+      logger.debug({ workingDir })
+      logger.info("Assembling dependencies");
       let da = new DependencyAssembler(workingDir);
       return da.assemble();
     } catch(e) {
@@ -57,9 +73,9 @@ export class Lede {
     }
   }
 
-  static async buildProject(logger, projectReport: ProjectReport | string) {
+  static async buildProject(logger, projectReport: ProjectReport | string | Promise<ProjectReport>) {
     if (typeof projectReport === "string") {
-      projectReport = <any>await Lede.getProjectReport(<string>projectReport, logger);
+      projectReport = await Lede.assembleDeps(<string>projectReport, logger);
     }
     await Lede.buildCache(<ProjectReport>projectReport, logger);
   }

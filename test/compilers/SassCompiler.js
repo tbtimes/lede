@@ -2,7 +2,7 @@ import { test } from 'ava';
 import { resolve } from 'path';
 import { readFileSync, writeFileSync } from 'fs-extra';
 import { CacheBuilder } from '../../dist/lede';
-import { SassCompiler } from '../../dist/compilers';
+import SassCompiler from '../../dist/compilers/SassCompiler';
 import projectReport from '../fixtures/projectReport';
 import * as rmrf from 'rimraf';
 
@@ -44,7 +44,7 @@ test("SassCompiler.compileGlobals", async t => {
 });
 
 test("SassCompiler.compile", async t => {
-  let sc = new SassCompiler();
+  let sc = new SassCompiler(options);
   let output = await sc.compile(projectReport, ["proj4/testSass"]);
   t.deepEqual(output, expectedCompile);
 });

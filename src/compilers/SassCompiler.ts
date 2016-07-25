@@ -3,20 +3,19 @@ import { render, Options } from "node-sass";
 import { join } from 'path';
 
 import { ProjectReport } from "../interfaces/ProjectReport";
-import { asyncMap, globProm } from "../utils";
 
+async function asyncMap(array: Array<any>, f: (x: any) => any): Promise<Array<any>> {
+  let returns = [];
+  for (let item of array) {
+    returns.push(await f(item));
+  }
+  return returns;
+}
 
 export default class SassCompiler {
   options: Options;
 
-  constructor(opts: Options = {}) {
-    let defaults: Options = {
-      includePaths: [],
-      outputStyle: 'compact',
-      sourceComments: false,
-      sourceMapEmbed: false
-    };
-    this.options = Object.assign({}, defaults, opts);
+  constructor(public options) {
   }
 
   async compile(report: ProjectReport, bits) {
