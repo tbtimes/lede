@@ -1,0 +1,99 @@
+$imgwidth: 75%;
+$imgmargin: -25%;
+$imgposition: 50%;
+$textmargin: 30px;
+figure {
+  margin-left: 0;
+  margin-right: 0;
+  position: relative;
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
+.image-left {
+  width: $imgwidth;
+  float: left;
+  margin-left: $imgmargin;
+  margin-right: $textmargin;
+}
+.image-right {
+  width: $imgwidth;
+  float: right;
+  margin-right: $imgmargin;
+  margin-left: $textmargin;
+}
+.inset-fullscreen {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 3px 3px 2px 4px;
+  background-color: #aaaaaa;
+  border-bottom-left-radius: 5px;
+  cursor: pointer;
+  i {
+    color: white;
+  }
+}
+@media screen and (min-width: 850px) and (max-width: 1023px) {
+  $imgwidth: 45vw;
+  $imgmargin: -10vw;
+  .image-left {
+    width: $imgwidth;
+    margin-left: $imgmargin;
+  }
+  .image-right {
+    width: $imgwidth;
+    margin-right: $imgmargin;
+  }
+}
+@media screen and (min-width: 661px) and (max-width: 849px) {
+  $imgwidth: 100%;
+  .image-left {
+    width: $imgwidth;
+    margin-left: 0;
+    margin-right: 0;
+    float: none;
+    left: 0;
+  }
+  .image-right {
+    width: $imgwidth;
+    margin-right: 0;
+    margin-left: 0;
+    float: none;
+    left: 0;
+  }
+}
+@media screen and (min-width: 0) and (max-width: 660px) {
+  $imgwidth: calc(100% + 20px);
+  $imgmargin: 0;
+  figure {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .image-left {
+    width: $imgwidth;
+    float: none;
+    margin-left: -10px;
+    & figcaption {
+      padding-left: 0;
+      padding-right: 0;
+      & span {
+      }
+    }
+  }
+  .image-right {
+    width: $imgwidth;
+    float: none;
+    margin-left: 0;
+    margin-right: 0;
+    margin-left: -10px;
+    margin-right: -10px;
+    & figcaption {
+      padding-left: 0;
+      padding-right: 0;
+      & span {
+      }
+    }
+  }
+}
