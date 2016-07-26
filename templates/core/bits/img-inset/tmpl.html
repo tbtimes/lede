@@ -15,7 +15,7 @@
       480px
       ">
   <figcaption>{% if bit.credit %}
-    <div class="credit">{{ bit.credit }}</div class="credit">{% endif %}{% if bit.caption %}
-    <div class="caption">{{ bit.caption }}</div>{% endif %}</figcaption>
+    <div class="credit">{{ bit.credit | safe }}</div class="credit">{% endif %}{% if bit.caption %}
+    <div class="caption">{{ bit.caption | safe }}</div>{% endif %}</figcaption>
 </figure>
 
