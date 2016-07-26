@@ -18,6 +18,12 @@
     .headline-overlay {
       bottom: 5vh;
       left: 7vw;
+      h1 {
+        font-size: calc(2.5vw * 1 + 27px);
+      }
+      h2 {
+        font-size: calc(1.5vw * 1 + 27px);
+      }
       &.texttop {
         bottom: auto;
         top: 3vw;
