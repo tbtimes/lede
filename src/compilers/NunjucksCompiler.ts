@@ -94,6 +94,7 @@ ${styles.bits}
 </head>
 <body>
 `;
+
     let pageBottom = `
   <script type="text/javascript" src="${scriptsBlock.file}"></script>
   {%if $debug %}
@@ -104,6 +105,7 @@ ${styles.bits}
 </body>
 </html>
 `;
+
     let middle = '';
     for (let block of report.blocks) {
       if (block !== 'ARTICLE') {
