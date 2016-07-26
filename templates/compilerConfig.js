@@ -17,7 +17,7 @@ module.exports = {
             name: "linebreaks",
             fn: function(txt) {
               return txt
-                .replaceAll("\r\n", "\n").split("\n")
+                .split("\r\n").join("\n").split("\n")
                 .filter(x => x.trim().length)
                 .map(x => `<p>${x}</p>`)
                 .join("\n")
