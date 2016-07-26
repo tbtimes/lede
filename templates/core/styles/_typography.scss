@@ -1,17 +1,17 @@
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700,700i|Open+Sans+Condensed:300,700);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700,700i|Open+Sans+Condensed:300,700|Merriweather:400,400i,700,700i);
 
-// @mixin merriweather() {
-//     font-family: 'Merriweather', 'times new roman', times, serif;
-// }
+@mixin merriweather() {
+    font-family: 'Merriweather', 'times new roman', times, serif;
+}
 
 @mixin georgia() {
     font-family: georgia, 'times new roman', times, serif;
 }
 
-@mixin open-sans-condensed() {
-    font-family: 'Open Sans Condensed', sans-serif;
+@mixin open-sans() {
+  font-family: 'Open Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-@mixin open-sans() {
-  font-family: 'Open Sans', sans-serif;
+@mixin open-sans-condensed() {
+    font-family: 'Open Sans Condensed', sans-serif;
 }
