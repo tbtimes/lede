@@ -18,8 +18,11 @@
     .headline-overlay {
       bottom: 5vh;
       left: 7vw;
+      h1, h2 {
+        margin: .2em 0;
+      }
       h1 {
-        font-size: calc(2.5vw * 1 + 27px);
+        font-size: calc(3vw * 1 + 27px);
       }
       h2 {
         font-size: calc(1.5vw * 1 + 27px);
