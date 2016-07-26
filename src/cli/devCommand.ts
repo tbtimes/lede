@@ -64,7 +64,7 @@ async function getPaths(workingDir, name, logger) {
     let res = await existsProm(resolve(process.cwd(), 'projectSettings.js'));
     if (res.file) {
       return {
-        servePath: resolve(workingDir,'.buildProjects', basename(process.cwd())),
+        servePath: resolve(workingDir,'.builtProjects', basename(process.cwd())),
         buildPath: resolve(workingDir, basename(process.cwd()))
       }
     }
