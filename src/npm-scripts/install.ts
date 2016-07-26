@@ -27,7 +27,7 @@ async function build() {
 
   console.log("Installing dependencies ... this may take a few minutes");
 
-  await execProm("npm install fs-extra node-sass nunjucks browserify babelify glob babel-preset-es2015 string slug", {
+  await execProm("npm install fs-extra node-sass nunjucks browserify babelify glob babel-preset-es2015 slug", {
     cwd: compilersDir
   })
 

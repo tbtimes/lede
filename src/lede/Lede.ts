@@ -40,7 +40,7 @@ export class Lede {
     logger.info("Compiling project.");
     logger.debug({ projectReport: proj});
     try {
-      return compilers.html.compile(proj, { css: compilers.css, js: compilers.js });
+      return await compilers.html.compile(proj, { css: compilers.css, js: compilers.js });
     } catch(e) {
       logger.error({err: e}, "Error compiling page.");
     }
