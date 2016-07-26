@@ -1,6 +1,5 @@
 let path = require('path');
 let os = require('os');
-let S = require('string');
 let slug = require('slug');
 
 let ledeHome = process.env.LEDE_HOME ? path.resolve(os.homedir(), process.env.LEDE_HOME) : path.resolve(os.homedir(), "LedeProjects");
@@ -12,14 +11,15 @@ module.exports = {
       options: {
         watch: false,
         noCache: true,
+        autoescape: false,
         filters: [
           {
             name: "linebreaks",
             fn: function(txt) {
-              return S(txt)
-                .lines()
+              return txt
+                .replaceAll("\r\n", "\n").split("\n")
                 .filter(x => x.trim().length)
-                .map(x => S(x).wrapHTML('p').s)
+                .map(x => `<p>${x}</p>`)
                 .join("\n")
             }
           },
