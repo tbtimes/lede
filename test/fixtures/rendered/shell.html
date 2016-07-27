@@ -10,6 +10,9 @@
   <meta NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
   {%- endif %}
   <link rel="stylesheet" type="text/css" href="globalStyles.css">
+  {% if headLinks %}
+  {{ headLinks | safe }}
+  {% endif %}
 </head>
 <body>
 <h1>This is a test</h1><article id="ledeRoot" class="container">
@@ -21,7 +24,10 @@
           </div>
         </article>
   <script type="text/javascript" src="globalScripts.js"></script>
-  {%if $debug %}
+  {% if bodyLinks %}
+  {{ bodyLinks | safe }}
+  {% endif %}
+  {% if $debug %}
 <script>
   document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
   ':35729/livereload.js?snipver=1"></' + 'script>')
