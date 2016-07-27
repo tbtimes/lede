@@ -35,7 +35,9 @@ test.before("Create deploy dir", async t => {
 
 test.after.cb("Remove deploy dir", t => {
   rmrf.default(deployPath, () => {
-    rmrf.default(resolve(__dirname, '..', 'fixtures', 'projects', 'proj1', '.ledeCache'), t.end)
+    rmrf.default(resolve(__dirname, '..', 'fixtures', 'projects', 'proj1', '.ledeCache'), () => {
+      rmrf.default(resolve(__dirname, '..', '..', 'ledeHome'), t.end)
+    })
   });
 });
 
