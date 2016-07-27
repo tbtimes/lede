@@ -35,17 +35,17 @@ export default class Es6Compiler {
 
   static async bundleBits(report: ProjectReport, requireable, bits) {
     let bitPaths = bits.map(b => resolve(report.workingDirectory, ".ledeCache", "bits", b, "interact.js"));
-    return Es6Compiler.bundleProm(bitPaths, requireable, resolve(report.workingDirectory, ".ledeCache", "scripts"));
+    return Es6Compiler.bundleProm(bitPaths, requireable, resolve(report.workingDirectory, ".ledeCache", "scripts"), report.context.$debug);
   }
   
   static async bundleGlobals(report: ProjectReport, requireable) {
     let globalPaths = report.scripts.map(s => resolve(report.workingDirectory, ".ledeCache", "scripts", s));
-    return await Es6Compiler.bundleProm(globalPaths, requireable, resolve(report.workingDirectory, ".ledeCache", "scripts"));
+    return await Es6Compiler.bundleProm(globalPaths, requireable, resolve(report.workingDirectory, ".ledeCache", "scripts"), report.context.$debug);
   }
 
-  static async bundleProm(toAdd, requireable, cwd) {
+  static async bundleProm(toAdd, requireable, cwd, debug) {
     return new Promise((resolve, reject) => {
-      let b = browserify({basedir: cwd});
+      let b = browserify({basedir: cwd, debug: debug});
       b.require(requireable);
       b.add(toAdd);
       b.transform(babelify, {presets: require('babel-preset-es2015')});
