@@ -18,6 +18,17 @@
     .headline-overlay {
       bottom: 5vh;
       left: 7vw;
+      max-width: 76%;
+      max-width: calc(100vw - 14vw);
+        h1, h2 {
+        margin: .2em 0;
+      }
+      h1 {
+        font-size: calc(3vw * 1 + 27px);
+      }
+      h2 {
+        font-size: calc(1.5vw * 1 + 27px);
+      }
       &.texttop {
         bottom: auto;
         top: 3vw;

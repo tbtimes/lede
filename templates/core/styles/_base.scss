@@ -107,9 +107,10 @@ p, lif, blockquote {
   // margin-right: auto;
   line-height: 1.8em;
 }
-// h1, h2, h3, h4, h5, h6 {
-//   @include open-sans();
-// }
+h1, h2, h3, h4, h5, h6 {
+  // @include open-sans();
+  font-weight: bold;
+}
 .main-column {
   // background-color: rgba(255,255,255,0.2);
   border: 1px dotted #ccc;

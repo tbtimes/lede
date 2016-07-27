@@ -1,8 +1,10 @@
 header {
   width: 100%;
+  width: 100vw;
   height: 40px;
   padding: $portal-padding-mobile;
-  position: absolute;
+  position: fixed;
+  z-index: 150;
   left: 0;
   top: 0;
   background-color: $brickred;
