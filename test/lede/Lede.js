@@ -39,12 +39,12 @@ test.after.cb("Remove deploy dir", t => {
   });
 });
 
-test("Lede.assembleDeps", async t => {
+test.serial("Lede.assembleDeps", async t => {
   let assembledDeps = await Lede.assembleDeps(workingDir, logger);
   t.deepEqual(assembledDeps, projectReport);
 });
 
-test("Lede.buildCache", async t => {
+test.serial("Lede.buildCache", async t => {
   await Lede.buildCache(projectReport, logger);
   let buildDir = resolve(workingDir, '.ledeCache');
   let assetTest = await existsProm(resolve(buildDir, 'assets', 'proj5', 'sleepyTiger.jpg'));
