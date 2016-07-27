@@ -15,7 +15,7 @@ function readStreamProm(path) {
 
 export default class NunjucksCompiler {
 
-  constructor(public opts) {}
+  constructor(public opts = {watch: false, noCache: true, autoescape: false}) {}
 
   async compile(report, compilers) {
     let bits = NunjucksCompiler.getUsedBits(report);

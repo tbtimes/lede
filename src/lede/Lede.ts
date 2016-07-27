@@ -42,6 +42,7 @@ export class Lede {
     try {
       return await compilers.html.compile(proj, { css: compilers.css, js: compilers.js });
     } catch(e) {
+      console.log(e)
       logger.error({err: e}, "Error compiling page.");
     }
   }

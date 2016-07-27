@@ -13,9 +13,8 @@ async function asyncMap(array: Array<any>, f: (x: any) => any): Promise<Array<an
 }
 
 export default class SassCompiler {
-  options: Options;
 
-  constructor(public options) {
+  constructor(public options = {includePaths: [], outputStyle: 'compact', sourceComments: false, sourceMapEmbed: false}) {
   }
 
   async compile(report: ProjectReport, bits) {

@@ -56,7 +56,6 @@
     "gulp-typescript": "^2.13.6",
     "gulp-watch": "^4.3.6",
     "nyc": "^7.0.0",
-    "sinon": "^1.17.5",
     "typedoc": "^0.4.4",
     "typescript": "^1.8.10"
   }
