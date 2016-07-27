@@ -91,13 +91,19 @@ ${styles.bits}
   <meta NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
   {%- endif %}
   <link rel="stylesheet" type="text/css" href="${stylesBlock.file}">
+  {% if headLinks %}
+  {{ headLinks | safe }}
+  {% endif %}
 </head>
 <body>
 `;
 
     let pageBottom = `
   <script type="text/javascript" src="${scriptsBlock.file}"></script>
-  {%if $debug %}
+  {% if bodyLinks %}
+  {{ bodyLinks | safe }}
+  {% endif %}
+  {% if $debug %}
 <script>
   document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
   ':35729/livereload.js?snipver=1"></' + 'script>')
