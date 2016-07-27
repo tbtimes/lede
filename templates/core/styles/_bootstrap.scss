@@ -5,11 +5,11 @@
  */
 
 // Core variables and mixins
-@import "test/bootstrap/variables";
+@import "core/bootstrap-modified/variables"; // veriables are edited for projects
 @import "core/bootstrap/mixins";
 
 // Reset and dependencies
-@import "test/bootstrap/bootstrap";
+@import "test/bootstrap/bootstrap"; // Paths are fixed for projects
 // @import "core/bootstrap/print";
 // @import "core/bootstrap/glyphicons";
 
