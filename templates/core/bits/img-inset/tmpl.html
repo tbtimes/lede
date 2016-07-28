@@ -1,19 +1,19 @@
 <figure class="{% if bit.class %}image-{{ bit.class }}{% endif %}">
-  <img
-    {% if bit.alt %} alt="{{ bit.alt }}"{% endif %}
-    src="{{ bit.srcpath }}img/600/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}"
-    srcset="
+    <img {% if bit.alt %} alt="{{ bit.alt }}" {% endif %}
+      {% if bit.directsrc %} src="{{ bit.directsrc }}"{% else %}
+      src="{{ bit.srcpath }}img/1024/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}" srcset="
       {{ bit.srcpath }}img/480/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 480w,
       {{ bit.srcpath }}img/480/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 960w,
       {{ bit.srcpath }}img/600/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 600w,
-      {{ bit.srcpath }}img/600/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1200w
-    "
-      sizes="
+      {{ bit.srcpath }}img/1024/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1024w,
+      {{ bit.srcpath }}img/600/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1200w,
+      {{ bit.srcpath }}img/1500/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1500w
+    " sizes="
       (min-width: 540px) 600px,
       (min-width: 850px) 480px,
       (min-width: 1200px) 600px,
       480px
-      ">
+    {% endif %}">
   <figcaption>{% if bit.credit %}
     <div class="credit">{{ bit.credit | safe }}</div class="credit">{% endif %}{% if bit.caption %}
     <div class="caption">{{ bit.caption | safe }}</div>{% endif %}</figcaption>
