@@ -1,6 +1,6 @@
 <div class="fs lede{% if bit.class %} {{ bit.class }}{% endif %}">
   <figure>
-    <img {% if bit.alt %} alt="{{ bit.alt }}" {% endif %} src="{{ bit.srcpath }}img/600/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}" srcset="
+    <img {% if bit.alt %} alt="{{ bit.alt }}" {% endif %} src="{{ bit.srcpath }}img/1024/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}" srcset="
       {{ bit.srcpath }}img/480/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 480w,
       {{ bit.srcpath }}img/480/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 960w,
       {{ bit.srcpath }}img/600/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 600w,
