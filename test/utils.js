@@ -56,6 +56,6 @@ test("Utils.writeProm", async t => {
 });
 
 test("Utils.readJsonProm", async t => {
-  let contents = await readJsonProm(resolve(__dirname, 'fixtures', 'rendered', 'testjson.json'));
+  let contents = await readJsonProm(testJsonPath);
   t.deepEqual(contents, {test: "this is a test"})
 });

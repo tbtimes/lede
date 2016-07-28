@@ -3,8 +3,8 @@ import { stat, Stats } from "fs-extra";
 import { request } from "https";
 import * as aml from "archieml";
 import { resolve as presolve } from 'path';
+import { homedir } from 'os';
 
-import { DefaultDependency } from "../models/DefaultDependency";
 import { Dependency, ProjectReport, ContentResolver } from "../interfaces";
 import { CircularDepError, NotAFile } from "../errors";
 
@@ -113,7 +113,9 @@ export class DependencyAssembler {
           // Here we are importing a user-written module so we want to catch any errors it may throw
           try {
             let SettingsConfig: ObjectConstructor = require(path).default;
-            return resolve(DependencyAssembler.mergeDepWithDefault(<Dependency>new SettingsConfig()));
+            let settings: Dependency = <any>new SettingsConfig();
+
+            return resolve(DependencyAssembler.setDepDefaults(settings));
           } catch (e) {
             return reject(e)
           }
@@ -122,44 +124,32 @@ export class DependencyAssembler {
     });
   }
 
-  /**
-   * This merges a custom dependency with the default effectively assuring that necessary properties are initialized.
-   * @param customSettings
-   * @returns {Dependency}
-   */
-  private static mergeDepWithDefault(customSettings: Dependency): Dependency {
-    let defaults = new DefaultDependency();
-    let merged = Object.assign({}, defaults);
-
-    for (let prop in customSettings) {
-      if (!customSettings.hasOwnProperty(prop)) {
-        continue
-      }
-      if (defaults.hasOwnProperty(prop)) {
-        switch (prop) {
-
-          // Inheritance chain should be concatenated onto the default
-          case 'dependsOn':
-            merged[prop] = merged[prop].concat(customSettings[prop]);
-            break;
-
-          // Should override the default if they exist
-          case 'name':
-          case 'inheritanceRoot':
-          case 'blocks':
-          case 'scripts':
-          case 'styles':
-          case 'googleFileId':
-            if (customSettings[prop]) {
-              merged[prop] = customSettings[prop];
-            }
-            break;
-        }
-      } else {
-        merged[prop] = customSettings[prop];
-      }
+  public static setDepDefaults(settings: Dependency) {
+    if (!settings.inheritanceRoot) {
+      settings.inheritanceRoot = process.env.LEDE_HOME ? presolve(homedir(), process.env.LEDE_HOME) : presolve(homedir(), "LedeProjects");
     }
-    return <Dependency>merged;
+    if (!settings.blocks) {
+      settings.blocks = ["ARTICLE"];
+    }
+    if (!settings.scripts) {
+      settings.scripts = [];
+    }
+    if (!settings.styles) {
+      settings.styles = [];
+    }
+    if (!settings.name) {
+      settings.name = "defaultLedeProject";
+    }
+    if (!settings.assets) {
+      settings.assets = [];
+    }
+    if (!settings.googleFileId) {
+      settings.googleFileId = "";
+    }
+    if (!settings.dependsOn) {
+      settings.dependsOn = [];
+    }
+    return settings;
   }
 
   /**
