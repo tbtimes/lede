@@ -76,24 +76,3 @@ export function readJsonProm(path) {
     })
   });
 }
-
-export function npmInstall(cwd:string) {
-  return new Promise((resolve, reject) => {
-    exec('npm init -y && npm install --save babelify babel-preset-es2016', {
-      cwd
-    }, (err, stdout, stderr) => {
-      if (err) return reject(err);
-      return resolve();
-    })
-  });
-}
-
-export function readStreamProm(path) {
-  let data = "";
-  let stream = createReadStream(path);
-  return new Promise((resolve, reject) => {
-    stream.on('data', d => data += d.toString());
-    stream.on('end', () => resolve(data));
-    stream.on('error', e => reject(e));
-  });
-}

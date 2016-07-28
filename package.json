@@ -14,7 +14,7 @@
     ]
   },
   "scripts": {
-    "test": "nyc ava",
+    "test": "gulp source && nyc ava",
     "build": "gulp source",
     "dev": "gulp dev",
     "prepublish": "gulp source",

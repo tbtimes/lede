@@ -8,11 +8,10 @@ import NunjucksCompiler from '../../dist/compilers/NunjucksCompiler';
 import SassCompiler from '../../dist/compilers/SassCompiler';
 import { FileSystemDeployer } from '../../dist/deployers/FileSystemDeployer';
 import projectReport from "../fixtures/projectReport";
-import { writeJsonSync, readJsonSync } from 'fs-extra';
 
 let deployPath = resolve(__dirname, "..", "fixtures", "tmp", "lede", "deploy");
 let workingDir = resolve(__dirname, "..", "fixtures", "projects", "proj1");
-let expectedCompiledPage = readJsonSync(resolve(__dirname, '..', 'fixtures', 'tmp', 'lede', 'compiledPage.json'));
+let getCompiledPage = require(resolve(__dirname, '..', 'fixtures', 'rendered', 'compiledPage.js')).getCompiledPage;
 let logger = {info:()=>{}, debug:()=>{}, trace:()=>{},error:()=>{},fatal:()=>{}};
 let compilers = {
   html: new NunjucksCompiler(),
@@ -53,7 +52,7 @@ test.serial("Lede.buildCache", async t => {
   let styleTest = await existsProm(resolve(buildDir, 'styles', 'proj1', 'foo.scss'));
   let scriptsTest = await existsProm(resolve(buildDir, 'scripts', 'proj2', 'bar.js'));
   let bitsTest = await existsProm(resolve(buildDir, 'bits', 'proj3', 'text'));
-  let blocksTest = await existsProm(resolve(buildDir, 'blocks', 'proj4', 'baz.html'))
+  let blocksTest = await existsProm(resolve(buildDir, 'blocks', 'proj4', 'baz.html'));
 
   t.true(assetTest.file);
   t.true(styleTest.file);
@@ -62,14 +61,17 @@ test.serial("Lede.buildCache", async t => {
   t.true(blocksTest.file);
 });
 
-// Skipping for now because expectedCompiledPage has a hardcoded path that is breaking the build
-test.serial.skip("Lede.compilePage", async t => {
+test.serial("Lede.compilePage", async t => {
   let compPage = await Lede.compilePage(compilers, projectReport, logger);
-  t.deepEqual(compPage, expectedCompiledPage);
+  let expected = getCompiledPage(projectReport.workingDirectory);
+  t.deepEqual(compPage.index, expected.index);
+  t.deepEqual(compPage.scripts, expected.scripts);
+  t.deepEqual(compPage.styles, expected.styles);
+  t.deepEqual(compPage.cachePath, expected.cachePath);
 });
 
 test.serial("Lede.deployPage", async t => {
-  await Lede.deployPage(deployers.dev, projectReport, expectedCompiledPage, logger);
+  await Lede.deployPage(deployers.dev, projectReport, getCompiledPage(projectReport.workingDirectory), logger);
   let assetTest = await existsProm(resolve(deployPath, 'assets', 'proj5', 'sleepyTiger.jpg'));
   let indexTest = await existsProm(resolve(deployPath, 'index.html'));
   let scriptsTest = await existsProm(resolve(deployPath, 'globalScripts.js'));

@@ -1,9 +1,6 @@
-import { resolve } from 'path';
-
-import { ProjectReport, CompiledPage } from '../interfaces';
-import { DependencyAssembler } from './DependencyAssembler';
-import { CacheBuilder } from './CacheBuilder';
-import { FileSystemDeployer } from "../deployers/FileSystemDeployer";
+import { ProjectReport, CompiledPage } from "../interfaces";
+import { DependencyAssembler } from "./DependencyAssembler";
+import { CacheBuilder } from "./CacheBuilder";
 
 
 export class Lede {
@@ -27,34 +24,33 @@ export class Lede {
   }
 
   static async deployPage(deployer, projReport: ProjectReport, compiledPage: CompiledPage, logger) {
-    logger.debug({ deployer, projReport, compiledPage });
+    logger.debug({deployer, projReport, compiledPage});
     logger.info("Deploying project.");
     try {
       await deployer.deploy({report: projReport, compiledPage});
-    } catch(e) {
+    } catch (e) {
       logger.error({err: e}, "Error deploying project.");
     }
   }
 
   static async compilePage(compilers, proj: ProjectReport, logger) {
     logger.info("Compiling project.");
-    logger.debug({ projectReport: proj});
+    logger.debug({projectReport: proj});
     try {
-      return await compilers.html.compile(proj, { css: compilers.css, js: compilers.js });
-    } catch(e) {
-      console.log(e)
+      return await compilers.html.compile(proj, {css: compilers.css, js: compilers.js});
+    } catch (e) {
       logger.error({err: e}, "Error compiling page.");
     }
   }
 
   static async assembleDeps(workingDir: string, logger) {
     try {
-      logger.debug({ workingDir })
+      logger.debug({workingDir});
       logger.info("Assembling dependencies");
       let da = new DependencyAssembler(workingDir);
       return da.assemble();
-    } catch(e) {
-      logger.error({ err: e});
+    } catch (e) {
+      logger.error({err: e});
       if (e.code === "CircularDepError") {
         logger.info(`${e.message} depends on a project which depends on itself.`)
       } else if (e.code === "NotAFile") {
@@ -69,7 +65,7 @@ export class Lede {
       logger.info("Caching assets");
       let cb = new CacheBuilder(proj);
       await cb.buildCache();
-    } catch(e) {
+    } catch (e) {
       logger.error({err: e}, "Error creating cache");
     }
   }
