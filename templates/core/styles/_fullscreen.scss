@@ -1,0 +1,8 @@
+.fs {
+  @media screen and (min-width: 992px) {
+    left: calc(-.5 * (100vw - 700px));
+    > * {
+      transform: translate(0,0);
+    }
+  }
+}

@@ -2,12 +2,12 @@
   width: 1000px;
   width: 100vw;
   position: relative;
-  left: 50%;
-  > * {
-    position: relative;
-    transform: translate(-50%, 0);
-    width: 100%;
-  }
+  // left: 50%;
+  // > * {
+  //   position: relative;
+  //   transform: translate(-50%, 0);
+  //   width: 100%;
+  // }
   figcaption {
     padding-left: 20px;
     padding-right: 20px;
@@ -17,6 +17,7 @@
   figure {
     .image {
       height: 90vh;
+      background-attachment: fixed;
     }
     .headline-overlay {
       bottom: 5vh;
