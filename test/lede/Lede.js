@@ -8,6 +8,7 @@ import NunjucksCompiler from '../../dist/compilers/NunjucksCompiler';
 import SassCompiler from '../../dist/compilers/SassCompiler';
 import { FileSystemDeployer } from '../../dist/deployers/FileSystemDeployer';
 import projectReport from "../fixtures/projectReport";
+import { spy } from 'sinon';
 
 let deployPath = resolve(__dirname, "..", "fixtures", "tmp", "lede", "deploy");
 let workingDir = resolve(__dirname, "..", "fixtures", "projects", "proj1");
@@ -19,6 +20,8 @@ let compilers = {
   js: new Es6Compiler()
 };
 let deployers = {dev: new FileSystemDeployer(deployPath)};
+let errorSpy = spy(logger, "error");
+let infoSpy = spy(logger, "info");
 
 // Resetting these because they add complexity and are tested in our compiler tests anyway
 projectReport.workingDirectory = workingDir;
@@ -61,6 +64,7 @@ test.serial("Lede.buildCache", async t => {
   t.true(blocksTest.file);
 });
 
+// TODO: Find bug that makes this test fail when it is the only test that runs.
 test.serial("Lede.compilePage", async t => {
   let compPage = await Lede.compilePage(compilers, projectReport, logger);
   let expected = getCompiledPage(projectReport.workingDirectory);
@@ -68,6 +72,10 @@ test.serial("Lede.compilePage", async t => {
   t.deepEqual(compPage.scripts, expected.scripts);
   t.deepEqual(compPage.styles, expected.styles);
   t.deepEqual(compPage.cachePath, expected.cachePath);
+
+  // Should error
+  await Lede.compilePage(compilers, "junk", logger);
+  // check error spy
 });
 
 test.serial("Lede.deployPage", async t => {
