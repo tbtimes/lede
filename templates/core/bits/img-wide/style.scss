@@ -3,10 +3,10 @@
     width: 1000px;
     width: 100vw;
     position: relative;
-    left: 50%;
+    // left: 50%;
     > * {
       position: relative;
-      transform: translate(-50%, 0);
+      // transform: translate(-50%, 0);
       width: 100%;
     }
     figcaption {
