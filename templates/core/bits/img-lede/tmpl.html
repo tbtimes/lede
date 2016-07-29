@@ -1,12 +1,14 @@
 <div class="fs lede{% if bit.class %} {{ bit.class }}{% endif %}">
   <figure>
-    <img {% if bit.alt %} alt="{{ bit.alt }}" {% endif %} src="{{ bit.srcpath }}img/1024/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}" srcset="
+    <img {% if bit.alt %} alt="{{ bit.alt }}" {% endif %}
+      {% if bit.directsrc %} src="{{ bit.directsrc }}"{% else %}
+      src="{{ bit.srcpath }}img/1024/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}" srcset="
       {{ bit.srcpath }}img/480/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 480w,
       {{ bit.srcpath }}img/480/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 960w,
       {{ bit.srcpath }}img/600/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 600w,
       {{ bit.srcpath }}img/1024/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1024w,
       {{ bit.srcpath }}img/600/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1200w,
-      {{ bit.srcpath }}img/1500/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1500w
+      {{ bit.srcpath }}img/1500/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1500w,
       {{ bit.srcpath }}img/1024/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 2048w,
       {{ bit.srcpath }}img/1500/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 3000w
     " sizes="
@@ -15,7 +17,7 @@
       (min-width: 600px) and (max-width: 1023px) 1024px,
       (min-width: 1024px) 1500px,
       100vw
-  ">
+  {% endif %}">
     <div class="headline-overlay{% if bit.textbackground %} textbackground{% endif %}{% if bit.textshadow %} textshadow{% endif %}{% if bit.texttop %} texttop{% endif %}{% if bit.textright %} textright{% endif %}">
       {% if bit.kicker %}<h2 style="{% if bit.textcolor %}color: {{ bit.textcolor }};{% endif %}{% if bit.headsize %} font-size: calc(1.5vw * (1 + {{ bit.headsize }}) + 27px){% endif %}">{{ bit.kicker }}</h2>{% endif %}
       {% if bit.hed %}<h1 style="{% if bit.textcolor %}color: {{ bit.textcolor }};{% endif %}{% if bit.headsize %} font-size: calc(3vw * (1 + {{ bit.headsize }}) + 27px){% endif %}">{{ bit.hed }}</h1>{% endif %}
