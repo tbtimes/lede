@@ -32,16 +32,19 @@
     .mobile-only { display: block!important; }
   }
 </style>
-<div class="fs lede{% if bit.class %} {{ bit.class }}{% endif %}">
-  <figure class="fixedimg"{% if bit.srcid %} id="{{ bit.srcid | slugify({ replacement: "_", lower: true })}}"{% else %} id="{{ bit.subhed | slugify({ replacement: "_", lower: true })}}"{% endif %}>
-  <img class="print-only" src="{{ bit.srcpath }}/img/480/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}">
-  <div class="image" style="{% if bit.height %} height: {{ bit.height }};{% endif %}background-position: {% if bit.backgroundpos %}{{ bit.backgroundpos }};{% else %}50% 50%;{% endif %}"{%- if bit.alt %} role="img" aria-label="{{ bit.alt }}"{% endif %}>
-      <div class="headline-overlay{% if bit.textbackground %} textbackground{% endif %}{% if bit.textshadow %} textshadow{% endif %}{% if bit.texttop %} texttop{% endif %}{% if bit.textright %} textright{% endif %}">
-        {% if bit.subhed %}<h2 style="{% if bit.textcolor %}color: {{ bit.textcolor }};{% endif %}{% if bit.headsize %} font-size: calc(1.5vw * (1 + {{ bit.headsize }}) + 27px){% endif %}">{{ bit.subhed }}</h2>{% endif %}
+<div class="fs{% if bit.class %} {{ bit.class }}{% endif %}">
+  <figure>
+    <div class="figure fixedimg"{% if bit.srcid %} id="{{ bit.srcid | slugify({ replacement: "_", lower: true })}}"{% else %} id="{{ bit.subhed | slugify({ replacement: "_", lower: true })}}"{% endif %}>
+    <img class="print-only" src="{{ bit.srcpath }}/img/480/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}">
+    <div class="image" style="{% if bit.height %} height: {{ bit.height }};{% endif %}background-position: {% if bit.backgroundpos %}{{ bit.backgroundpos }};{% else %}50% 50%;{% endif %}"{%- if bit.alt %} role="img" aria-label="{{ bit.alt }}"{% endif %}>
+        <div class="headline-overlay{% if bit.textbackground %} textbackground{% endif %}{% if bit.textshadow %} textshadow{% endif %}{% if bit.texttop %} texttop{% endif %}{% if bit.textright %} textright{% endif %}">
+          {% if bit.subhed %}<h2 style="{% if bit.textcolor %}color: {{ bit.textcolor }};{% endif %}{% if bit.headsize %} font-size: calc(1.5vw * (1 + {{ bit.headsize }}) + 27px){% endif %}">{{ bit.subhed }}</h2>{% endif %}
+        </div>
       </div>
     </div>
     <figcaption>{% if bit.credit %}
       <div class="credit">{{ bit.credit | safe }}</div>{% endif %}{% if bit.caption %}
-      <div class="caption">{{ bit.caption | safe }}</div>{% endif %}</figcaption>
+      <div class="caption">{{ bit.caption | safe }}</div>{% endif %}
+    </figcaption>
   </figure>
 </div>
