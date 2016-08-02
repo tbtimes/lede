@@ -108,7 +108,7 @@ p, lif, blockquote {
   line-height: 1.8em;
 }
 h1, h2, h3, h4, h5, h6 {
-  // @include open-sans();
+  @include open-sans-condensed();
   font-weight: bold;
 }
 .main-column {
