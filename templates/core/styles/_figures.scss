@@ -46,18 +46,42 @@ figure {
       background-position: 50% 50%;
     }
     .headline-overlay {
-      bottom: 5vh;
+      bottom: 60px;
+      bottom: 20vh;
+      left: 50px;
       left: 7vw;
       max-width: 76%;
       max-width: calc(100vw - 14vw);
+      &.top {
+        bottom: auto;
+        top: 100px;
+        top: 15vh;
+      }
+      &.middle {
+        bottom: auto;
+        top: 250px;
+        top: 60vh;
+      }
+      &.center {
+        width: 100%;
+        text-align: center;
+      }
+      &.right {
+        text-align: right;
+        left: auto;
+        right: 50px;
+        right: 7vw;
+      }
         h1, h2 {
         margin: .2em 0;
         letter-spacing: -0.02em;
       }
       h1 {
+        font-size: 48px;
         font-size: calc(3vw * 1 + 27px);
       }
       h2 {
+        font-size: 30px;
         font-size: calc(1.5vw * 1 + 27px);
       }
       &.texttop {
@@ -103,7 +127,7 @@ figure {
 .no-display, .false-display { display: none; }
 @media only screen {
   // img.print-only { display: none!important; }
-  img.print-only {
+  img.print-only { /* this works for print without hiding from Safari reader */
     height: 0;
     position: absolute;
     // width: 100%;
