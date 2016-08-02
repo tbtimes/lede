@@ -48,7 +48,7 @@ export class Lede {
       logger.debug({workingDir});
       logger.info("Assembling dependencies");
       let da = new DependencyAssembler(workingDir);
-      return da.assemble();
+      return await da.assemble();
     } catch (e) {
       logger.error({err: e});
       if (e.code === "CircularDepError") {
