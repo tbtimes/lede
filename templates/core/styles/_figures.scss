@@ -52,17 +52,19 @@ figure {
       // left: 7vw;
       max-width: 80%;
       max-width: calc(100vw - 14vw);
-      padding: 2em 4em;
       padding: 6vw 8vw;
+      @media screen and (min-width: 768px) {
+        padding: 2em 4em;
+      }
       &.top {
         bottom: auto;
         top: 0;
         // top: 10vh;
       }
       &.middle {
-        bottom: auto;
-        top: 250px;
-        top: 60vh;
+        // bottom: auto;
+        bottom: 250px;
+        bottom: 30vh;
       }
       &.center {
         width: 100%;
