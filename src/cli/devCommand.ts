@@ -13,8 +13,7 @@ import { asyncMap } from "../utils";
 
 
 
-export async function devCommand(config) {
-  let { workingDir, args, logger } = config;
+export async function devCommand({ workingDir, args, logger }) {
   let name = args['n'] || args['name'];
   let port = args['x'] || args['port'] || 8000;
   let { servePath, buildPath } = await getPaths(workingDir, name, logger);

@@ -1,10 +1,9 @@
 import * as chalk from "chalk";
 import { resolve } from 'path';
 
-import { globProm, copyProm, writeProm, existsProm, npmInstall } from "../utils";
+import { globProm, copyProm, writeProm, existsProm } from "../utils";
 
-export async function newCommand(config) {
-  let { args, workingDir } = config;
+export async function newCommand({ workingDir, args, logger }) {
   let type = args['_'][0];
   let name = args['_'][1];
   let contentSrc = args['c'] || args['content'] || "1kLHE2F-ydeTiQtnHKX4PhQy9oSLCTYS0CsoNr5zjx1c";

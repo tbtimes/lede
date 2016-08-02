@@ -10,7 +10,7 @@ export function makeLogger(ledeHome, level = "info") {
         stream: process.stdout
       },
       {
-        level: "error",
+        level: "debug",
         path: resolve(ledeHome, "logs", "lede.log")
       }
     ]

@@ -4,8 +4,7 @@ import { resolve } from 'path';
 import { existsProm } from "../utils";
 
 
-export async function cdCommand(config) {
-  let {args, workingDir} = config;
+export async function cdCommand({ workingDir, args, logger }) {
   let name = args['_'][0];
   if (args['h'] || args['help']) {
       console.log(`\n${chalk.blue('lede cd [name]')} is a helper command that returns a full path to project ${chalk.blue('name')}.

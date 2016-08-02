@@ -2,6 +2,7 @@
   "name": "ledeTwo",
   "dependencies": {},
   "globalDependencies": {
+    "aws-sdk": "registry:dt/aws-sdk#0.0.0+20160802165139",
     "browserify": "registry:dt/browserify#12.0.1+20160317120654",
     "bunyan": "registry:dt/bunyan#0.0.0+20160412155112",
     "chalk": "registry:dt/chalk#0.4.0+20160317120654",
