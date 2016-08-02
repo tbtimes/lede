@@ -46,16 +46,18 @@ figure {
       background-position: 50% 50%;
     }
     .headline-overlay {
-      bottom: 60px;
-      bottom: 20vh;
-      left: 50px;
-      left: 7vw;
-      max-width: 76%;
+      bottom: 0;
+      // bottom: 10vh;
+      left: 0;
+      // left: 7vw;
+      max-width: 80%;
       max-width: calc(100vw - 14vw);
+      padding: 2em 4em;
+      padding: 6vw 8vw;
       &.top {
         bottom: auto;
-        top: 100px;
-        top: 15vh;
+        top: 0;
+        // top: 10vh;
       }
       &.middle {
         bottom: auto;
@@ -65,12 +67,14 @@ figure {
       &.center {
         width: 100%;
         text-align: center;
+        width: 100%;
+        max-width: 100%;
+        left: 0;
       }
       &.right {
         text-align: right;
         left: auto;
-        right: 50px;
-        right: 7vw;
+        right: 0;
       }
         h1, h2 {
         margin: .2em 0;
@@ -97,7 +101,6 @@ figure {
       }
       &.textbackground {
         background-color: rgba(0, 0, 0, .4);
-        padding: 2em 3em 1em;
       }
       &.textshadow {
         h1, h2 {
