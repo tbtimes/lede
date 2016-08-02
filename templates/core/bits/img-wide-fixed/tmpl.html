@@ -23,14 +23,14 @@
   @media only screen and (min-width: 1500px), screen and (min-height: 1000px), screen and (min-width: 1025px) and (-webkit-min-device-pixel-ratio: 2), screen and (min-height: 1000px) and (-webkit-min-device-pixel-ratio: 2), screen and (min-width: 1025px) and (min-resolution: 192dpi), screen and (min-height: 1000px) and (min-resolution: 192dpi) {
     {% if bit.srcid %}#{{ bit.srcid | slugify({ replacement: "_", lower: true })}}{% else %}#{{ bit.subhed | slugify({ replacement: "_", lower: true })}}{% endif %}.fixedimg>.image { background-image: url({{ bit.srcpath }}img/1500/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}); }
   }
-  .no-display, .false-display { display: none; }
+  /*.no-display, .false-display { display: none; }
   @media only screen {
     img.print-only { display: none!important; }
   }
   @media only print {
     .fixedimg-subhed { display: none!important; }
     .mobile-only { display: block!important; }
-  }
+  }*/
 </style>
 <div class="fs{% if bit.class %} {{ bit.class }}{% endif %}">
   <figure>
