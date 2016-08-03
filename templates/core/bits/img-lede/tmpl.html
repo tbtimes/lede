@@ -2,15 +2,15 @@
   <figure>
     <img {% if bit.alt %} alt="{{ bit.alt }}" {% endif %}
       {% if bit.directsrc %} src="{{ bit.directsrc }}"{% else %}
-      src="assets/{{ bit.srcpath }}/img/1024/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}" srcset="
-      assets/{{ bit.srcpath }}/img/480/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 480w,
-      assets/{{ bit.srcpath }}/img/480/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 960w,
-      assets/{{ bit.srcpath }}/img/600/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 600w,
-      assets/{{ bit.srcpath }}/img/1024/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1024w,
-      assets/{{ bit.srcpath }}/img/600/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1200w,
-      assets/{{ bit.srcpath }}/img/1500/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1500w,
-      assets/{{ bit.srcpath }}/img/1024/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 2048w,
-      assets/{{ bit.srcpath }}/img/1500/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 3000w
+      src="assets/{{ $projectName }}/img/1024/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}" srcset="
+      assets/{{ $projectName }}/img/480/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 480w,
+      assets/{{ $projectName }}/img/480/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 960w,
+      assets/{{ $projectName }}/img/600/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 600w,
+      assets/{{ $projectName }}/img/1024/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1024w,
+      assets/{{ $projectName }}/img/600/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1200w,
+      assets/{{ $projectName }}/img/1500/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1500w,
+      assets/{{ $projectName }}/img/1024/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 2048w,
+      assets/{{ $projectName }}/img/1500/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 3000w
     " sizes="
       (max-width: 479px) 480px,
       (min-width: 480px) and (max-width: 599px) 600px,

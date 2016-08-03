@@ -1,12 +1,12 @@
 <figure class="column-plus{% if bit.style %} {{ bit.style }}{% endif %}">
     <img {% if bit.alt %} alt="{{ bit.alt }}" {% endif %}
       {% if bit.directsrc %} src="{{ bit.directsrc }}"{% else %}
-      src="assets/{{ bit.srcpath }}/img/1024/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}" srcset="
-      assets/{{ bit.srcpath }}/img/480/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 480w,
-      assets/{{ bit.srcpath }}/img/480/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 960w,
-      assets/{{ bit.srcpath }}/img/600/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 600w,
-      assets/{{ bit.srcpath }}/img/1024/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1024w,
-      assets/{{ bit.srcpath }}/img/600/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1200w
+      src="assets/{{ $projectName }}/img/1024/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %}" srcset="
+      assets/{{ $projectName }}/img/480/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 480w,
+      assets/{{ $projectName }}/img/480/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 960w,
+      assets/{{ $projectName }}/img/600/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 600w,
+      assets/{{ $projectName }}/img/1024/{{ bit.src }}.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1024w,
+      assets/{{ $projectName }}/img/600/{{ bit.src }}-2x.{% if bit.imgtype %}{{ bit.imgtype }}{% else %}jpg{% endif %} 1200w
     " sizes="
       (max-width: 480px) 480px,
       (min-width: 481px) and (max-width: 1023px) 600px,
