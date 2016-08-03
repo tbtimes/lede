@@ -1,10 +1,8 @@
 import { merge } from "lodash";
 import { stat, Stats } from "fs-extra";
 import { request } from "https";
-import * as aml from "archieml";
-import { resolve as presolve } from 'path';
-import { homedir } from 'os';
-
+import { resolve as presolve } from "path";
+import { homedir } from "os";
 import { Dependency, ProjectReport, ContentResolver } from "../interfaces";
 import { CircularDepError, NotAFile } from "../errors";
 
@@ -31,10 +29,11 @@ export class DependencyAssembler {
    */
   public async assemble(): Promise<ProjectReport> {
     let deps = await DependencyAssembler.buildDependencies(this.workingDir);
-    let context = merge(await DependencyAssembler.buildContext(deps),
-                        {content: await DependencyAssembler.buildContent(deps)});
-
     let origDep = deps[deps.length - 1];
+    let context = merge(await DependencyAssembler.buildContext(deps),
+      {content: await DependencyAssembler.buildContent(deps)},
+      {$projectName: origDep.name});
+
 
     return {
       workingDirectory: this.workingDir,
@@ -126,7 +125,8 @@ export class DependencyAssembler {
 
   public static setDepDefaults(settings: Dependency) {
     if (!settings.inheritanceRoot) {
-      settings.inheritanceRoot = process.env.LEDE_HOME ? presolve(homedir(), process.env.LEDE_HOME) : presolve(homedir(), "LedeProjects");
+      settings.inheritanceRoot = process.env.LEDE_HOME ? presolve(homedir(), process.env.LEDE_HOME) : presolve(
+        homedir(), "LedeProjects");
     }
     if (!settings.blocks) {
       settings.blocks = ["ARTICLE"];
@@ -174,8 +174,10 @@ export class DependencyAssembler {
     }
     return merge(...contexts)
   }
+
   /**
-   * Looks for and resolves a baseContext.js file if it exists in the directory. If ENOENT, resolves with an empty object.
+   * Looks for and resolves a baseContext.js file if it exists in the directory. If ENOENT, resolves with an empty
+   * object.
    * @param searchDir
    * @returns {Promise<any>}
    */
@@ -214,7 +216,8 @@ export class DependencyAssembler {
         if (!process.env.GAPI_KEY) {
           throw new Error("Must have a googleapis key saved in the env variable GAPI_KEY to access documents stored on google drive.")
         }
-        let content = await DependencyAssembler.fetchContent({fileId: dep.googleFileId, apiKey: process.env.GAPI_KEY, parseFn: null});
+        let content = await DependencyAssembler.fetchContent(
+          {fileId: dep.googleFileId, apiKey: process.env.GAPI_KEY, parseFn: null});
         contents.push(content)
       }
     }

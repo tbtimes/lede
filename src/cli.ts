@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import * as minimist from "minimist";
 import * as chalk from 'chalk';
 
-import { newCommand, lsCommand, cdCommand, devCommand, makeLogger } from './cli/';
+import { newCommand, lsCommand, cdCommand, devCommand, makeLogger, imageCommand } from './cli/';
 
 
 let args = minimist(process.argv.slice(2));
@@ -40,7 +40,10 @@ async function handleCommand(args) {
       break;
     case 'dev':
       await devCommand(config);
-      
+      break;
+    case 'image':
+    case 'images':
+      await imageCommand(config);
       break;
     default:
       console.error(`Command "${chalk.red(command)}" not recognized`);

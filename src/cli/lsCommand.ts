@@ -4,8 +4,7 @@ import { resolve, basename } from 'path';
 import { globProm, asyncMap, existsProm } from "../utils";
 
 
-export async function lsCommand(config) {
-  let workingDir = config.workingDir;
+export async function lsCommand({ workingDir, args, logger }) {
   let projects = await globProm(`${workingDir}/*`);
   let existingProjects = await asyncMap(projects, async (p) => {
     try {
