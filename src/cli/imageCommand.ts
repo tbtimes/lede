@@ -1,6 +1,6 @@
 import { S3, s3 } from "aws-sdk";
 import { resolve } from "path";
-import { createReadStream } from 'fs-extra';
+import { createReadStream } from "fs-extra";
 import { globProm } from "../utils";
 import { DependencyAssembler } from "../lede";
 
@@ -38,26 +38,36 @@ export async function imageCommand({workingDir, args, logger}) {
 
   logger.debug(mugsResults, "MUGS");
   logger.debug(fullscreenResults, "FULLSCREEN");
-  logger.info("All images have been uploaded to s3 and are being resized right now. It may take up to a minute before the images are available.")
+  logger.info(
+    "All images have been uploaded to s3 and are being resized right now. It may take up to a minute before the images are available.")
 }
 
 function uploadImagesToS3({Bucket, logger, images}) {
   return new Promise((resolve, reject) => {
     let concurrentUploads = [];
 
-    images.forEach( ({ Key, path}) => {
+    images.forEach(({Key, path}) => {
       concurrentUploads.push(new Promise((res, rej) => {
-        let upload = new S3.ManagedUpload({params: { Bucket, Key, Body: createReadStream(path), ACL: "bucket-owner-full-control"}});
-        upload.send( (err, data) => {
+        let upload = new S3.ManagedUpload({
+          params: {
+            Bucket,
+            Key,
+            Body: createReadStream(path),
+            ACL: "bucket-owner-full-control"
+          }
+        });
+        upload.send((err, data) => {
           logger.debug(data);
-          if (err) rej(err);
+          if (err) {
+            rej(err);
+          }
           logger.info(`Successfully uploaded ${path}`);
           res();
         });
       }));
     });
 
-    return resolve(Promise.all(concurrentUploads));
+    resolve(Promise.all(concurrentUploads));
   });
 }
 
@@ -85,7 +95,7 @@ function getImagesNotOnS3({Bucket, logger, paths}) {
           logger.info(
             `${x} exists on s3; refusing to upload. To force an upload, run lede image with the --clobber flag`)
         }
-        !exists
+        return !exists
       });
       resolve(toPush)
     });
