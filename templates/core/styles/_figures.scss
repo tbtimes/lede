@@ -135,7 +135,7 @@ figure {
   img.print-only { /* this works for print without hiding from Safari reader */
     height: 0;
     position: absolute;
-    // width: 100%;
+    width: 100%;
   }
 }
 @media only print {
