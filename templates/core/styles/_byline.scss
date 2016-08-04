@@ -1,0 +1,19 @@
+.byline {
+  font-weight: 700;
+  padding: 1em 0;
+  margin-top: .5em;
+}
+.byline, .dateline {
+  color: #777;
+  font-family: $font-family-sans-condensed;
+}
+.dateline {
+  float: right;
+  font-weight: normal;
+  color: #000;
+}
+.byline span {
+  padding-top: .3em;
+  display: inline-block;
+  line-height: 1.3em;
+}
