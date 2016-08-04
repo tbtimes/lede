@@ -143,8 +143,29 @@ $grid-gutter-width:          3.75rem !default; // 60px
 //
 // Font, line-height, and color for body text, headings, and more.
 
+// GOOGLE FONT IMPORT
+
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700,700i|Open+Sans+Condensed:300,700|Merriweather:400,400i,700,700i);
+// @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700,700i|Open+Sans+Condensed:300,700);
+
+// INDIVIDUAL FONTS
+
+@mixin merriweather() {
+    font-family: 'Merriweather', 'times new roman', times, serif;
+}
+@mixin georgia() {
+    font-family: georgia, 'times new roman', times, serif;
+}
+@mixin open-sans() {
+  font-family: 'Open Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+@mixin open-sans-condensed() {
+    font-family: 'Open Sans Condensed', sans-serif;
+}
+
 $font-family-sans-serif:     "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
-$font-family-serif:          Georgia, "Times New Roman", Times, serif !default;
+$font-family-sans-condensed: "Open Sans Condensed", "Helvetica Neue", Helvetica, Arial, sans-serif !default;
+$font-family-serif:          Merriweather, Georgia, "Times New Roman", Times, serif !default;
 $font-family-monospace:      Menlo, Monaco, Consolas, "Courier New", monospace !default;
 $font-family-base:           $font-family-sans-serif !default;
 

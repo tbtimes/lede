@@ -55,7 +55,7 @@ blockquote p {
 }
 p {
   .liftout {
-    @include open-sans-condensed();
+    font-family: $font-family-sans-condensed;
     font-size: 1.5em;
   }
   .emphasis {
@@ -100,7 +100,8 @@ header {
   right: 20;
 }
 p, lif, blockquote {
-  @include georgia();
+  // @include georgia();
+  font-family: $font-family-serif;
   // max-width: $well-width;
   // padding: $well-padding;
   // margin-left: auto;
@@ -108,7 +109,7 @@ p, lif, blockquote {
   line-height: 1.8em;
 }
 h1, h2, h3, h4, h5, h6 {
-  @include open-sans-condensed();
+  font-family: $font-family-sans-condensed;
   font-weight: bold;
 }
 .main-column {
