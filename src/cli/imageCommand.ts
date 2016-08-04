@@ -113,10 +113,10 @@ function uploadImagesToS3({Bucket, logger, images}) {
         upload.send((err, data) => {
           logger.debug(data);
           if (err) {
-            rej(err);
+            return rej(err);
           }
           logger.info(`Successfully uploaded ${path}`);
-          res();
+          return res();
         });
       }));
     });
@@ -130,7 +130,7 @@ function getImagesNotOnS3({Bucket, logger, paths, Key}) {
   return new Promise((resolve, reject) => {
     // If there's no paths to check, don't bother making the request to S3
     if (!paths) {
-      resolve([]);
+      return resolve([]);
     }
 
     logger.info("Checking s3 for existing images");
@@ -138,7 +138,7 @@ function getImagesNotOnS3({Bucket, logger, paths, Key}) {
     // Make the request to see what images are on S3
     s3.listObjectsV2({Bucket}, (err, data: s3.ListObjectV2Response) => {
       if (err) {
-        reject(err);
+        return reject(err);
       }
       // Get just the image name
       let existing = data.Contents.map(x => {
@@ -157,7 +157,7 @@ function getImagesNotOnS3({Bucket, logger, paths, Key}) {
         }
         return !exists
       });
-      resolve(toPush)
+      return resolve(toPush)
     });
   });
 }
