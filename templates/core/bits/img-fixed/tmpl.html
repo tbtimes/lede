@@ -54,6 +54,10 @@
         {% if bit.subhed %}<h2 style="{% if bit.textcolor %}color: {{ bit.textcolor }};{% endif %}{% if bit.headsize %} font-size: calc(1.5vw * (1 + {{ bit.headsize }}) + 27px){% endif %}">{{ bit.subhed }}</h2>{% endif %}
       </div>
     </div>
+    {% if bit.credit or bit.caption %}<figcaption>{% if bit.credit %}
+      <div class="credit">{{ bit.credit | safe }}</div>{% endif %}{% if bit.caption %}
+      <div class="caption">{{ bit.caption | safe }}</div>{% endif %}
+    </figcaption>{% endif %}
   </figure>
 </div>
 

@@ -39,78 +39,84 @@ figure {
   }
 }
 .fs {
-  // .fixedimg {
-    .image {
-      height: 85vh;
-      background-attachment: fixed;
-      background-position: 50% 50%;
+  .fixedimg {
+    figcaption {
+      border-bottom: 1px dotted #ccc;
+      padding-bottom: 1em;
+      margin-bottom: 1em;
     }
-    .headline-overlay {
-      bottom: 0;
-      // bottom: 10vh;
+  }
+  .image {
+    height: 85vh;
+    background-attachment: fixed;
+    background-position: 50% 50%;
+    position: relative;
+  }
+  .headline-overlay {
+    bottom: 0;
+    // bottom: 10vh;
+    left: 0;
+    // left: 7vw;
+    max-width: 80%;
+    max-width: calc(100vw - 14vw);
+    padding: 6vw 8vw;
+    @media screen and (min-width: 768px) {
+      padding: 2em 4em;
+    }
+    &.top {
+      bottom: auto;
+      top: 0;
+      // top: 10vh;
+    }
+    &.middle {
+      // bottom: auto;
+      bottom: 250px;
+      bottom: 30vh;
+    }
+    &.center {
+      width: 100%;
+      text-align: center;
+      width: 100%;
+      max-width: 100%;
       left: 0;
-      // left: 7vw;
-      max-width: 80%;
-      max-width: calc(100vw - 14vw);
-      padding: 6vw 8vw;
-      @media screen and (min-width: 768px) {
-        padding: 2em 4em;
-      }
-      &.top {
-        bottom: auto;
-        top: 0;
-        // top: 10vh;
-      }
-      &.middle {
-        // bottom: auto;
-        bottom: 250px;
-        bottom: 30vh;
-      }
-      &.center {
-        width: 100%;
-        text-align: center;
-        width: 100%;
-        max-width: 100%;
-        left: 0;
-      }
-      &.right {
+    }
+    &.right {
+      text-align: right;
+      left: auto;
+      right: 0;
+    }
+      h1, h2 {
+      margin: .2em 0;
+      letter-spacing: -0.02em;
+    }
+    h1 {
+      font-size: 48px;
+      font-size: calc(3vw * 1 + 27px);
+    }
+    h2 {
+      font-size: 30px;
+      font-size: calc(1.5vw * 1 + 27px);
+    }
+    &.texttop {
+      bottom: auto;
+      top: 3vw;
+    }
+    &.textright {
+      left: auto;
+      right: 7vw;
+      h1, h2 {
         text-align: right;
-        left: auto;
-        right: 0;
-      }
-        h1, h2 {
-        margin: .2em 0;
-        letter-spacing: -0.02em;
-      }
-      h1 {
-        font-size: 48px;
-        font-size: calc(3vw * 1 + 27px);
-      }
-      h2 {
-        font-size: 30px;
-        font-size: calc(1.5vw * 1 + 27px);
-      }
-      &.texttop {
-        bottom: auto;
-        top: 3vw;
-      }
-      &.textright {
-        left: auto;
-        right: 7vw;
-        h1, h2 {
-          text-align: right;
-        }
-      }
-      &.textbackground {
-        background-color: rgba(0, 0, 0, .4);
-      }
-      &.textshadow {
-        h1, h2 {
-          text-shadow: 0 0 12px rgba(0, 0, 0, .8);
-        }
       }
     }
-  // }
+    &.textbackground {
+      background-color: rgba(0, 0, 0, .4);
+    }
+    &.textshadow {
+      h1, h2 {
+        text-shadow: 0 0 12px rgba(0, 0, 0, .8);
+      }
+    }
+  }
 }
 
 @media screen and (min-width: 992px) {
