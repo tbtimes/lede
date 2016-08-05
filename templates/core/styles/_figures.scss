@@ -57,9 +57,10 @@ figure {
     bottom: 0;
     // bottom: 10vh;
     left: 0;
+    width: 100%;
     // left: 7vw;
-    max-width: 80%;
-    max-width: calc(100vw - 14vw);
+    // max-width: 80%;
+    // max-width: calc(100vw - 14vw);
     padding: 6vw 8vw;
     @media screen and (min-width: 768px) {
       padding: 2em 4em;
@@ -77,8 +78,8 @@ figure {
     &.center {
       width: 100%;
       text-align: center;
-      width: 100%;
-      max-width: 100%;
+      // width: 100%;
+      // max-width: 100%;
       left: 0;
     }
     &.right {
@@ -89,6 +90,7 @@ figure {
       h1, h2 {
       margin: .2em 0;
       letter-spacing: -0.02em;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
     }
     h1 {
       font-size: 48px;
@@ -110,7 +112,14 @@ figure {
       }
     }
     &.textbackground {
-      background-color: rgba(0, 0, 0, .4);
+      background-color: rgba(0, 0, 0, .3);
+      @include title-gradient();
+      &.top {
+        @include title-gradient-top();
+      }
+      &.bottom {
+        @include title-gradient-bottom();
+      }
     }
     &.textshadow {
       h1, h2 {
