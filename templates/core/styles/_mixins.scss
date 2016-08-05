@@ -1,3 +1,5 @@
+// STUFF FROM LEDE
+
 /* Breakpoints */
 $screen-mobile-max: 543px;
 $screen-sm-min: 544px;
@@ -11,16 +13,16 @@ $screen-md-max: ($screen-lg-min - 1);
 $screen-xlg-min: 1400px; // we're gonna need a bigger boat
 $screen-lg-max: ($screen-xlg-min -1);
 
-$well-width: 660px;
-$well-padding: 0 10px;
+// $well-width: 660px;
+// $well-padding: 0 10px;
 
 $portal-padding-mobile: 0 10px;
 $portal-padding-desktop: 0 15px;
 
-$header-height-mobile: 40px;
-$header-height-desktop: 50px;
-$footer-height-mobile: 140px;
-$footer-height-desktop: 160px;
+// $header-height-mobile: 40px;
+// $header-height-desktop: 50px;
+// $footer-height-mobile: 140px;
+// $footer-height-desktop: 160px;
 
 /* Colors */
 $lightgray: #f2f2f2;
@@ -33,6 +35,8 @@ $lightred: #D23E27;
 $turquoise: #56BDC5;
 $timesgreen: #115220;
 $black: #000;
+
+$accentcolor: $brickred;
 
 /* Reusable elements */
 @mixin hover-btn() {
