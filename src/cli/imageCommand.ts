@@ -59,11 +59,13 @@ export async function imageCommand({workingDir, args, logger}) {
   // UPLOAD THEM ALL
   try {
     await uploadImagesToS3({Bucket, logger, images: mugPaths});
+    logger.info("Successfully uploaded all mugshots. It may take up to a minute before the resized images are available.")
   } catch(err) {
     logger.error({err}, "An error occurred while uploading mugshots to s3.");
   }
   try {
     await uploadImagesToS3({Bucket, logger, images: fullscreenPaths});
+    logger.info("Successfully uploaded all fullscreen images. It may take up to a minute before the resized images are available.")
   } catch (err) {
     logger.error({err}, "An error occurred while uploading fullscreen images to s3.");
   }
@@ -121,7 +123,7 @@ function uploadImagesToS3({Bucket, logger, images}) {
       }));
     });
 
-    resolve(Promise.all(concurrentUploads));
+    return resolve(Promise.all(concurrentUploads));
   });
 }
 
