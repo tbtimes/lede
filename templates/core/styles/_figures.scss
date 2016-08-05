@@ -4,6 +4,9 @@ figure {
   border: 1px dotted #ccc;
   border-width: 1px 0;
 }
+figcaption {
+  font-family: $font-family-sans-serif;
+}
 .credit {
   font-size: 11px;
   text-align: right;
