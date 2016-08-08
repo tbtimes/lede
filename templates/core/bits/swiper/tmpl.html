@@ -1,0 +1,14 @@
+{% if bit.slides -%}<!-- Swiper -->
+<div class="swiper-container swiper-container-vertical fs">
+  <div class="swiper-wrapper">
+    {% for each in bit.slides -%}
+    <div class="swiper-slide">
+      <h2>{{ each.hed }}</h2>
+      <p>{{ each.text }}</p>
+    </div>
+    {%- endfor %}
+  </div>
+  <!-- Add Pagination -->
+  <div class="swiper-pagination"></div>
+</div>
+{%- endif %}
