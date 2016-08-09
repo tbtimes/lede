@@ -8,7 +8,6 @@ import NunjucksCompiler from '../../dist/compilers/NunjucksCompiler';
 import SassCompiler from '../../dist/compilers/SassCompiler';
 import { FileSystemDeployer } from '../../dist/deployers/FileSystemDeployer';
 import projectReport from "../fixtures/projectReport";
-import { spy } from 'sinon';
 
 let deployPath = resolve(__dirname, "..", "fixtures", "tmp", "lede", "deploy");
 let workingDir = resolve(__dirname, "..", "fixtures", "projects", "proj1");
