@@ -6,6 +6,7 @@ class SettingsConfig {
     this.name = "core";
     this.inheritanceRoot = process.env.LEDE_HOME ? path.resolve(os.homedir(), process.env.LEDE_HOME) : path.resolve(os.homedir(), "LedeProjects");
     this.dependsOn = [];
+    // point to project files for customization
     this.styles = [];
     this.scripts = [];
     this.blocks = [];

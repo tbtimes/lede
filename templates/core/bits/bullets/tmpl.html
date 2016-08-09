@@ -1,0 +1,14 @@
+{% if bit.bullets -%}
+<ul>
+    {% for each in bit.bullets -%}
+    <li>{{ each }}</li>
+    {%- endfor %}
+</ul>
+{%- endif %}
+{% if bit.numbered -%}
+<ol>
+    {% for each in bit.numbered -%}
+    <li>{{ each }}</li>
+    {%- endfor %}
+</ol>
+{%- endif %}

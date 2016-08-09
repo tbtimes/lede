@@ -7,7 +7,7 @@ header {
   z-index: 150;
   left: 0;
   top: 0;
-  background-color: $brickred;
+  background-color: $accentcolor;
   // @media screen and (min-width: $screen-sm-min) {
   @include media-breakpoint-up(sm) {
     height: 50px;
