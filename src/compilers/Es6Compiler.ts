@@ -3,7 +3,6 @@ import * as babelify from "babelify";
 import { basename, resolve } from "path";
 import * as glob from "glob";
 import { ProjectReport } from "../interfaces/ProjectReport";
-import BrowserifyObject = Browserify.BrowserifyObject;
 
 
 function globProm(path, cwd?): Promise<Array<string>> {

@@ -20,8 +20,6 @@ let compilers = {
   js: new Es6Compiler()
 };
 let deployers = {dev: new FileSystemDeployer(deployPath)};
-let errorSpy = spy(logger, "error");
-let infoSpy = spy(logger, "info");
 
 // Resetting these because they add complexity and are tested in our compiler tests anyway
 projectReport.workingDirectory = workingDir;
@@ -29,6 +27,8 @@ projectReport.scripts = [];
 projectReport.styles = [];
 projectReport.blocks = [];
 projectReport.context.content = {};
+projectReport.context.$projectName = "proj1";
+// projectReport.context.$debug =
 
 
 test.before("Create deploy dir", async t => {
