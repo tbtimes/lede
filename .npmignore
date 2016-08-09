@@ -116,3 +116,4 @@ gulpfile.js
 typings.json
 typings
 .coveralls.yml
+.idea
