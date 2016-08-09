@@ -32,7 +32,7 @@ export async function devCommand({ workingDir, args, logger }) {
   fileServer.listen(port);
 }
 
-async function getCompilers(configPath, logger) {
+export async function getCompilers(configPath, logger) {
   try {
     let compilerTypes = require(configPath).compilers;
     let comps = {
@@ -46,13 +46,12 @@ async function getCompilers(configPath, logger) {
       comps[type] = new compiler(compilerTypes[type].options)
     }
     return comps;
-  } catch(e) {
-    console.log(e)
-    logger.error({err: e}, "Error loading compilers. Check logs for more info.")
+  } catch(err) {
+    logger.error({err}, "Error loading compilers. Check logs for more info.")
   }
 }
 
-async function getPaths(workingDir, name, logger) {
+export async function getPaths(workingDir, name, logger) {
   if (name) {
     return {
       servePath: resolve(workingDir,".builtProjects", name),
@@ -67,11 +66,11 @@ async function getPaths(workingDir, name, logger) {
         buildPath: resolve(workingDir, basename(process.cwd()))
       }
     }
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      logger.error({err: e}, `Cannot find project. Please specify a ${chalk.blue('-n [name]')} option or change into a project directory. Type ${chalk.blue('lede dev -h')} for help`);
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      logger.error({err}, `Cannot find project. Please specify a ${chalk.blue('-n [name]')} option or change into a project directory. Type ${chalk.blue('lede dev -h')} for help`);
     } else {
-      logger.error({err: e}, `An error occurred while opening ${chalk.blue(resolve(workingDir, 'projectSettings.js'))}. It is likely that there is a syntax error in the file.`)
+      logger.error({err}, `An error occurred while opening ${chalk.blue(resolve(workingDir, 'projectSettings.js'))}. It is likely that there is a syntax error in the file.`)
     }
     process.exit(1);
   }
