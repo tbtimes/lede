@@ -1,7 +1,7 @@
 {
   "name": "lede",
   "version": "0.0.2",
-  "description": "",
+  "description": "A tool for building and deploying static article pages.",
   "repository": "https://github.com/tbtimes/lede",
   "main": "dist/index.js",
   "ava": {
@@ -21,7 +21,7 @@
   "author": "Tampa Bay Times Data Team",
   "license": "MIT",
   "engines": {
-    "node": "^6.2.0"
+    "node": "^6.3.0"
   },
   "dependencies": {
     "archieml": "^0.3.1",
