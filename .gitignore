@@ -113,6 +113,3 @@ Temporary Items
 dist/
 .idea/
 typings/
-spec/
-coverage
-.nyc_output
