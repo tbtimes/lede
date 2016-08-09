@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 import { homedir } from "os";
-import { resolve } from 'path';
+import { resolve } from "path";
 import * as minimist from "minimist";
-import * as chalk from 'chalk';
-
-import { newCommand, lsCommand, cdCommand, devCommand, makeLogger, imageCommand } from './cli/';
+import * as chalk from "chalk";
+import { newCommand, lsCommand, cdCommand, devCommand, makeLogger, imageCommand, stageCommand } from "./cli/";
 
 
 let args = minimist(process.argv.slice(2));
@@ -16,7 +15,7 @@ async function handleCommand(args) {
   let ledeHome = process.env.LEDE_HOME ? resolve(homedir(), process.env.LEDE_HOME) : resolve(homedir(), "LedeProjects");
 
   let logger = makeLogger(args['path'] || args['p'] || ledeHome,
-                          args['log-level'] || args['l'] || "info"
+    args['log-level'] || args['l'] || "info"
   );
 
   let config = {
@@ -30,8 +29,8 @@ async function handleCommand(args) {
 
   switch (command) {
     case 'new':
-       await newCommand(config);
-       break;
+      await newCommand(config);
+      break;
     case 'ls':
       await lsCommand(config);
       break;
@@ -44,6 +43,10 @@ async function handleCommand(args) {
     case 'image':
     case 'images':
       await imageCommand(config);
+      break;
+    case 'stage':
+    case 'staging':
+      await stageCommand(config);
       break;
     default:
       console.error(`Command "${chalk.red(command)}" not recognized`);
