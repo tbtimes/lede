@@ -4,9 +4,11 @@
   <div class="swiper-wrapper">
     {% for each in bit.slides -%}
     <div class="swiper-slide">
-      {% if each.img %}<img src="{{ each.img }}">{% endif %}
-      <h2>{{ each.hed }}</h2>
-      <p>{{ each.text }}</p>
+      <div class="slide-content">
+        {% if each.img %}<img src="{{ each.img }}">{% endif %}
+        {% if each.hed %}<h2>{{ each.hed }}</h2>{% endif %}
+        {% if each.text %}<p>{{ each.text }}</p>{% endif %}
+      </div>
     </div>
     {%- endfor %}
   </div>
