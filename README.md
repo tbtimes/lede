@@ -1,5 +1,5 @@
 # Lede
-[![Build Status](https://travis-ci.org/tbtimes/lede.svg?branch=master)](https://travis-ci.org/tbtimes/lede) [![Coverage Status](https://coveralls.io/repos/github/tbtimes/ledeTwo/badge.svg?branch=master)](https://coveralls.io/github/tbtimes/ledeTwo?branch=master)
+[![Build Status](https://travis-ci.org/tbtimes/lede.svg?branch=master)](https://travis-ci.org/tbtimes/lede) [![Coverage Status](https://coveralls.io/repos/github/tbtimes/lede/badge.svg?branch=master)](https://coveralls.io/github/tbtimes/lede?branch=master)
 
 Lede is a cross-platform build tool designed to make it simple for news organizations to build pretty story pages. Lede aims to be flexible enough that an experienced designer/developer can quickly throw together a non-traditional story page (like a media slider) but simple enough that non-developers (reporters and web editors) can build story pages from predefined pieces of functionality called bits and blocks. If your newsroom has developers, they can create new bits and blocks for use in any project.
 
