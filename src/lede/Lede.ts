@@ -9,7 +9,7 @@ export class Lede {
   constructor(public workingDir, public compilers: any, public deployers: any, public logger: any) {
   }
 
-  async deploy(deployer: string, debug = true, pr?: ProjectReport | Promise<ProjectReport>): Promise<ProjectReport> {
+  async deploy(deployer: string, debug = true, pr?: ProjectReport): Promise<ProjectReport> {
     if (!pr) {
       pr = await Lede.assembleDeps(this.workingDir, this.logger);
     }
@@ -43,7 +43,7 @@ export class Lede {
     }
   }
 
-  static async assembleDeps(workingDir: string, logger) {
+  static async assembleDeps(workingDir: string, logger): Promise<ProjectReport> {
     try {
       logger.debug({workingDir});
       logger.info("Assembling dependencies");

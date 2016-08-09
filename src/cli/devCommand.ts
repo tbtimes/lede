@@ -1,26 +1,21 @@
-import * as livereload from 'livereload';
-import * as connect from 'connect';
-import * as serveStatic from 'serve-static';
-import * as chalk from 'chalk';
-import * as chokidar from 'chokidar';
-import { resolve, basename } from 'path';
+import * as livereload from "livereload";
+import * as connect from "connect";
+import * as serveStatic from "serve-static";
+import * as chalk from "chalk";
+import * as chokidar from "chokidar";
+import { resolve, basename } from "path";
+import { existsProm, asyncMap } from "../utils";
+import { Lede } from "../lede";
+import { FileSystemDeployer } from "../deployers";
 
-import { existsProm } from '../utils';
-import { Lede } from '../lede';
-import { FileSystemDeployer } from '../deployers';
-import { asyncMap } from "../utils";
-
-
-
-
-export async function devCommand({ workingDir, args, logger }) {
+export async function devCommand({workingDir, args, logger}) {
   let name = args['n'] || args['name'];
   let port = args['x'] || args['port'] || 8000;
-  let { servePath, buildPath } = await getPaths(workingDir, name, logger);
+  let {servePath, buildPath} = await getPaths(workingDir, name, logger);
   let compilerPath = args['c'] || args['compilers'] || resolve(workingDir, "compilers", "compilerConfig.js");
   let compilers = await getCompilers(compilerPath, logger);
   let lede = new Lede(buildPath, compilers,
-    { dev: new FileSystemDeployer(servePath) }, logger);
+    {dev: new FileSystemDeployer(servePath)}, logger);
   let fileServer = connect();
   let lrServer: any = livereload.createServer();
 
@@ -41,12 +36,11 @@ export async function getCompilers(configPath, logger) {
       js: null
     };
     for (let type in compilerTypes) {
-      // console.log(resolve(process.cwd(), compilerTypes[type].path))
       let compiler: any = require(resolve(process.cwd(), compilerTypes[type].path)).default
       comps[type] = new compiler(compilerTypes[type].options)
     }
     return comps;
-  } catch(err) {
+  } catch (err) {
     logger.error({err}, "Error loading compilers. Check logs for more info.")
   }
 }
@@ -54,7 +48,7 @@ export async function getCompilers(configPath, logger) {
 export async function getPaths(workingDir, name, logger) {
   if (name) {
     return {
-      servePath: resolve(workingDir,".builtProjects", name),
+      servePath: resolve(workingDir, ".builtProjects", name),
       buildPath: resolve(workingDir, name)
     }
   }
@@ -62,15 +56,17 @@ export async function getPaths(workingDir, name, logger) {
     let res = await existsProm(resolve(process.cwd(), 'projectSettings.js'));
     if (res.file) {
       return {
-        servePath: resolve(workingDir,'.builtProjects', basename(process.cwd())),
+        servePath: resolve(workingDir, '.builtProjects', basename(process.cwd())),
         buildPath: resolve(workingDir, basename(process.cwd()))
       }
     }
   } catch (err) {
     if (err.code === 'ENOENT') {
-      logger.error({err}, `Cannot find project. Please specify a ${chalk.blue('-n [name]')} option or change into a project directory. Type ${chalk.blue('lede dev -h')} for help`);
+      logger.error({err}, `Cannot find project. Please specify a ${chalk.blue(
+        '-n [name]')} option or change into a project directory. Type ${chalk.blue('lede dev -h')} for help`);
     } else {
-      logger.error({err}, `An error occurred while opening ${chalk.blue(resolve(workingDir, 'projectSettings.js'))}. It is likely that there is a syntax error in the file.`)
+      logger.error({err}, `An error occurred while opening ${chalk.blue(
+        resolve(workingDir, 'projectSettings.js'))}. It is likely that there is a syntax error in the file.`)
     }
     process.exit(1);
   }
@@ -93,11 +89,11 @@ async function createWatcher(info) {
   });
 
   let assetWatcher = chokidar.watch(assets, {
-    persistant: true,
+    persistent: true,
     ignored: [/[\/\\]\./, /\/(baseContext|projectSettings).js/]
   });
   let configWatcher = chokidar.watch(cfgs, {
-    persistant: true
+    persistent: true
   });
 
   configWatcher.on('change', path => {
@@ -106,10 +102,10 @@ async function createWatcher(info) {
     delete require.cache[require.resolve(path)];
     logger.info(`Detected change to ${chalk.blue(path)}`);
     lede.deploy("dev", true)
-      .then(x => projectReport = x);
+        .then(x => projectReport = x);
   });
 
-  assetWatcher.on('change', (path, stats) =>{
+  assetWatcher.on('change', (path, stats) => {
     console.log(`Detected change to ${chalk.blue(path)}`);
     delete require.cache[require.resolve(path)];
     lede.deploy("dev", true, projectReport);

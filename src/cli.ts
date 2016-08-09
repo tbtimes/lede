@@ -3,7 +3,7 @@ import { homedir } from "os";
 import { resolve } from "path";
 import * as minimist from "minimist";
 import * as chalk from "chalk";
-import { newCommand, lsCommand, cdCommand, devCommand, makeLogger, imageCommand, stageCommand } from "./cli/";
+import { newCommand, lsCommand, cdCommand, devCommand, makeLogger, imageCommand, stageCommand } from "./cli/commands";
 
 
 let args = minimist(process.argv.slice(2));

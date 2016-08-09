@@ -127,7 +127,7 @@ function uploadImagesToS3({Bucket, logger, images}) {
   });
 }
 
-function getImagesNotOnS3({Bucket, logger, paths, Key}) {
+function getImagesNotOnS3({Bucket, logger, paths, Key}): Promise<string[]> {
   const s3 = new S3();
   return new Promise((resolve, reject) => {
     // If there's no paths to check, don't bother making the request to S3

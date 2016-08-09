@@ -1,6 +1,6 @@
 import { Environment, FileSystemLoader, Template } from "nunjucks";
-import { join } from 'path';
-import { createReadStream } from 'fs-extra';
+import { join } from "path";
+import { createReadStream } from "fs-extra";
 
 
 function readStreamProm(path) {
@@ -29,7 +29,7 @@ export default class NunjucksCompiler {
       cachePath: join(report.workingDirectory, '.ledeCache')
     };
   }
-  
+
   static async createScriptsBlock(report, bits, compiler) {
     let scripts = await compiler.compile(report, bits);
     return {
@@ -42,8 +42,8 @@ ${scripts.bits}
 `
     }
   }
-  
-  static getUsedBits (report) {
+
+  static getUsedBits(report) {
     let visitedBits = [];
     if (report.context.content.ARTICLE) {
       for (let bit of report.context.content.ARTICLE) {
@@ -55,8 +55,10 @@ ${scripts.bits}
     return visitedBits;
   }
 
-  static async renderTemplate(report, template, opts) {
-    let env = new Environment(new FileSystemLoader(join(report.workingDirectory, '.ledeCache', 'bits'), opts));
+  static async renderTemplate(report, template, opts: {filters?: Array<{name: string, fn: any}>}) {
+    let loader = new FileSystemLoader();
+    loader.init([join(report.workingDirectory, '.ledeCache', 'bits')], opts);
+    let env = new Environment(loader);
     if (opts.filters) {
       for (let f of opts.filters) {
         env.addFilter(f.name, f.fn)
@@ -75,7 +77,8 @@ ${scripts.bits}
 ${styles.globals}
 /* BITS */
 ${styles.bits}
-`};
+`
+    };
   }
 
   static async createShell(report, stylesBlock, scriptsBlock) {
