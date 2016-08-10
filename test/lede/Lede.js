@@ -3,9 +3,9 @@ import { Lede } from '../../dist/lede/Lede';
 import { resolve } from 'path';
 import { createDir, existsProm } from '../../dist/utils';
 import * as rmrf from 'rimraf';
-import Es6Compiler from '../../dist/compilers/Es6Compiler';
-import NunjucksCompiler from '../../dist/compilers/NunjucksCompiler';
-import SassCompiler from '../../dist/compilers/SassCompiler';
+import { Es6Compiler } from '../../dist/compilers/Es6Compiler';
+import { NunjucksCompiler } from '../../dist/compilers/NunjucksCompiler';
+import { SassCompiler } from '../../dist/compilers/SassCompiler';
 import { FileSystemDeployer } from '../../dist/deployers/FileSystemDeployer';
 import projectReport from "../fixtures/projectReport";
 

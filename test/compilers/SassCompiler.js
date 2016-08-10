@@ -2,7 +2,7 @@ import { test } from 'ava';
 import { resolve } from 'path';
 import { readFileSync, writeFileSync } from 'fs-extra';
 import { CacheBuilder } from '../../dist/lede';
-import SassCompiler from '../../dist/compilers/SassCompiler';
+import { SassCompiler } from '../../dist/compilers/SassCompiler';
 import projectReport from '../fixtures/projectReport';
 import * as rmrf from 'rimraf';
 

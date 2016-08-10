@@ -2,7 +2,7 @@ import { test } from 'ava';
 import { resolve } from 'path';
 import { readFileSync } from 'fs-extra';
 import * as rmrf from 'rimraf';
-import NunjucksCompiler from '../../dist/compilers/NunjucksCompiler';
+import { NunjucksCompiler } from '../../dist/compilers/NunjucksCompiler';
 
 import { CacheBuilder } from "../../dist/lede"
 import projectReport from "../fixtures/projectReport";

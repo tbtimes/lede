@@ -2,7 +2,7 @@ import { test } from 'ava';
 import { resolve } from 'path';
 import { readFileSync, readJsonSync, writeJsonSync } from 'fs-extra';
 import { CacheBuilder } from '../../dist/lede';
-import Es6Compiler from '../../dist/compilers/Es6Compiler';
+import { Es6Compiler } from '../../dist/compilers/Es6Compiler';
 import projectReport from '../fixtures/projectReport';
 import * as rmrf from 'rimraf';
 
