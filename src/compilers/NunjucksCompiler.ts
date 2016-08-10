@@ -13,7 +13,7 @@ function readStreamProm(path) {
   });
 }
 
-export default class NunjucksCompiler {
+export class NunjucksCompiler {
 
   constructor(public opts = {watch: false, noCache: true, autoescape: false}) {}
 

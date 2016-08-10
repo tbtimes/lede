@@ -12,7 +12,7 @@ async function asyncMap(array: Array<any>, f: (x: any) => any): Promise<Array<an
   return returns;
 }
 
-export default class SassCompiler {
+export class SassCompiler {
 
   constructor(public options = {includePaths: [], outputStyle: 'compact', sourceComments: false, sourceMapEmbed: false}) {
   }

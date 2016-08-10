@@ -19,7 +19,7 @@ function globProm(path, cwd?): Promise<Array<string>> {
 }
 
 
-export default class Es6Compiler {
+export class Es6Compiler {
   constructor(public options) {};
 
   async compile(report: ProjectReport, usedBits) {
