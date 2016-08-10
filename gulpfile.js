@@ -5,12 +5,13 @@ const typedoc = require('gulp-typedoc');
 const chmod = require('gulp-chmod');
 const srcmap = require('gulp-sourcemaps');
 const path = require('path');
+const merge = require('merge2');
 
 const projectOpts = ts.createProject({
   target: "es6",
   module: "commonjs",
   noImplicitAny: false,
-  declaration: false,
+  declaration: true,
   noExternalResolve: true
 });
 
@@ -19,10 +20,8 @@ gulp.task("docs", () => {
     .pipe(typedoc({
        module: "commonjs",
        target: "es6",
-       includeDeclarations: true,
        out: "docs/",
        ignoreCompilerErrors: true,
-
      }))
 });
 
@@ -31,22 +30,25 @@ gulp.task('source', () => {
     .pipe(srcmap.init())
     .pipe(ts(projectOpts));
 
-  result.js
-    .pipe(chmod({
-                  owner: {
-                    read: true,
-                    write: true,
-                    execute: true
-                  },
-                  group: {
-                    execute: true
-                  },
-                  others: {
-                    execute: true
-                  }
-                }))
-    .pipe(srcmap.write({sourceRoot: path.resolve(__dirname, "src")}))
-    .pipe(gulp.dest('dist/'))
+  return merge([
+    result.js
+      .pipe(chmod({
+        owner: {
+          read: true,
+          write: true,
+          execute: true
+        },
+        group: {
+          execute: true
+        },
+        others: {
+          execute: true
+        }
+      }))
+      .pipe(srcmap.write({sourceRoot: path.resolve(__dirname, "src")}))
+      .pipe(gulp.dest('dist/')),
+    result.dts.pipe(gulp.dest('dist/definitions'))
+  ]);
 });
 
 gulp.task('dev', ['source'], () => {

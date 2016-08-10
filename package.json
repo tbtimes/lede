@@ -4,6 +4,7 @@
   "description": "A tool for building and deploying static article pages.",
   "repository": "https://github.com/tbtimes/lede",
   "main": "dist/index.js",
+  "typings": "dist/definitions",
   "ava": {
     "files": [
       "test/**/*.js"
@@ -46,6 +47,7 @@
     "gulp-typedoc": "^2.0.0",
     "gulp-typescript": "^2.13.6",
     "gulp-watch": "^4.3.6",
+    "merge2": "^1.0.2",
     "nyc": "^7.0.0",
     "typedoc": "^0.4.4",
     "typescript": "^1.8.10",
