@@ -4,7 +4,7 @@
   "description": "A tool for building and deploying static article pages.",
   "repository": "https://github.com/tbtimes/lede",
   "main": "dist/index.js",
-  "typings": "dist/definitions",
+  "typings": "dist/definitions/index.d.ts",
   "ava": {
     "files": [
       "test/**/*.js"
