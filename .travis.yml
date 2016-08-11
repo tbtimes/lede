@@ -1,7 +1,7 @@
 language: node_js
 node_js: "6"
 script:
-  - "./node_modules/.bin/tsc || echo this is a hacky fix"
+  - "./node_modules/.bin/tsc || echo this is a hacky fix for typescript errors"
   - "npm run test"
 after_success:
     - './node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls'
