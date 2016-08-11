@@ -6,10 +6,6 @@
   },
   "globalDependencies": {
     "aws-sdk": "registry:dt/aws-sdk#0.0.0+20160805030905",
-    "babel-core": "registry:dt/babel-core#6.7.0+20160423062108",
-    "babel-template": "registry:dt/babel-template#6.7.0+20160423062108",
-    "babel-traverse": "registry:dt/babel-traverse#6.7.0+20160423062108",
-    "babel-types": "registry:dt/babel-types#6.7.0+20160423062108",
     "babelify": "registry:dt/babelify#7.3.0+20160621215837",
     "babylon": "registry:dt/babylon#6.7.0+20160423062108",
     "browserify": "registry:dt/browserify#12.0.1+20160317120654",
