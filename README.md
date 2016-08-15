@@ -9,8 +9,15 @@ __This project is under active development and is, at the moment, incomplete. Th
 
 ### Technical overview
 There are four key concepts to understanding how lede works:
-* The DependencyAssembler
-* The CacheBuilder
+* The Dependency Assembler
+* The Cache Builder
 * Compilers
 * Deployers
 
+#### Dependency Assembler
+
+#### Cache Builder
+
+#### Compilers
+
+#### Deployers
