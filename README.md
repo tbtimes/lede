@@ -14,10 +14,26 @@ There are four key concepts to understanding how lede works:
 * Compilers
 * Deployers
 
+There's also a [Lede](./src/lede/Lede.ts) class which simply provides a wrapper around the four components with methods for doing common tasks.
+
 #### Dependency Assembler
+Lede has a concept of project inheritance which allows the user to inherit components from other projects. The [Dependency Assembler](./src/lede/DependencyAssembler.ts) is in charge of managing the inheritance chain. It returns a promise wrapped [Project Report](./src/interfaces/ProjectReport.ts) which is the central data structure in a lede project. 
+
+The Project Report specifies the working directory of the current project, an array of every project the current project inherits from, a context object used to build the html, and a few various arrays that specify paths to resources which should be included on the page.
 
 #### Cache Builder
+The [Cache Builder](./src/lede/CacheBuilder.ts) takes a Project Report and caches all of the dependencies' resources in the current project's working directory. The cache structure gives lede it's "magic" where projects can import scripts, styles, and html templates from other projects. Compile a lede project and look inside `.ledeCache` to see how it's laid out.
 
 #### Compilers
+The compilers are the workhorse of a lede project. Each lede project has three compilers, an html compiler, a css compiler, and a js compiler. 
+
+The html compiler is the root compiler with a `compile` method that takes a Project Report and an object containing the css and js compilers. The `compile` method returns a promise wrapped [Compiled Page](./src/interfaces/CompiledPage.ts). 
+
+The html compiler uses the project report to create an array of bits that are included in the project; it then passes the project report and that array of used bits to the other two compilers' `compile` method. Each of those methods return a promise wrapped object with two properties, bits and globals, each containing a string of the compiled styles/scripts.
+
+Lede's default compilers are Nunjucks for html, Sass for css, and Es6 for javascript but you can easily swap them out for custom built compilers that conform to the spec, keeping in mind that one set of compilers must work for every project in the inheritance chain (ie: no EmlCompiler for a project that inherits ES6 scripts.)
+
+TODO: write docs for how to swap out compilers
 
 #### Deployers
+Deployers are the simplest component, they are responsible for turning a [Compiled Page](./src/interfaces/CompiledPage.ts) into a set of files and deploying those files. The most basic deployer, [File System Deployer](./src/deployers/FileSystemDeployer.ts), simply serializes the Compiled Page into files on the users' system where it can be served up by a local web server (check out [lede-cli](https://github.com/tbtimes/lede-cli) for a dev server). The [S3 Deployer](./src/deployers/S3Deployer.ts) subclasses the File System Deployer and ships the compiled files to Amazon S3 to host the page.
