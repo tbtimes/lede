@@ -93,8 +93,10 @@ test.serial("Lede.deployPage", async t => {
 test.serial("Lede.deploy", async t => {
   let lede = new Lede(workingDir, compilers, deployers, logger);
   let pr = await lede.deploy("dev", false);
+  let expected = Object.assign({}, projectReport);
+  expected.context.$debug = false;
 
-  t.deepEqual(pr, projectReport);
+  t.deepEqual(pr, expected);
   let assetTest = await existsProm(resolve(deployPath, 'assets', 'proj5', 'sleepyTiger.jpg'));
   let indexTest = await existsProm(resolve(deployPath, 'index.html'));
   let scriptsTest = await existsProm(resolve(deployPath, 'globalScripts.js'));

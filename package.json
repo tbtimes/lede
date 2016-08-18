@@ -14,10 +14,10 @@
     ]
   },
   "scripts": {
-    "test": "nyc ava",
-    "build": "typings install && tsc",
-    "dev": "typings install && tsc -w",
-    "prepublishOnly": "tsc || npm test"
+    "test": "typings install && gulp source && nyc ava",
+    "build": "typings install && gulp source",
+    "dev": "typings install && gulp dev",
+    "prepublishOnly": "npm test"
   },
   "author": "Tampa Bay Times Data Team",
   "license": "MIT",
@@ -41,8 +41,12 @@
   "devDependencies": {
     "ava": "^0.15.2",
     "coveralls": "^2.11.11",
+    "gulp": "^3.9.1",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-typescript": "^2.13.6",
+    "gulp-watch": "^4.3.9",
+    "merge2": "^1.0.2",
     "nyc": "^7.0.0",
-    "typescript": "^1.8.10",
     "typings": "^1.3.2"
   }
 }
