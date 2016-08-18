@@ -106,7 +106,9 @@ ${styles.bits}
     let pageBottom = `
   <script type="text/javascript" src="${scriptsBlock.file}"></script>
   {% if bodyLinks %}
-  {{ bodyLinks | safe }}
+    {% for link in bodyLinks %}
+      {{ link | safe }}
+    {% endfor %}
   {% endif %}
   {% if $debug %}
 <script>

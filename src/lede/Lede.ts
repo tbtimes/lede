@@ -13,9 +13,9 @@ export class Lede {
     if (!pr) {
       pr = await Lede.assembleDeps(this.workingDir, this.logger);
     }
-    if (debug) {
-      pr.context.$debug = true;
-    }
+
+    pr.context.$debug = debug;
+
     await Lede.buildCache(<ProjectReport>pr, this.logger);
     let compiledPage = await Lede.compilePage(this.compilers, pr, this.logger);
     deployer = <any>this.deployers[deployer];
