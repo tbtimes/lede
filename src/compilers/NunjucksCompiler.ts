@@ -95,7 +95,9 @@ ${styles.bits}
   {%- endif %}
   <link rel="stylesheet" type="text/css" href="${stylesBlock.file}">
   {% if headLinks %}
-  {{ headLinks | safe }}
+    {% for link in headLinks %}
+      {{ link | safe }}
+    {% endfor %}
   {% endif %}
 </head>
 <body>
