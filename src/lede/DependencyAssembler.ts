@@ -236,23 +236,25 @@ export class DependencyAssembler {
       };
 
       request(options, res => {
-        let result = "";
-        res.on('data', d => result += d.toString('utf8'));
+        let buffs = [];
+        res.on('data', d => buffs.push(d));
         res.on('error', e => reject(e));
         res.on('end', () => {
-          let parsableResult: {exportLinks: string} = JSON.parse(result);
+          let buffer = Buffer.concat(buffs);
+          let parsableResult: {exportLinks: string} = JSON.parse(buffer.toString('utf8'));
           let plainUrl: string = parsableResult.exportLinks['text/plain'].slice(8);
           options.hostname = plainUrl.split('/')[0];
           options.path = `/${plainUrl.split('/').slice(1).join('/')}`;
           request(options, res => {
-            let parsableResult = "";
-            res.on('data', d => parsableResult += d.toString('utf8'));
+            let bufferArray = [];
+            res.on('data', d => bufferArray.push(d));
             res.on('error', e => reject(e));
             res.on('end', () => {
+              let buff = Buffer.concat(bufferArray);
               if (!resolver.parseFn) {
-                resolve(aml.load(parsableResult));
+                resolve(aml.load(buff.toString('utf8')));
               } else {
-                resolve(resolver.parseFn(parsableResult));
+                resolve(resolver.parseFn(buff.toString('utf8')));
               }
             })
           }).end()
