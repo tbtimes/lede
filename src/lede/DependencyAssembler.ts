@@ -237,7 +237,7 @@ export class DependencyAssembler {
 
       request(options, res => {
         let result = "";
-        res.on('data', d => result += d);
+        res.on('data', d => result += d.toString('utf8'));
         res.on('error', e => reject(e));
         res.on('end', () => {
           let parsableResult: {exportLinks: string} = JSON.parse(result);
@@ -246,7 +246,7 @@ export class DependencyAssembler {
           options.path = `/${plainUrl.split('/').slice(1).join('/')}`;
           request(options, res => {
             let parsableResult = "";
-            res.on('data', d => parsableResult += d);
+            res.on('data', d => parsableResult += d.toString('utf8'));
             res.on('error', e => reject(e));
             res.on('end', () => {
               if (!resolver.parseFn) {
