@@ -5,7 +5,7 @@ Lede is a cross-platform build tool designed to make it simple for news organiza
 
 For an easy-to-use command line tool, check out [lede-cli](http://github.com/tbtimes/lede-cli).
 
-__This project is under active development and is, at the moment, incomplete. There may yet be breaking changes before the 1.0.0 release.__
+__This project is under active development and is, at the moment, incomplete. There may yet be breaking changes before the 1.0.0 release. You can see the design document [here](https://docs.google.com/document/d/1JWlMWI_K7AmLP4jQMzumpTnsQtkIrpMrVWLloAv-M20/edit?usp=sharing).__
 
 ## Installation
 1. Install [nvm](https://github.com/creationix/nvm) [\[windows\]](https://github.com/coreybutler/nvm-windows) and the latest versions of node (v6.3.x) and npm (v3.x).
