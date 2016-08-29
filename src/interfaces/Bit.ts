@@ -11,7 +11,7 @@
  * {prop} style – Defines a Material of type "style" to associate with this Bit.
  * {prop} html – Defines a Material of type "html" to associate with this Bit.
  */
-import { Material } from ".";
+import { Material } from "./";
 
 export interface Bit {
   version: Number;

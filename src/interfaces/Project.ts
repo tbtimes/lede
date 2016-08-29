@@ -10,7 +10,7 @@
  * {prop} compilers – Specifies the {html, style, script} compilers that should be used on the Page. Compilers specify
  * a compiler class that should be instantiated and the constructor args that should be passed to it.
  */
-import { Material, Block, MetaTag, Page } from ".";
+import { Material, Block, MetaTag, Page } from "./";
 
 
 export interface Project {

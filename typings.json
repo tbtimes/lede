@@ -17,6 +17,7 @@
     "fs-extra": "registry:dt/fs-extra#0.0.0+20160517121359",
     "glob": "registry:dt/glob#5.0.10+20160317120654",
     "lodash": "registry:dt/lodash#4.14.0+20160802150749",
+    "minimatch": "registry:dt/minimatch#2.0.8+20160317120654",
     "node": "registry:dt/node#6.0.0+20160807145350",
     "node-sass": "registry:dt/node-sass#0.0.0+20160316155526",
     "nunjucks": "registry:dt/nunjucks#0.0.0+20160802155009",

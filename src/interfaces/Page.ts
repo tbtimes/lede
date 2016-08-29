@@ -10,7 +10,7 @@
  * {prop} resources – Specifies strings to be inserted in the {head, body} of the Page. Useful for linking scripts or
  * styles from a cdn.
  */
-import { Block, Material, MetaTag } from ".";
+import { Block, Material, MetaTag } from "./";
 
 
 export interface Page {
