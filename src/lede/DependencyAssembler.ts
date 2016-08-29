@@ -1,3 +1,4 @@
+/* tslint:disable */
 import { merge } from "lodash";
 import { stat, Stats } from "fs-extra";
 import { request } from "https";

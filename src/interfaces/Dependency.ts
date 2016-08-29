@@ -1,4 +1,4 @@
-
+/* tslint:disable */
 export interface Dependency {
   inheritanceRoot: string;
   workingDir?: string;

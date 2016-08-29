@@ -1,3 +1,4 @@
+/* tslint:disable */
 export class CircularDepError extends Error {
     code: string;
     message: string;

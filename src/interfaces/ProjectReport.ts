@@ -1,3 +1,4 @@
+/* tslint:disable */
 import { Dependency } from './Dependency';
 
 export interface ProjectReport {

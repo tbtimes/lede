@@ -1,8 +1,10 @@
+/* tslint:disable */
 import { createReadStream } from "fs-extra";
 import { render, Options } from "node-sass";
 import { join } from 'path';
 
 import { ProjectReport } from "../interfaces/ProjectReport";
+
 
 async function asyncMap(array: Array<any>, f: (x: any) => any): Promise<Array<any>> {
   let returns = [];

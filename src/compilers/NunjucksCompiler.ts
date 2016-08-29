@@ -2,6 +2,7 @@ import { Environment, FileSystemLoader, Template } from "nunjucks";
 import { join } from "path";
 import { createReadStream } from "fs-extra";
 
+/* tslint:disable */
 
 function readStreamProm(path) {
   let data = "";

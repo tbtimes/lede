@@ -4,6 +4,7 @@ const watch = require('gulp-watch');
 const srcmap = require('gulp-sourcemaps');
 const path = require('path');
 const merge = require('merge2');
+const tslint = require('gulp-tslint');
 
 const projectOpts = ts.createProject({
   target: "es6",
@@ -25,6 +26,16 @@ gulp.task('source', () => {
     result.dts.pipe(gulp.dest('dist/definitions'))
   ]);
 });
+
+gulp.task('lint', () => {
+  gulp.src('src/**/*.ts')
+    .pipe(tslint({
+      formatter: "verbose"
+    }))
+    .pipe(tslint.report());
+});
+
+gulp.task('pub', ['lint', 'source']);
 
 gulp.task('dev', ['source'], () => {
   watch('src/**/*.ts', () => {

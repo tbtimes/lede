@@ -1,4 +1,4 @@
-import { Extension } from 'nunjucks';
+import { Extension } from "nunjucks";
 
 
 export default class ComponentExtension implements Extension {
@@ -15,7 +15,7 @@ export default class ComponentExtension implements Extension {
     const args = parser.parseSignature(null, true);
     parser.advanceAfterBlockEnd(token.value);
     this.elementName = args.children[0].value;
-    return new nodes.CallExtensionAsync(this, 'run', args);
+    return new nodes.CallExtensionAsync(this, "run", args);
   }
 
   run(context, arg, cb) {

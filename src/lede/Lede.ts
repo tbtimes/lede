@@ -1,7 +1,7 @@
 import { ProjectReport, CompiledPage } from "../interfaces";
 import { DependencyAssembler } from "./DependencyAssembler";
 import { CacheBuilder } from "./CacheBuilder";
-
+/* tslint:disable */
 
 export class Lede {
   dependencyAssembler: DependencyAssembler;

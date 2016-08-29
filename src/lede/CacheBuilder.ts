@@ -1,3 +1,4 @@
+/* tslint:disable */
 import { writeJson, stat, Stats, mkdir, ensureDir } from 'fs-extra';
 import * as rmrf from 'rimraf';
 import { join, resolve as presolve, basename } from 'path';

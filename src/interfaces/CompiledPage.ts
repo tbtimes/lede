@@ -1,3 +1,4 @@
+/* tslint:disable */
 export interface LinkFile {
   file: string;
   data: string;

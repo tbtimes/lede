@@ -1,3 +1,4 @@
+/* tslint:disable */
 import * as glob from "glob";
 import { copy, ensureDir, readJson, createReadStream, writeFile, stat, Stats } from "fs-extra";
 import { exec } from 'child_process';

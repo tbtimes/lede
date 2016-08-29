@@ -5,6 +5,7 @@ import { ProjectReport, CompiledPage } from "../interfaces";
 import { globProm } from "../utils";
 import { createReadStream } from "fs-extra";
 
+/* tslint:disable */
 
 export class S3Deployer extends FileSystemDeployer {
 

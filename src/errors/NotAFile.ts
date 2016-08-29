@@ -1,3 +1,4 @@
+/* tslint:disable */
 export class NotAFile extends Error {
   code: string;
   message: string;

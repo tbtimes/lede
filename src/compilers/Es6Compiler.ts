@@ -4,6 +4,7 @@ import { basename, resolve } from "path";
 import * as glob from "glob";
 import { ProjectReport } from "../interfaces/ProjectReport";
 
+/* tslint:disable */
 
 function globProm(path, cwd?): Promise<Array<string>> {
   return new Promise((resolve, reject) => {

@@ -3,6 +3,7 @@ import { join } from "path";
 import { createDir, writeProm, copyProm } from "../utils";
 import { CompiledPage, ProjectReport } from "../interfaces";
 
+/* tslint:disable */
 
 export class FileSystemDeployer {
   constructor(public deployDir: string) {};
