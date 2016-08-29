@@ -12,6 +12,7 @@ __This project is under active development and is, at the moment, incomplete. Th
 2. Create a [GitHub auth token](https://help.github.com/articles/creating-an-access-token-for-command-line-use/) and add the environment variable `GH_TOKEN=<your token>`.
 3. Ask Eli Murray for the Google APIs auth token and set it to the environment variable `GAPI_KEY=<google auth token>`.
 4. Install the cli with `npm install -g lede-cli`.
+5. Install bunyan for pretty printing lede logs (`npm install -g bunyan`).
 
 ### Technical overview
 There are four key concepts to understanding how lede works:
