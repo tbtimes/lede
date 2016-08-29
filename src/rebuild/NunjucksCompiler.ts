@@ -26,7 +26,7 @@ export class NunjucksCompiler {
     loaderPaths: string[]
   }) {
     const loaderOptions = Object.assign({watch: false, noCache: true}, opts.loaderOptions || {});
-    const envOptions = Object.assign({autoescape: false}, opts.envOptions || {});
+    const envOptions = Object.assign({autoescape: false, watch: false, noCache: true}, opts.envOptions || {});
 
     // Build extensions
     const bitExt = {tags: ['BIT', 'bit'], elementName: "$bit"};
@@ -69,7 +69,7 @@ export class NunjucksCompiler {
     loader.init(opts.loaderPaths, loaderOptions);
 
     // Initialize environment
-    this.env = new Environment(loader);
+    this.env = new Environment(loader, envOptions);
     for (let filter of filters) {
       this.env.addFilter(filter.name, filter.fn);
     }
