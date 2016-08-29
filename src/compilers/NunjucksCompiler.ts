@@ -1,19 +1,8 @@
-import { Environment, FileSystemLoader, Template } from "nunjucks";
-import { join } from "path";
+import { Environment, FileSystemLoader } from "nunjucks";
 import { createReadStream } from "fs-extra";
 import ComponentExtension from "./ComponentExtension";
 import * as slug from "slug";
 
-
-function readStreamProm(path) {
-  let data = "";
-  let stream = createReadStream(path);
-  return new Promise((resolve, reject) => {
-    stream.on("data", d => data += d.toString());
-    stream.on("end", () => resolve(data));
-    stream.on("error", e => reject(e));
-  });
-}
 
 export class NunjucksCompiler {
   env: Environment;
@@ -57,7 +46,7 @@ export class NunjucksCompiler {
       },
       {
         name: "slugify",
-        fn: function(txt, opts) {
+        fn: function (txt, opts) {
           return slug(txt, opts);
         }
       }
