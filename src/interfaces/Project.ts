@@ -16,14 +16,10 @@ import { Material, Block, MetaTag, Page } from "./";
 export interface Project {
   name: string;
   deployRoot: string;
-  defaults?: {
-    materials?: Material[],
-    blocks?: Block[],
-    metaTags?: MetaTag[]
-  };
-  namespaces?: {
-    materials?: string[],
-    bits?: string[]
+  defaults: {
+    materials: Material[],
+    blocks: Block[],
+    metaTags: MetaTag[]
   };
   pages: Page[];
   compilers: {
