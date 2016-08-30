@@ -5,7 +5,6 @@ const srcmap = require('gulp-sourcemaps');
 const path = require('path');
 const merge = require('merge2');
 const tslint = require('gulp-tslint');
-const typedoc = require('gulp-typedoc');
 
 const projectOpts = ts.createProject({
   target: "es6",
@@ -34,22 +33,6 @@ gulp.task('lint', () => {
       formatter: "verbose"
     }))
     .pipe(tslint.report());
-});
-
-gulp.task('docs', () => {
-  return gulp.src(["src/**/*.ts"])
-    .pipe(typedoc({
-      excludeExternals: true,
-      includeDeclarations: false,
-      module: 'commonjs',
-      target: 'ES6',
-      theme: 'minimal',
-      readme: './README.md',
-      out: './docs',
-      name: 'lede',
-      version: true,
-      ignoreCompilerErrors: true
-    }))
 });
 
 gulp.task('pub', ['lint', 'source']);
