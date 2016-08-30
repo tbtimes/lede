@@ -23,7 +23,7 @@ gulp.task('source', () => {
     result.js
       .pipe(srcmap.write({sourceRoot: path.resolve(__dirname, "src")}))
       .pipe(gulp.dest('dist/')),
-    result.dts.pipe(gulp.dest('dist/definitions'))
+    result.dts.pipe(gulp.dest('dist/'))
   ]);
 });
 

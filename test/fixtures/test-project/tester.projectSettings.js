@@ -1,7 +1,6 @@
 class SettingsConfig {
   constructor() {
     this.deployRoot = "some/root/directory";
-    this.namespace = "tester";
     this.defaults = {
       materials: [],
       blocks: [],
