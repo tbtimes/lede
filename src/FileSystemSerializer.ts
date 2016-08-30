@@ -1,4 +1,6 @@
 const sander = require("sander"); // No type defs so we will require it for now TODO: write type defs for sander
+import { join } from "path";
+import { globProm } from "./utils";
 
 import { Bit, Block, Material, Page, Project } from "./interfaces";
 
@@ -10,11 +12,17 @@ import { Bit, Block, Material, Page, Project } from "./interfaces";
 export class FileSystemSerializer {
   constructor(public workingDir: string) {}
 
-  static getProject(workingDir: string): Project {
+  static async getProject(workingDir: string): Promise<Project> {
+    const settings: any = await globProm("*.projectSettings.js", workingDir);
     const defaultProject: Project = {
       name: "",
       deployRoot: "",
       pages: [],
+      defaults: {
+        materials: [],
+        blocks: [],
+        metaTags: []
+      },
       compilers: {
         html: {
           compilerClass: {},
@@ -30,6 +38,17 @@ export class FileSystemSerializer {
         },
       }
     };
+
+    if (!settings) {
+      // TODO: Make this a custom error so we can catch it higher up
+      throw new Error(`Could not find a projectSetting file in ${workingDir}`);
+    } else if (settings.length > 1) {
+      // TODO: Make this a custom error so we can catch it higher up
+      throw new Error(`Found multiple projectSettings files in ${workingDir}`);
+    }
+
+
+
 
     return defaultProject;
   }
