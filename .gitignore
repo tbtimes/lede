@@ -112,6 +112,5 @@ Temporary Items
 # PROJECT SPECIFIC
 dist/
 .idea/
-typings/globals
-typlings/modules
+typings/
 docs/
