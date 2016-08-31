@@ -1,4 +1,3 @@
-export * from "./Bit";
 export * from "./Block";
 export * from "./Material";
 export * from "./MetaTag";
@@ -7,3 +6,4 @@ export * from "./Resolver";
 export * from "./CompilerInitializer";
 export * from "./ProjectConstructorArg";
 export * from "./BitConstructorArg";
+export * from "./PageConstructorArg";

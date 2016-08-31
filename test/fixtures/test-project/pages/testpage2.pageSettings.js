@@ -1,6 +1,6 @@
 class SettingsConfig {
   constructor() {
-    this.deployPath = "pageOne/should/deploy/here";
+    this.deployPath = "pageTwo/should/deploy/here";
     this.blocks = [];
     this.materials = {
       scripts: [],

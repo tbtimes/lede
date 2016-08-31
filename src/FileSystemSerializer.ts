@@ -2,8 +2,8 @@ const sander = require("sander"); // No type defs so we will require it for now 
 import { join } from "path";
 import { globProm } from "./utils";
 
-import { Block, Material, Page, ProjectConstructorArg, BitConstructorArg } from "./interfaces";
-import { Project, Bit } from "./models";
+import { Block, Material, PageConstructorArg, ProjectConstructorArg, BitConstructorArg } from "./interfaces";
+import { Project, Bit, Page } from "./models";
 
 
 /**
@@ -65,13 +65,21 @@ export class FileSystemSerializer {
     return new Bit(SettingsConfig);
   }
 
-  static getPage(workingDir: string): Page {
-    const defaultPage: Page = {
-      deployPath: "",
-      blocks: []
-    };
+  static async getPages(workingDir: string): Promise<Page[]> {
+    const settings = await globProm("*.pageSettings.js", workingDir);
+    const nameRegex = FileSystemSerializer.getRegex("pageSettings");
 
-    return defaultPage;
+    // Check that working directory contains a projectSettings file.
+    if (!settings) {
+      // TODO: Make this a custom error so we can catch it higher up
+      throw new Error(`Could not find a pageSettings file in ${workingDir}`);
+    }
+
+    // Since this is user-defined, it could throw. TODO: remember to catch/log this case higher
+   return settings.map(s => {
+      const cfg: PageConstructorArg = new (require(join(workingDir, s))).default();
+      return new Page(cfg);
+    });
   }
 
   static getMaterial(workingDir: string): Material {
