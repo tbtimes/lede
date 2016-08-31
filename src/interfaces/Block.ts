@@ -15,12 +15,14 @@
  * </div>
  * NOTE: This syntax assumes there is Nunjucks Extension called BIT. Here is not the place ot get into it.
  */
-import { Bit, Resolver } from "./";
+import { Resolver } from "./";
+import { Bit } from "../models";
 
 
 export interface Block {
   bits?: Bit[];
   source?: Resolver;
   context?: any;
+  name?: string;
   template: string;
 }

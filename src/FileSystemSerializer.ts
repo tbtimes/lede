@@ -65,9 +65,13 @@ export class FileSystemSerializer {
     return new Bit(SettingsConfig);
   }
 
+  /**
+   * Takes a directory string and returns an array of Pages in that directory.
+   * @param workingDir: string – Directory containing one or more pageSettings files.
+   * @returns {Page[]}
+   */
   static async getPages(workingDir: string): Promise<Page[]> {
     const settings = await globProm("*.pageSettings.js", workingDir);
-    const nameRegex = FileSystemSerializer.getRegex("pageSettings");
 
     // Check that working directory contains a projectSettings file.
     if (!settings) {
@@ -82,42 +86,42 @@ export class FileSystemSerializer {
     });
   }
 
-  static getMaterial(workingDir: string): Material {
-    const defaultMaterial = {
-      name: "",
-      content: "",
-      version: 0,
-      type: "",
-      namespace: "",
-      overridableName: ""
-    };
-
-    return defaultMaterial;
-  }
-
-  static getBlock(workingDir: string): Block {
-    const defaultBlock = {
-      template: ""
-    };
-
-    return defaultBlock;
-  }
-
-  static writeBit(workingDir: string, bit: Bit): void {
-    return;
-  }
-
-  static writePage(workingDir: string, page: Page): void {
-    return;
-  }
-
-  static writeMaterial(workingDir: string, mat: Material): void {
-    return;
-  }
-
-  static writeBlock(workingDir: string, block: Block): void {
-    return;
-  }
+  // static getMaterial(workingDir: string): Material {
+  //   const defaultMaterial = {
+  //     name: "",
+  //     content: "",
+  //     version: 0,
+  //     type: "",
+  //     namespace: "",
+  //     overridableName: ""
+  //   };
+  //
+  //   return defaultMaterial;
+  // }
+  //
+  // static getBlock(workingDir: string): Block {
+  //   const defaultBlock = {
+  //     template: ""
+  //   };
+  //
+  //   return defaultBlock;
+  // }
+  //
+  // static writeBit(workingDir: string, bit: Bit): void {
+  //   return;
+  // }
+  //
+  // static writePage(workingDir: string, page: Page): void {
+  //   return;
+  // }
+  //
+  // static writeMaterial(workingDir: string, mat: Material): void {
+  //   return;
+  // }
+  //
+  // static writeBlock(workingDir: string, block: Block): void {
+  //   return;
+  // }
 
   private static getRegex(settingsFileName: string) {
     return new RegExp(`(.*)\.${settingsFileName}\.js`);
