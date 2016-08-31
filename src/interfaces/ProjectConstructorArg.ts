@@ -14,4 +14,5 @@ export interface ProjectConstructorArg {
     style?: CompilerInitializer,
     script?: CompilerInitializer
   };
+  context?: any;
 }

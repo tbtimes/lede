@@ -6,3 +6,4 @@ export * from "./Page";
 export * from "./Resolver";
 export * from "./CompilerInitializer";
 export * from "./ProjectConstructorArg";
+export * from "./BitConstructorArg";

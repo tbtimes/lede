@@ -2,8 +2,8 @@ const sander = require("sander"); // No type defs so we will require it for now 
 import { join } from "path";
 import { globProm } from "./utils";
 
-import { Bit, Block, Material, Page, ProjectConstructorArg } from "./interfaces"
-import { Project } from "./models";
+import { Block, Material, Page, ProjectConstructorArg, BitConstructorArg } from "./interfaces";
+import { Project, Bit } from "./models";
 
 
 /**
@@ -20,12 +20,12 @@ export class FileSystemSerializer {
    */
   static async getProject(workingDir: string): Promise<Project> {
     const settings = await globProm("*.projectSettings.js", workingDir);
-    const nameRegex = /(.*)\.projectSettings\.js/;
+    const nameRegex = FileSystemSerializer.getRegex("projectSettings");
 
     // Check that working directory contains a projectSettings file.
     if (!settings) {
       // TODO: Make this a custom error so we can catch it higher up
-      throw new Error(`Could not find a projectSetting file in ${workingDir}`);
+      throw new Error(`Could not find a s file in ${workingDir}`);
     } else if (settings.length > 1) {
       // TODO: Make this a custom error so we can catch it higher up
       throw new Error(`Found multiple projectSettings files in ${workingDir}`);
@@ -38,14 +38,31 @@ export class FileSystemSerializer {
     return new Project(SettingsConfig);
   }
 
-  static getBit(workingDir: string): Bit {
-    const defaultBit: Bit = {
-      version: 0,
-      namespace: "",
-      name: ""
-    };
+  /**
+   * Takes a directory string and returns a Bit.
+   * @param workingDir: string – Directory containing a bitSettings file.
+   * @returns Promise<{Bit}>
+   */
+  static async getBit(workingDir: string): Promise<Bit> {
+    const settings = await globProm("*.bitSettings.js", workingDir);
+    const nameRegex = FileSystemSerializer.getRegex("bitSettings");
 
-    return defaultBit;
+    // Check that working directory contains a projectSettings file.
+    if (!settings) {
+      // TODO: Make this a custom error so we can catch it higher up
+      throw new Error(`Could not find a bitSettings file in ${workingDir}`);
+    } else if (settings.length > 1) {
+      // TODO: Make this a custom error so we can catch it higher up
+      throw new Error(`Found multiple bitSettings files in ${workingDir}`);
+    }
+
+    // Since this is user-defined, it could throw. TODO: remember to catch/log this case higher
+    const SettingsConfig: BitConstructorArg = new (require(join(workingDir, settings[0]))).default();
+    SettingsConfig.name = settings[0].match(nameRegex)[1];
+
+    // TODO instantiate materials
+
+    return new Bit(SettingsConfig);
   }
 
   static getPage(workingDir: string): Page {
@@ -92,5 +109,9 @@ export class FileSystemSerializer {
 
   static writeBlock(workingDir: string, block: Block): void {
     return;
+  }
+
+  private static getRegex(settingsFileName: string) {
+    return new RegExp(`(.*)\.${settingsFileName}\.js`);
   }
 }
