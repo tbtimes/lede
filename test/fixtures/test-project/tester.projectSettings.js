@@ -6,6 +6,7 @@ class SettingsConfig {
       blocks: [],
       metaTags: []
     };
+    this.context = { baz: "qux" };
   }
 }
 

@@ -5,8 +5,9 @@ export class Project {
   deployRoot: string;
   defaults: { materials: Material[], blocks: Block[], metaTags: MetaTag[] };
   compilers: { html: CompilerInitializer, style: CompilerInitializer, script: CompilerInitializer };
+  context: any;
 
-  constructor({ name, deployRoot, defaults, compilers }: ProjectConstructorArg) {
+  constructor({ name, deployRoot, defaults, compilers, context }: ProjectConstructorArg) {
     this.name = name;
     this.deployRoot = deployRoot;
     this.defaults = { materials: [], metaTags: [], blocks: [] };
@@ -15,6 +16,8 @@ export class Project {
       style: { compilerClass: {}, constructorArg: {} },
       script: { compilerClass: {}, constructorArg: {} }
     };
+
+    this.context = context ? context : {};
 
     if (defaults) {
       this.defaults.materials = defaults.materials ? defaults.materials : [];

@@ -16,7 +16,8 @@ test("Static getProject method should return an instantiated Project.", async t 
       html: { compilerClass: {}, constructorArg: {} },
       style: { compilerClass: {}, constructorArg: {} },
       script: { compilerClass: {}, constructorArg: {} },
-    }
+    },
+    context: { baz: "qux" }
   };
 
 
