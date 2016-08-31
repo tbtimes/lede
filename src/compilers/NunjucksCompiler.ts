@@ -1,5 +1,4 @@
 import { Environment, FileSystemLoader } from "nunjucks";
-import { createReadStream } from "fs-extra";
 import ComponentExtension from "./ComponentExtension";
 import * as slug from "slug";
 
