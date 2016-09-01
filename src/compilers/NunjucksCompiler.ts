@@ -1,5 +1,5 @@
 import { Environment, FileSystemLoader } from "nunjucks";
-import ComponentExtension from "./ComponentExtension";
+import { ComponentExtensionFactory } from "./ComponentExtension";
 import * as slug from "slug";
 
 
@@ -22,11 +22,11 @@ export class NunjucksCompiler {
     const baseExtensions = [
       {
         name: "Bit",
-        ext: new ComponentExtension(bitExt)
+        ext: new ComponentExtensionFactory(bitExt)
       },
       {
         name: "Block",
-        ext: new ComponentExtension(blockExt)
+        ext: new ComponentExtensionFactory(blockExt)
       }
     ];
     const extensions = opts.extensions ? baseExtensions.concat(opts.extensions) : baseExtensions;

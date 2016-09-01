@@ -1,7 +1,7 @@
 import { Extension } from "nunjucks";
 
 
-export default class ComponentExtension implements Extension {
+export class ComponentExtensionFactory implements Extension {
   tags: string[];
   elementName: string;
 
