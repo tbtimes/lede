@@ -33,9 +33,9 @@ test("Static getBit method should return an instantiated Bit.", async t => {
     version: 0,
     name: "testBit",
     context: { foo: "bar" },
-    script: undefined,
-    style: undefined,
-    html: undefined
+    script: "test.js",
+    style: "test.scss",
+    html: "test.html"
   };
   t.true(bit instanceof Bit, "Should return an instance of Bit.");
   t.deepEqual(bit, expected, "Should be correctly instantiated.")

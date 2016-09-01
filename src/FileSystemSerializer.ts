@@ -1,9 +1,10 @@
 const sander = require("sander"); // No type defs so we will require it for now TODO: write type defs for sander
 import { join } from "path";
 import { globProm } from "./utils";
+import { Logger, createLogger, stdSerializers } from "bunyan";
+const PrettyStream = require("bunyan-prettystream");
 
-import { Block, Material, PageConstructorArg, ProjectConstructorArg, BitConstructorArg } from "./interfaces";
-import { Project, Bit, Page } from "./models";
+import { Project, Bit, Page, Material, PageConstructorArg, ProjectConstructorArg, BitConstructorArg } from "./models";
 
 
 /**
@@ -11,7 +12,20 @@ import { Project, Bit, Page } from "./models";
  * various interfaces.
  */
 export class FileSystemSerializer {
-  constructor(public workingDir: string) {}
+  constructor(public workingDir: string, public logger?: Logger) {
+    if (!this.logger) {
+      const stream = new PrettyStream();
+      stream.pipe(process.stdout);
+      this.logger = createLogger({
+        name: "FileSystemSerializer",
+        stream: stream,
+        level: "error",
+        serializers: {
+          err: stdSerializers.err
+        }
+      });
+    }
+  }
 
   /**
    * Takes a directory string and returns an instantiated Project.
@@ -84,6 +98,14 @@ export class FileSystemSerializer {
       const cfg: PageConstructorArg = new (require(join(workingDir, s))).default();
       return new Page(cfg);
     });
+  }
+
+  /**
+   * This method essentially calls all the static methods in the proper sequence and returns a datastructure detailing
+   * the project.
+   */
+  public async buildReport() {
+
   }
 
   // static getMaterial(workingDir: string): Material {

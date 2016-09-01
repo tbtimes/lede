@@ -5,6 +5,8 @@
     "slug": "registry:npm/slug#0.9.0+20160723033700"
   },
   "globalDependencies": {
+    "bunyan": "registry:dt/bunyan#0.0.0+20160412155112",
+    "bunyan-prettystream": "registry:dt/bunyan-prettystream#0.0.0+20160316155526",
     "glob": "registry:dt/glob#5.0.10+20160317120654",
     "minimatch": "registry:dt/minimatch#2.0.8+20160317120654",
     "node": "registry:env/node#6.0.0+20160901015934",

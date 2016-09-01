@@ -1,4 +1,27 @@
-import { Material, Block, MetaTag, CompilerInitializer, ProjectConstructorArg } from "../interfaces";
+import { Block, MetaTag } from "../interfaces";
+import { Material } from "./";
+
+
+export interface CompilerInitializer {
+  compilerClass: any;
+  constructorArg: any;
+}
+
+export interface ProjectConstructorArg {
+  name: string;
+  deployRoot: string;
+  defaults?: {
+    materials?: Material[],
+    blocks?: Block[],
+    metaTags?: MetaTag[]
+  };
+  compilers?: {
+    html?: CompilerInitializer,
+    style?: CompilerInitializer,
+    script?: CompilerInitializer
+  };
+  context?: any;
+}
 
 export class Project {
   name: string;
