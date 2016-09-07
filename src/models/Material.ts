@@ -18,6 +18,10 @@ export class Material {
     this.content = "";
   };
 
+  /**
+   * This loads the bit content and returns the bit
+   * @returns {Material}
+   */
   async fetch(): Promise<Material> {
     if (this.content) return this;
     if (!this.location) throw new Error("Material has no location property"); // TODO: make custom error for this

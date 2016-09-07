@@ -1,15 +1,15 @@
 import { test } from "ava";
-import { resolve } from "path";
+import { join } from "path";
 
-import { FileSystemSerializer } from "../dist/FileSystemSerializer";
+import { ProjectFactory } from "../dist/ProjectFactory";
 import { Project, Bit, Page } from "../dist/models";
 
-const testProjPath = resolve(__dirname, "fixtures", "test-project");
-const testBitPath = resolve(__dirname, "fixtures", "test-project", "bits", "test-bit");
-const testPagePath = resolve(__dirname, "fixtures", "test-project", "pages");
+const testProjPath = join(__dirname, "fixtures", "test-project");
+const testBitPath = join(__dirname, "fixtures", "test-project", "bits", "test-bit");
+const testPagePath = join(__dirname, "fixtures", "test-project", "pages");
 
 test("Static getProject method should return an instantiated Project.", async t => {
-  const proj = await FileSystemSerializer.getProject(testProjPath);
+  const proj = await ProjectFactory.getProject(testProjPath);
   const expected = {
     name: "tester",
     deployRoot: "some/root/directory",
@@ -28,7 +28,7 @@ test("Static getProject method should return an instantiated Project.", async t 
 });
 
 test("Static getBit method should return an instantiated Bit.", async t => {
-  const bit = await FileSystemSerializer.getBit(testBitPath);
+  const bit = await ProjectFactory.getBit(testBitPath);
   const expected = {
     version: 0,
     name: "testBit",
@@ -42,7 +42,7 @@ test("Static getBit method should return an instantiated Bit.", async t => {
 });
 
 test("Static getPages method should return an array of instantiated Pages.", async t => {
-  const pages = await FileSystemSerializer.getPages(testPagePath);
+  const pages = await ProjectFactory.getPages(testPagePath);
   const expectedBase = {
     blocks: [],
     meta: [],
@@ -53,4 +53,9 @@ test("Static getPages method should return an array of instantiated Pages.", asy
   t.true(pages[0] instanceof Page && pages[1] instanceof Page, "Pages should be instances of Page.");
   t.deepEqual(pages[0], Object.assign({}, expectedBase, { deployPath: "pageOne/should/deploy/here" }), "Page1 should instantiate correctly");
   t.deepEqual(pages[1], Object.assign({}, expectedBase, { deployPath: "pageTwo/should/deploy/here" }), "Page2 should instantiate correctly");
+});
+
+test("FJFJFJF", async t => {
+  const pf = new ProjectFactory(testProjPath);
+  return pf.buildReport()
 });

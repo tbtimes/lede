@@ -8,16 +8,16 @@ import { Project, Bit, Page, Material, PageConstructorArg, ProjectConstructorArg
 
 
 /**
- * The FileSystemSerializer is responsible for reading the FileSystem structure and creating objects to represent the
+ * The ProjectFactory is responsible for reading the FileSystem structure and creating objects to represent the
  * various interfaces.
  */
-export class FileSystemSerializer {
+export class ProjectFactory {
   constructor(public workingDir: string, public logger?: Logger) {
     if (!this.logger) {
       const stream = new PrettyStream();
       stream.pipe(process.stdout);
       this.logger = createLogger({
-        name: "FileSystemSerializer",
+        name: "ProjectFactory",
         stream: stream,
         level: "error",
         serializers: {
@@ -34,7 +34,7 @@ export class FileSystemSerializer {
    */
   static async getProject(workingDir: string): Promise<Project> {
     const settings = await globProm("*.projectSettings.js", workingDir);
-    const nameRegex = FileSystemSerializer.getRegex("projectSettings");
+    const nameRegex = ProjectFactory.getRegex("projectSettings");
 
     // Check that working directory contains a projectSettings file.
     if (!settings) {
@@ -59,7 +59,7 @@ export class FileSystemSerializer {
    */
   static async getBit(workingDir: string): Promise<Bit> {
     const settings = await globProm("*.bitSettings.js", workingDir);
-    const nameRegex = FileSystemSerializer.getRegex("bitSettings");
+    const nameRegex = ProjectFactory.getRegex("bitSettings");
 
     // Check that working directory contains a projectSettings file.
     if (!settings) {
@@ -105,7 +105,10 @@ export class FileSystemSerializer {
    * the project.
    */
   public async buildReport() {
-
+    const projectReport = {};
+    projectReport["project"] = await ProjectFactory.getProject(this.workingDir);
+    projectReport["pages"] = await ProjectFactory.getPages(join(this.workingDir, "pages"));
+    console.log(projectReport);
   }
 
   // static getMaterial(workingDir: string): Material {
