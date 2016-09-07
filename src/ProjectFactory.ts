@@ -1,6 +1,7 @@
 const sander = require("sander"); // No type defs so we will require it for now TODO: write type defs for sander
 import { join } from "path";
 import { globProm } from "./utils";
+import { inspect } from "util";
 import { Logger, createLogger, stdSerializers } from "bunyan";
 const PrettyStream = require("bunyan-prettystream");
 
@@ -13,7 +14,8 @@ import {
   ProjectConstructorArg,
   BitConstructorArg,
   Block,
-  BlockConstructorArg
+  BlockConstructorArg,
+  ProjectReport
 } from "./models";
 
 
@@ -142,51 +144,14 @@ export class ProjectFactory {
    * This method essentially calls all the static methods in the proper sequence and returns a datastructure detailing
    * the project.
    */
-  public async buildReport() {
+  public async buildReport(): Promise<ProjectReport> {
     // TODO: error handling in this method
-    const projectReport = { workingDir: this.workingDir };
+    const projectReport = { workingDir: this.workingDir, project: null, pages: [], blocks: [] };
     projectReport["project"] = await ProjectFactory.getProject(this.workingDir);
     projectReport["pages"] = await ProjectFactory.getPages(join(this.workingDir, "pages"));
     projectReport["blocks"] = await ProjectFactory.getBlocks(join(this.workingDir, "blocks"));
-    console.log(projectReport);
+    return projectReport;
   }
-
-  // static getMaterial(workingDir: string): Material {
-  //   const defaultMaterial = {
-  //     name: "",
-  //     content: "",
-  //     version: 0,
-  //     type: "",
-  //     namespace: "",
-  //     overridableName: ""
-  //   };
-  //
-  //   return defaultMaterial;
-  // }
-  //
-  // static getBlock(workingDir: string): Block {
-  //   const defaultBlock = {
-  //     template: ""
-  //   };
-  //
-  //   return defaultBlock;
-  // }
-  //
-  // static writeBit(workingDir: string, bit: Bit): void {
-  //   return;
-  // }
-  //
-  // static writePage(workingDir: string, page: Page): void {
-  //   return;
-  // }
-  //
-  // static writeMaterial(workingDir: string, mat: Material): void {
-  //   return;
-  // }
-  //
-  // static writeBlock(workingDir: string, block: Block): void {
-  //   return;
-  // }
 
   private static getRegex(settingsFileName: string) {
     return new RegExp(`(.*)\.${settingsFileName}\.js`);

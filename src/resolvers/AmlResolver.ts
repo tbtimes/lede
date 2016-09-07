@@ -2,6 +2,7 @@ import { load } from "archieml";
 
 import { httpsGetProm } from "../utils";
 import { Resolver, GoogleRestAPI } from "../interfaces";
+import { BitReference } from "../models";
 
 
 export class AmlResolver implements Resolver {
@@ -9,9 +10,9 @@ export class AmlResolver implements Resolver {
 
   /**
    * Fetches content from googledocs and parses it with archieml. NOTE: This incorrectly implements the resolver interface
-   * right now because it returns any but it should return an array of instantiated bits.
+   * right now because it returns any but it should return an array of bit references.
    */
-  async fetch() {
+  async fetch(): Promise<BitReference[]> {
     const descriptorOpts = {
       hostname: "www.googleapis.com",
       path: `/drive/v2/files/${this.googleId}?key=${this.gapikey}`
@@ -24,7 +25,16 @@ export class AmlResolver implements Resolver {
       path: `/${plainUrl.split("/").slice(1).join("/")}`
     };
     const file = await httpsGetProm(fileOpts);
-    // TODO: return instantiated bits
-    return load(file);
+    const bitRefs = load(file).CONTENT;
+
+    //
+    return bitRefs.map(b => {
+      return Object.keys(b).reduce((state, key) => {
+        if (key !== "bit") {
+          state.context[key] = b[key];
+        }
+        return state;
+      }, { bit: b.bit, context: {} });
+    });
   };
 }

@@ -1,10 +1,17 @@
-import { Block, MetaTag } from "../interfaces";
-import { Material } from "./";
+import { MetaTag } from "../interfaces";
+import { Material, Page, Block } from "./";
 
 
 export interface CompilerInitializer {
   compilerClass: any;
   constructorArg: any;
+}
+
+export interface ProjectReport {
+  workingDir: string;
+  project: Project;
+  blocks: Block[];
+  pages: Page[];
 }
 
 export interface ProjectConstructorArg {

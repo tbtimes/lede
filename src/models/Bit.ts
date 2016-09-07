@@ -9,6 +9,11 @@ export interface BitConstructorArg {
   html: Material;
 }
 
+export interface BitReference {
+  bit: string;
+  context?: any;
+}
+
 export class Bit {
   version: number;
   name: string;

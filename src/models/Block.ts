@@ -1,9 +1,9 @@
 import { Resolver } from "../interfaces";
-import { Bit } from "./";
+import { BitReference } from "./";
 
 
 const BLOCK_TEMPLATE = `
-<div class="container">
+<div class="lede-block">
   {% asyncAll $bit in $block.bits %}
     {% BIT $bit %}
   {% endall %}
@@ -11,7 +11,7 @@ const BLOCK_TEMPLATE = `
 `;
 
 export interface BlockConstructorArg {
-  bits?: Bit[];
+  bits?: BitReference[];
   source?: Resolver;
   context?: any;
   template?: string;
@@ -19,7 +19,7 @@ export interface BlockConstructorArg {
 }
 
 export class Block {
-  bits: Bit[];
+  bits: BitReference[];
   source: Resolver;
   context: any;
   template: string;

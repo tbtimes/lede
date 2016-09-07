@@ -3,9 +3,9 @@
  * {prop} googleId – The ID of the Google Doc to retrieve.
  * {prop} parser – A function which takes the raw content of the Google Doc and returns an array of Bits.
  */
-import { Bit } from "../models";
+import { BitReference } from "../models";
 
 
 export interface Resolver {
-  fetch: () => Promise<Bit[]>;
+  fetch: () => Promise<BitReference[]>;
 }
