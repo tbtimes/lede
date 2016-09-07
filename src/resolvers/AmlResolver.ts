@@ -1,7 +1,7 @@
 import { load } from "archieml";
 
-import { httpsGetProm } from "./utils";
-import { Resolver, GoogleRestAPI } from "./interfaces";
+import { httpsGetProm } from "../utils";
+import { Resolver, GoogleRestAPI } from "../interfaces";
 
 
 export class AmlResolver implements Resolver {
@@ -24,7 +24,7 @@ export class AmlResolver implements Resolver {
       path: `/${plainUrl.split("/").slice(1).join("/")}`
     };
     const file = await httpsGetProm(fileOpts);
-    // TODO: return instantiated bits;
+    // TODO: return instantiated bits
     return load(file);
   };
 }

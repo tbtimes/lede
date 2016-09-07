@@ -55,7 +55,7 @@ test("Static getPages method should return an array of instantiated Pages.", asy
   t.deepEqual(pages[1], Object.assign({}, expectedBase, { deployPath: "pageTwo/should/deploy/here" }), "Page2 should instantiate correctly");
 });
 
-test("FJFJFJF", async t => {
+test.only("FJFJFJF", async t => {
   const pf = new ProjectFactory(testProjPath);
   return pf.buildReport()
 });

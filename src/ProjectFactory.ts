@@ -4,7 +4,17 @@ import { globProm } from "./utils";
 import { Logger, createLogger, stdSerializers } from "bunyan";
 const PrettyStream = require("bunyan-prettystream");
 
-import { Project, Bit, Page, Material, PageConstructorArg, ProjectConstructorArg, BitConstructorArg } from "./models";
+import {
+  Project,
+  Bit,
+  Page,
+  Material,
+  PageConstructorArg,
+  ProjectConstructorArg,
+  BitConstructorArg,
+  Block,
+  BlockConstructorArg
+} from "./models";
 
 
 /**
@@ -30,7 +40,7 @@ export class ProjectFactory {
   /**
    * Takes a directory string and returns an instantiated Project.
    * @param workingDir: string – Directory containing a projectSettings file.
-   * @returns Promise<{Project}> – Instantiated project
+   * @returns {Promise<Project>} – Instantiated project
    */
   static async getProject(workingDir: string): Promise<Project> {
     const settings = await globProm("*.projectSettings.js", workingDir);
@@ -55,7 +65,7 @@ export class ProjectFactory {
   /**
    * Takes a directory string and returns a Bit.
    * @param workingDir: string – Directory containing a bitSettings file.
-   * @returns Promise<{Bit}>
+   * @returns {Promise<Bit>}
    */
   static async getBit(workingDir: string): Promise<Bit> {
     const settings = await globProm("*.bitSettings.js", workingDir);
@@ -82,7 +92,7 @@ export class ProjectFactory {
   /**
    * Takes a directory string and returns an array of Pages in that directory.
    * @param workingDir: string – Directory containing one or more pageSettings files.
-   * @returns {Page[]}
+   * @returns {Promise<Page[]>}
    */
   static async getPages(workingDir: string): Promise<Page[]> {
     const settings = await globProm("*.pageSettings.js", workingDir);
@@ -101,13 +111,43 @@ export class ProjectFactory {
   }
 
   /**
+   * Takes a directory string and returns an array of Blocks in that directory.
+   * @param workingDir
+   * @returns {Promise<Block[]>}
+   */
+  static async getBlocks(workingDir: string): Promise<Block[]> {
+    const settingsLocations = await globProm("*.blockSettings.js", workingDir);
+    const nameRegex = ProjectFactory.getRegex("blockSettings");
+    const settings = settingsLocations.map(loc => {
+      return { loc, name: loc.match(nameRegex)[1] };
+    });
+
+    if (!settings) {
+      // TODO: Make this a custom error to catch higher up
+      throw new Error(`Could not find a blockSettings file in ${workingDir}`);
+    }
+
+    // instantiate blocks here
+    const blocks = settings.map(x => {
+      const cfg: BlockConstructorArg = new (require(join(workingDir, x.loc))).default();
+      cfg.name = x.name;
+      return new Block(cfg);
+    });
+
+    // make sure blocks have all their bits
+    return <any>Promise.all(blocks.map(b => b.fetch()));
+  }
+
+  /**
    * This method essentially calls all the static methods in the proper sequence and returns a datastructure detailing
    * the project.
    */
   public async buildReport() {
-    const projectReport = {};
+    // TODO: error handling in this method
+    const projectReport = { workingDir: this.workingDir };
     projectReport["project"] = await ProjectFactory.getProject(this.workingDir);
     projectReport["pages"] = await ProjectFactory.getPages(join(this.workingDir, "pages"));
+    projectReport["blocks"] = await ProjectFactory.getBlocks(join(this.workingDir, "blocks"));
     console.log(projectReport);
   }
 

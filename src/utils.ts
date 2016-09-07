@@ -5,7 +5,7 @@ import { request, RequestOptions } from "https";
 export function globProm(path, cwd?): Promise<Array<string>> {
   return new Promise((resolve, reject) => {
     glob(path, {
-      cwd: cwd ? cwd: process.cwd()
+      cwd: cwd ? cwd : process.cwd()
     }, (err, paths) => {
       if (err) {
         return reject(err);
@@ -26,6 +26,6 @@ export function httpsGetProm(options: RequestOptions): Promise<string> {
         const buffer = Buffer.concat(buffers);
         resolve(buffer.toString("utf8"));
       });
-    });
+    }).end();
   });
 }

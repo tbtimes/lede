@@ -1,14 +1,8 @@
+const resolvers = require("../../../../dist/resolvers");
+
 class SettingsConfig {
   constructor() {
-    this.deployPath = "pageOne/should/deploy/here";
-    this.blocks = ["header"];
-    this.materials = {
-      scripts: [],
-      styles: [],
-      assets: []
-    };
-    this.resources = {};
-    this.meta = [];
+    this.source = new resolvers.AmlResolver("1yET-AtSiVJ1L3R0YVt50GfBJHsq242-oltepsxO6FXQ", process.env.GAPI_KEY);
   }
 }
 
