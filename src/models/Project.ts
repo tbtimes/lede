@@ -1,5 +1,5 @@
 import { MetaTag } from "../interfaces";
-import { Material, Page, Block } from "./";
+import { Material, Page, Block, Bit } from "./";
 
 
 export interface CompilerInitializer {
@@ -12,6 +12,7 @@ export interface ProjectReport {
   project: Project;
   blocks: Block[];
   pages: Page[];
+  bits: Bit[];
 }
 
 export interface ProjectConstructorArg {

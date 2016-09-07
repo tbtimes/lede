@@ -87,4 +87,5 @@ test("Public buildReport method should return a ProjectReport", async t => {
   t.true(projectReport.project instanceof Project);
   t.true(projectReport.blocks[0] instanceof Block);
   t.true(projectReport.pages[0] instanceof Page);
+  t.true(projectReport.bits[0] instanceof Bit);
 });

@@ -146,7 +146,12 @@ export class ProjectFactory {
    */
   public async buildReport(): Promise<ProjectReport> {
     // TODO: error handling in this method
-    const projectReport = { workingDir: this.workingDir, project: null, pages: [], blocks: [] };
+    const projectReport = { workingDir: this.workingDir, project: null, pages: [], blocks: [], bits: [] };
+    const bitDirs = await globProm("*", join(this.workingDir, "bits"));
+
+    for (let dir of bitDirs) {
+      projectReport.bits.push(await ProjectFactory.getBit(join(this.workingDir, "bits", dir)));
+    }
     projectReport["project"] = await ProjectFactory.getProject(this.workingDir);
     projectReport["pages"] = await ProjectFactory.getPages(join(this.workingDir, "pages"));
     projectReport["blocks"] = await ProjectFactory.getBlocks(join(this.workingDir, "blocks"));
