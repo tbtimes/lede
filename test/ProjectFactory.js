@@ -92,5 +92,5 @@ test("Public buildReport method should return a ProjectReport", async t => {
   t.true(projectReport.pages[0] instanceof Page);
   t.true(projectReport.bits[0] instanceof Bit);
   // const inspect = require('util').inspect;
-  // console.log(inspect(projectReport, {depth:Infinity}));
+  // sander.writeFileSync("report.txt", inspect(projectReport, {depth:Infinity}));
 });

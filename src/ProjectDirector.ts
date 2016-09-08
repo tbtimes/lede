@@ -3,23 +3,34 @@ import { Logger } from "bunyan";
 import { defaultLogger } from "./DefaultLogger";
 import { ProjectReport } from "./models";
 import { ProjectFactory } from "./ProjectFactory";
+import { CacheBuilder } from "./CacheBuilder";
 
+
+interface ProjectDirectorArgs {
+  workingDir: string;
+  logger?: Logger;
+  projectFactory: ProjectFactory;
+  cacheBuilder: CacheBuilder;
+}
 
 export class ProjectDirector {
   projectFactory: ProjectFactory;
-  projectReport: ProjectReport;
+  cacheBuilder: CacheBuilder;
   logger: Logger;
   workingDir: string;
 
-  constructor({workingDir, logger, projectFactory}: {workingDir: string, logger: Logger, projectFactory: ProjectFactory}) {
+  constructor({workingDir, logger, projectFactory, cacheBuilder}: ProjectDirectorArgs) {
+    if (!workingDir) throw new Error("workingDir is a required parameter");
+    if (!projectFactory) throw new Error("projectFactory is a required parameter");
+    if (!cacheBuilder) throw new Error("cacheBuilder is a required parameter");
     this.logger = logger || defaultLogger();
-    this.workingDir = workingDir || process.cwd();
-    this.projectFactory = projectFactory || new ProjectFactory({workingDir: this.workingDir, logger: this.logger});
-    this.projectReport = null;
+    this.workingDir = workingDir;
+    this.projectFactory = projectFactory;
+    this.cacheBuilder = cacheBuilder;
   };
 
-  public async buildReport() {
-    this.projectReport = await this.projectFactory.buildReport();
+  public async buildReport(): Promise<ProjectReport> {
+    return await this.projectFactory.buildReport();
   }
 
   public async fetchDependencies() {
@@ -28,11 +39,11 @@ export class ProjectDirector {
     // Loop through bits and look for materials
   }
 
-  public async createCache() {
-
+  public async createCache(report: ProjectReport) {
+    await this.cacheBuilder.serialize(report);
   }
 
-  public async compile() {
+  public async compile(report: ProjectReport) {
 
 
     // Set up compilers
