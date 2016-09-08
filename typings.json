@@ -9,7 +9,7 @@
     "bunyan-prettystream": "registry:dt/bunyan-prettystream#0.0.0+20160316155526",
     "glob": "registry:dt/glob#5.0.10+20160317120654",
     "minimatch": "registry:dt/minimatch#2.0.8+20160317120654",
-    "node": "registry:env/node#6.0.0+20160901015934",
+    "node": "registry:env/node#6.0.0+20160902022231",
     "nunjucks": "registry:dt/nunjucks#0.0.0+20160802155009"
   }
 }
