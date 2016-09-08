@@ -1,22 +1,12 @@
-// import { Material } from "./";
-//
-// export interface Bit {
-//   version: Number;
-//   namespace: string;
-//   name: string;
-//   context?: any;
-//   script?: Material;
-//   style?: Material;
-//   html?: Material;
-// }
+const join = require("path").join;
 
 class SettingsConfig {
   constructor() {
     this.version = 0;
     this.context = { foo: "bar" };
-    this.script = "test.js";
-    this.style = "test.scss";
-    this.html = "test.html";
+    this.script = join(__dirname, "test.js");
+    this.style = join(__dirname, "test.scss");
+    this.html = join(__dirname, "test.html");
   }
 }
 

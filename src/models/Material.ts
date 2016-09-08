@@ -12,10 +12,10 @@ export class Material {
   type: string;
   content: string;
 
-  constructor({ location, type }: MaterialConstructorArgs) {
+  constructor({ location, type, content }: MaterialConstructorArgs) {
     this.location = location;
     this.type = type;
-    this.content = "";
+    this.content = content || null;
   };
 
   /**
@@ -23,9 +23,9 @@ export class Material {
    * @returns {Material}
    */
   async fetch(): Promise<Material> {
-    if (this.content) return this;
-    if (!this.location) throw new Error("Material has no location property"); // TODO: make custom error for this
-    this.content = await sander.readFile(this.location);
+    if (typeof this.content === "string") return this;
+    if (!this.location) throw new Error(`Material has no location property`); // TODO: make custom error for this
+    this.content = (await sander.readFile(this.location)).toString();
     return this;
   }
 

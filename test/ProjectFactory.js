@@ -4,7 +4,7 @@ import { join } from "path";
 const sander = require("sander");
 
 import { ProjectFactory } from "../dist/ProjectFactory";
-import { Project, Bit, Page, Block } from "../dist/models";
+import { Project, Bit, Page, Block, Material } from "../dist/models";
 import { AmlResolver } from "../dist/resolvers";
 
 const testProjPath = join(__dirname, "fixtures", "test-project");
@@ -33,13 +33,16 @@ test("Static getProject method should return an instantiated Project.", async t 
 
 test("Static getBit method should return an instantiated Bit.", async t => {
   const bit = await ProjectFactory.getBit(testBitPath);
+  const script = await (new Material({type: "script", location: join(testBitPath, "test.js")})).fetch();
+  const style = await (new Material({type: "style", location: join(testBitPath, "test.scss")})).fetch();
+  const html = await (new Material({type: "html", location: join(testBitPath, "test.html")})).fetch();
   const expected = {
     version: 0,
     name: "testBit",
     context: { foo: "bar" },
-    script: "test.js",
-    style: "test.scss",
-    html: "test.html"
+    script,
+    style,
+    html,
   };
   t.true(bit instanceof Bit, "Should return an instance of Bit.");
   t.deepEqual(bit, expected, "Should be correctly instantiated.")

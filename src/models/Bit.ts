@@ -1,12 +1,17 @@
-import { Material } from "./";
+import { Material } from "./Material";
+
+
+const defaultScript = new Material({ type: "script", content: "" });
+const defualtStyle = new Material({ type: "style", content: "" });
+const defaultHtml = new Material({ type: "html", content: "" });
 
 export interface BitConstructorArg {
   version: number;
   name: string;
   context?: any;
-  script: Material;
-  style: Material;
-  html: Material;
+  script: string;
+  style: string;
+  html: string;
 }
 
 export interface BitReference {
@@ -26,10 +31,16 @@ export class Bit {
     this.version = version;
     this.name = name;
     this.context = context ? context : {};
-    this.script = script;
-    this.style = style;
-    this.html = html;
+    this.script = script ? new Material({ location: script, type: "script" }) : defaultScript;
+    this.style = style ? new Material({ location: style, type: "style" }) : defualtStyle;
+    this.html = html ? new Material({ location: html, type: "html" }) : defaultHtml;
   };
+
+  async init(): Promise<Bit> {
+    // Collect all the materials
+    [this.script, this.style, this.html] = await Promise.all([this.script.fetch(), this.style.fetch(), this.html.fetch()]);
+    return this;
+  }
 }
 
 

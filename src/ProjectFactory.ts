@@ -79,9 +79,8 @@ export class ProjectFactory {
     const SettingsConfig: BitConstructorArg = new (require(join(workingDir, settings[0]))).default();
     SettingsConfig.name = settings[0].match(nameRegex)[1];
 
-    // TODO instantiate materials
 
-    return new Bit(SettingsConfig);
+    return await (new Bit(SettingsConfig)).init();
   }
 
   /**
