@@ -1,5 +1,6 @@
 import { MetaTag } from "../interfaces";
 import { Material, Page, Block, Bit } from "./";
+import { NunjucksCompiler, SassCompiler, Es6Compiler } from "../compilers";
 
 
 export interface CompilerInitializer {
@@ -43,9 +44,9 @@ export class Project {
     this.deployRoot = deployRoot;
     this.defaults = { materials: [], metaTags: [], blocks: [] };
     this.compilers = {
-      html: { compilerClass: {}, constructorArg: {} },
-      style: { compilerClass: {}, constructorArg: {} },
-      script: { compilerClass: {}, constructorArg: {} }
+      html: { compilerClass: NunjucksCompiler, constructorArg: {} },
+      style: { compilerClass: SassCompiler, constructorArg: {} },
+      script: { compilerClass: Es6Compiler, constructorArg: {} }
     };
 
     this.context = context ? context : {};
@@ -56,11 +57,18 @@ export class Project {
       this.defaults.metaTags = defaults.metaTags ? defaults.metaTags : [];
     }
 
-    if (compilers) {
-      this.compilers.html = compilers.html ? compilers.html : { compilerClass: {}, constructorArg: {} };
-      this.compilers.script = compilers.script ? compilers.script : { compilerClass: {}, constructorArg: {} };
-      this.compilers.style = compilers.style ? compilers.style : { compilerClass: {}, constructorArg: {} };
-    }
+    // Initialize compilers
+    this.compilers.html = compilers && compilers.html ?
+      new compilers.html.compilerClass(compilers.html.constructorArg) :
+      new this.compilers.html.compilerClass(this.compilers.html.constructorArg);
+
+    this.compilers.style = compilers && compilers.style ?
+      new compilers.style.compilerClass(compilers.style.constructorArg) :
+      new this.compilers.style.compilerClass(this.compilers.style.constructorArg);
+
+    this.compilers.script = compilers && compilers.script ?
+      new compilers.script.compilerClass(compilers.script.constructorArg) :
+      new this.compilers.script.compilerClass(this.compilers.script.constructorArg);
 
   }
 }

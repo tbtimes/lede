@@ -6,6 +6,7 @@ const sander = require("sander");
 import { ProjectFactory } from "../dist/ProjectFactory";
 import { Project, Bit, Page, Block, Material } from "../dist/models";
 import { AmlResolver } from "../dist/resolvers";
+import { NunjucksCompiler, SassCompiler, Es6Compiler } from "../dist/compilers";
 
 const testProjPath = join(__dirname, "fixtures", "test-project");
 const testBitPath = join(__dirname, "fixtures", "test-project", "bits", "test-bit");
@@ -19,16 +20,15 @@ test("Static getProject method should return an instantiated Project.", async t 
     deployRoot: "some/root/directory",
     defaults: { materials: [], metaTags: [], blocks: [] },
     compilers: {
-      html: { compilerClass: {}, constructorArg: {} },
-      style: { compilerClass: {}, constructorArg: {} },
-      script: { compilerClass: {}, constructorArg: {} },
+      html: new NunjucksCompiler({}),
+      style: new SassCompiler(),
+      script: new Es6Compiler(),
     },
     context: { baz: "qux" }
   };
 
-
   t.true(proj instanceof Project, "Should return an instance of Project.");
-  t.deepEqual(proj, expected, "Should be correctly instantiated.")
+  t.deepEqual(JSON.stringify(proj), JSON.stringify(expected), "Should be correctly instantiated.")
 });
 
 test("Static getBit method should return an instantiated Bit.", async t => {
