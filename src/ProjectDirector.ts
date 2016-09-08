@@ -15,6 +15,7 @@ export class ProjectDirector {
     this.logger = logger || defaultLogger();
     this.workingDir = workingDir || process.cwd();
     this.projectFactory = projectFactory || new ProjectFactory({workingDir: this.workingDir, logger: this.logger});
+    this.projectReport = null;
   };
 
   public async buildReport() {
