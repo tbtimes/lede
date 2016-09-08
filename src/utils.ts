@@ -29,3 +29,11 @@ export function httpsGetProm(options: RequestOptions): Promise<string> {
     }).end();
   });
 }
+
+export async function asyncMap(collection: any[], fn: (item: any) => any): Promise<any[]> {
+  const returns = [];
+  for (let item of collection) {
+    returns.push(await fn(item));
+  }
+  return returns;
+}

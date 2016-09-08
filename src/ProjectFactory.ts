@@ -3,12 +3,11 @@ import { join } from "path";
 import { Logger } from "bunyan";
 
 import { defaultLogger } from "./DefaultLogger";
-import { globProm } from "./utils";
+import { globProm, asyncMap } from "./utils";
 import {
   Project,
   Bit,
   Page,
-  Material,
   PageConstructorArg,
   ProjectConstructorArg,
   BitConstructorArg,
@@ -141,12 +140,13 @@ export class ProjectFactory {
     const projectReport = { workingDir: this.workingDir, project: null, pages: [], blocks: [], bits: [] };
     const bitDirs = await globProm("*", join(this.workingDir, "bits"));
 
-    for (let dir of bitDirs) {
-      projectReport.bits.push(await ProjectFactory.getBit(join(this.workingDir, "bits", dir)));
-    }
     projectReport["project"] = await ProjectFactory.getProject(this.workingDir);
     projectReport["pages"] = await ProjectFactory.getPages(join(this.workingDir, "pages"));
     projectReport["blocks"] = await ProjectFactory.getBlocks(join(this.workingDir, "blocks"));
+    projectReport["bits"] = await asyncMap(
+      await globProm("*", join(this.workingDir, "bits")),
+      async (path) => await ProjectFactory.getBit(join(this.workingDir, "bits", path))
+    );
     return projectReport;
   }
 
