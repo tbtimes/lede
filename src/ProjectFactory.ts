@@ -1,10 +1,9 @@
 const sander = require("sander"); // No type defs so we will require it for now TODO: write type defs for sander
 import { join } from "path";
-import { globProm } from "./utils";
-import { inspect } from "util";
-import { Logger, createLogger, stdSerializers } from "bunyan";
-const PrettyStream = require("bunyan-prettystream");
+import { Logger } from "bunyan";
 
+import { defaultLogger } from "./DefaultLogger";
+import { globProm } from "./utils";
 import {
   Project,
   Bit,
@@ -24,19 +23,13 @@ import {
  * various interfaces.
  */
 export class ProjectFactory {
-  constructor(public workingDir: string, public logger?: Logger) {
-    if (!this.logger) {
-      const stream = new PrettyStream();
-      stream.pipe(process.stdout);
-      this.logger = createLogger({
-        name: "ProjectFactory",
-        stream: stream,
-        level: "error",
-        serializers: {
-          err: stdSerializers.err
-        }
-      });
-    }
+  logger: Logger;
+  workingDir: string;
+
+  constructor({workingDir, logger}: {workingDir: string, logger: Logger}) {
+    if (!workingDir) throw new Error("Must specify a workingDir for ProjectFactory.");
+    this.logger = logger || defaultLogger();
+    this.workingDir = workingDir;
   }
 
   /**
