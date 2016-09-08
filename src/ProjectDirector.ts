@@ -11,10 +11,10 @@ export class ProjectDirector {
   logger: Logger;
   workingDir: string;
 
-  constructor({workingDir, logger, pf}: {workingDir: string, logger: Logger, pf: ProjectFactory}) {
+  constructor({workingDir, logger, projectFactory}: {workingDir: string, logger: Logger, projectFactory: ProjectFactory}) {
     this.logger = logger || defaultLogger();
-    this.workingDir = workingDir;
-    this.projectFactory = new pf({workingDir: this.workingDir, logger: this.logger}); // typescript complains here, dunno why
+    this.workingDir = workingDir || process.cwd();
+    this.projectFactory = projectFactory || new ProjectFactory({workingDir: this.workingDir, logger: this.logger});
   };
 
   public async buildReport() {
@@ -25,6 +25,10 @@ export class ProjectDirector {
     // Loop through pages and look for blocks
     // Loop through blocks and look for bits
     // Loop through bits and look for materials
+  }
+
+  public async createCache() {
+
   }
 
   public async compile() {
