@@ -6,7 +6,6 @@ class SettingsConfig {
       blocks: [],
       metaTags: []
     };
-    this.compilers = {};
     this.context = { baz: "qux" };
   }
 }

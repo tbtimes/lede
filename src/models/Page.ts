@@ -4,7 +4,7 @@ import { Material } from "./";
 
 export interface PageConstructorArg {
   deployPath: string;
-  blocks?: Block[];
+  blocks?: string[];
   materials?: { scripts?: Material[], styles: Material[], assets: Material[] };
   meta?: MetaTag[];
   resources?: { head?: string[], body: string[] };
@@ -12,7 +12,7 @@ export interface PageConstructorArg {
 
 export class Page {
   deployPath: string;
-  blocks: Block[];
+  blocks: string[];
   materials: { scripts: Material[], styles: Material[], assets: Material[] };
   meta: MetaTag[];
   resources: { head: string[], body: string[] };

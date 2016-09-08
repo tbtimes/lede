@@ -82,10 +82,12 @@ test("Static getBlocks method should return an array of instantiated blocks.", a
 });
 
 test("Public buildReport method should return a ProjectReport", async t => {
-  const pf = new ProjectFactory(testProjPath);
+  const pf = new ProjectFactory({workingDir: testProjPath});
   const projectReport = await pf.buildReport();
   t.true(projectReport.project instanceof Project);
   t.true(projectReport.blocks[0] instanceof Block);
   t.true(projectReport.pages[0] instanceof Page);
   t.true(projectReport.bits[0] instanceof Bit);
+  // const inspect = require('util').inspect;
+  // console.log(inspect(projectReport, {depth:Infinity}));
 });
