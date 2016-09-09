@@ -100,13 +100,11 @@ export class ProjectFactory {
     }
 
     // Since this is user-defined, it could throw. TODO: remember to catch/log this case higher
-   const pages = settings.map(s => {
+   return asyncMap(settings, async (s) => {
       const cfg: PageConstructorArg = new (require(join(workingDir, s))).default();
      cfg.name = s.match(nameRegex)[1];
-      return new Page(cfg);
+      return await (new Page(cfg)).init();
     });
-
-    return Promise.all(pages.map(p => p.init()));
   }
 
   /**

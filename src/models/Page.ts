@@ -48,6 +48,7 @@ export class Page {
     this.materials.styles = await asyncMap(this.materials.styles, async (m) => await m.fetch());
     this.materials.scripts = await asyncMap(this.materials.scripts, async (m) => await m.fetch());
     this.materials.assets = await asyncMap(this.materials.assets, async (m) => await m.fetch());
+    return this;
   }
 }
 
