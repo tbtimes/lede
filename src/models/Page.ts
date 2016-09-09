@@ -1,3 +1,5 @@
+import { basename } from "path";
+
 import { Block, MetaTag } from "../interfaces";
 import { Material } from "./";
 import { asyncMap } from "../utils";
@@ -38,8 +40,12 @@ export class Page {
     }
 
     function constructMaterial(type) {
-      return function(location) {
-        return new Material({location, type});
+      return function(input) {
+        if (typeof input === "string") {
+          return new Material({location: input, type, overridableName: basename(input)});
+        }
+        const {location, as} = input;
+        return new Material({location, type, overridableName: as});
       };
     }
   };

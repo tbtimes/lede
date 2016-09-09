@@ -1,16 +1,16 @@
 import { Logger } from "bunyan";
+import { join } from "path";
+const sander = require("sander");
 
 import { defaultLogger } from "./DefaultLogger";
 import { ProjectReport } from "./models";
 import { ProjectFactory } from "./ProjectFactory";
-import { CacheBuilder } from "./CacheBuilder";
 
 
 export interface ProjectDirectorArgs {
   workingDir: string;
   logger?: Logger;
   projectFactory: ProjectFactory;
-  cacheBuilder: CacheBuilder;
 }
 
 /**
@@ -20,18 +20,15 @@ export interface ProjectDirectorArgs {
  */
 export class ProjectDirector {
   projectFactory: ProjectFactory;
-  cacheBuilder: CacheBuilder;
   logger: Logger;
   workingDir: string;
 
-  constructor({workingDir, logger, projectFactory, cacheBuilder}: ProjectDirectorArgs) {
+  constructor({workingDir, logger, projectFactory}: ProjectDirectorArgs) {
     if (!workingDir) throw new Error("workingDir is a required parameter");
     if (!projectFactory) throw new Error("projectFactory is a required parameter");
-    if (!cacheBuilder) throw new Error("cacheBuilder is a required parameter");
     this.logger = logger || defaultLogger();
     this.workingDir = workingDir;
     this.projectFactory = projectFactory;
-    this.cacheBuilder = cacheBuilder;
   };
 
   public async buildReport(): Promise<ProjectReport> {
@@ -44,13 +41,30 @@ export class ProjectDirector {
     // Loop through bits and look for materials
   }
 
-  public async createCache(report: ProjectReport) {
-    await this.cacheBuilder.serialize(report);
-  }
+  // public async buildCache(report: ProjectReport): Promise<any> {
+  //   const cacheReport = {};
+  //   for (let page of report.pages) {
+  //     const cacheDir = join(this.workingDir, ".ledeCache", page.name);
+  //     cacheReport[page.name] = {};
+  //     for (let type of Object.keys(page.materials)) {
+  //       const cachePath = join(cacheDir, type);
+  //       cacheReport[page.name][type] = {};
+  //       const toWrite = page.materials[type].reduce((state: any, mat: Material) => {
+  //         state[mat.overridableName] = mat.content;
+  //         cacheReport[page.name][type][mat.overridableName] = join(cachePath, mat.overridableName);
+  //         return state;
+  //       }, {});
+  //       for (let file of Object.keys(toWrite)) {
+  //         await sander.writeFile(join(cachePath, file), toWrite[file]);
+  //       }
+  //     }
+  //   }
+  //   return cacheReport;
+  // }
 
   public async compile(report: ProjectReport) {
 
-
+    await report.project.compilers.script.compile(report);
     // Set up compilers
         // let styleCompiler = this.projectReport.project.compilers.style;
         // let scriptCompiler = this.projectReport.project.compilers.script;

@@ -5,17 +5,20 @@ export interface MaterialConstructorArgs {
   type: string;
   location?: string;
   content?: string;
+  overridableName: string;
 }
 
 export class Material {
   location: string;
   type: string;
   content: string;
+  overridableName: string;
 
-  constructor({ location, type, content }: MaterialConstructorArgs) {
+  constructor({ location, type, content, overridableName }: MaterialConstructorArgs) {
     this.location = location;
     this.type = type;
     this.content = content || null;
+    this.overridableName = overridableName;
   };
 
   /**

@@ -11,7 +11,7 @@ export class NunjucksCompiler {
     extensions?: any[],
     loaderOptions?: any,
     envOptions?: any,
-    loaderPaths: string[]
+    loaderPaths?: string[]
   }) {
     const loaderOptions = Object.assign({watch: false, noCache: true}, opts.loaderOptions || {});
     const envOptions = Object.assign({autoescape: false, watch: false, noCache: true}, opts.envOptions || {});

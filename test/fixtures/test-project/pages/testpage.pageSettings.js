@@ -1,9 +1,15 @@
+const resolve = require("path").resolve;
+
 class SettingsConfig {
   constructor() {
     this.deployPath = "pageOne/should/deploy/here";
     this.blocks = ["header"];
     this.materials = {
-      scripts: [],
+      scripts: [
+        resolve(__dirname, "..", "scripts", "a.js"),
+        resolve(__dirname, "..", "scripts", "b.js"),
+        resolve(__dirname, "..", "scripts", "c.js"),
+      ],
       styles: [],
       assets: []
     };

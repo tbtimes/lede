@@ -32,18 +32,22 @@ export interface ProjectConstructorArg {
   context?: any;
 }
 
+export interface Compiler {
+  compile(report: ProjectReport): Promise<any>;
+}
+
 export class Project {
   name: string;
   deployRoot: string;
   defaults: { materials: Material[], blocks: Block[], metaTags: MetaTag[] };
-  compilers: { html: CompilerInitializer, style: CompilerInitializer, script: CompilerInitializer };
+  compilers: { html: Compiler, style: Compiler, script: Compiler };
   context: any;
 
   constructor({ name, deployRoot, defaults, compilers, context }: ProjectConstructorArg) {
     this.name = name;
     this.deployRoot = deployRoot;
     this.defaults = { materials: [], metaTags: [], blocks: [] };
-    this.compilers = {
+    const defaultCompilers = {
       html: { compilerClass: NunjucksCompiler, constructorArg: {} },
       style: { compilerClass: SassCompiler, constructorArg: {} },
       script: { compilerClass: Es6Compiler, constructorArg: {} }
@@ -58,18 +62,19 @@ export class Project {
     }
 
     // Initialize compilers
-    this.compilers.html = compilers && compilers.html ?
+    const instantiatedCompilers = { html: null, style: null, script: null};
+    instantiatedCompilers.html = compilers && compilers.html ?
       new compilers.html.compilerClass(compilers.html.constructorArg) :
-      new this.compilers.html.compilerClass(this.compilers.html.constructorArg);
+      new defaultCompilers.html.compilerClass(defaultCompilers.html.constructorArg);
 
-    this.compilers.style = compilers && compilers.style ?
+    instantiatedCompilers.style = compilers && compilers.style ?
       new compilers.style.compilerClass(compilers.style.constructorArg) :
-      new this.compilers.style.compilerClass(this.compilers.style.constructorArg);
+      new defaultCompilers.style.compilerClass(defaultCompilers.style.constructorArg);
 
-    this.compilers.script = compilers && compilers.script ?
+    instantiatedCompilers.script = compilers && compilers.script ?
       new compilers.script.compilerClass(compilers.script.constructorArg) :
-      new this.compilers.script.compilerClass(this.compilers.script.constructorArg);
-
+      new defaultCompilers.script.compilerClass(defaultCompilers.script.constructorArg);
+    this.compilers = instantiatedCompilers;
   }
 }
 

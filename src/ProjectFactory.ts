@@ -27,7 +27,7 @@ export class ProjectFactory {
   logger: Logger;
   workingDir: string;
 
-  constructor({workingDir, logger}: {workingDir: string, logger: Logger}) {
+  constructor({workingDir, logger}: {workingDir: string, logger?: Logger}) {
     if (!workingDir) throw new Error("Must specify a workingDir for ProjectFactory.");
     this.logger = logger || defaultLogger();
     this.workingDir = workingDir;
@@ -101,9 +101,9 @@ export class ProjectFactory {
 
     // Since this is user-defined, it could throw. TODO: remember to catch/log this case higher
    return asyncMap(settings, async (s) => {
-      const cfg: PageConstructorArg = new (require(join(workingDir, s))).default();
+     const cfg: PageConstructorArg = new (require(join(workingDir, s))).default();
      cfg.name = s.match(nameRegex)[1];
-      return await (new Page(cfg)).init();
+     return await (new Page(cfg)).init();
     });
   }
 
