@@ -6,13 +6,18 @@ import { ProjectFactory } from "./ProjectFactory";
 import { CacheBuilder } from "./CacheBuilder";
 
 
-interface ProjectDirectorArgs {
+export interface ProjectDirectorArgs {
   workingDir: string;
   logger?: Logger;
   projectFactory: ProjectFactory;
   cacheBuilder: CacheBuilder;
 }
 
+/**
+ * The ProjectDirector is the top level abstraction for working with a project. It is responsible for orchestrating the
+ * creation of the models, initiating the retrieval of external assets, triggering the compilation of assets, and launching
+ * the deployers.
+ */
 export class ProjectDirector {
   projectFactory: ProjectFactory;
   cacheBuilder: CacheBuilder;

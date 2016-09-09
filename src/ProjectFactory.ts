@@ -19,7 +19,9 @@ import {
 
 /**
  * The ProjectFactory is responsible for reading the FileSystem structure and creating objects to represent the
- * various interfaces.
+ * various models. The most important method is buildReport which returns an object encompassing all the local information
+ * for a project. This report can be used to compile the various pages as well as determine assets that must be requested
+ * from the repository.
  */
 export class ProjectFactory {
   logger: Logger;
@@ -38,7 +40,7 @@ export class ProjectFactory {
    */
   static async getProject(workingDir: string): Promise<Project> {
     const settings = await globProm("*.projectSettings.js", workingDir);
-    const nameRegex = ProjectFactory.getRegex("projectSettings");
+    const nameRegex = ProjectFactory.getNameRegex("projectSettings");
 
     // Check that working directory contains a projectSettings file.
     if (!settings) {
@@ -63,7 +65,7 @@ export class ProjectFactory {
    */
   static async getBit(workingDir: string): Promise<Bit> {
     const settings = await globProm("*.bitSettings.js", workingDir);
-    const nameRegex = ProjectFactory.getRegex("bitSettings");
+    const nameRegex = ProjectFactory.getNameRegex("bitSettings");
 
     // Check that working directory contains a projectSettings file.
     if (!settings) {
@@ -89,6 +91,7 @@ export class ProjectFactory {
    */
   static async getPages(workingDir: string): Promise<Page[]> {
     const settings = await globProm("*.pageSettings.js", workingDir);
+    const nameRegex = ProjectFactory.getNameRegex("pageSettings");
 
     // Check that working directory contains a projectSettings file.
     if (!settings) {
@@ -97,10 +100,13 @@ export class ProjectFactory {
     }
 
     // Since this is user-defined, it could throw. TODO: remember to catch/log this case higher
-   return settings.map(s => {
+   const pages = settings.map(s => {
       const cfg: PageConstructorArg = new (require(join(workingDir, s))).default();
+     cfg.name = s.match(nameRegex)[1];
       return new Page(cfg);
     });
+
+    return Promise.all(pages.map(p => p.init()));
   }
 
   /**
@@ -110,7 +116,7 @@ export class ProjectFactory {
    */
   static async getBlocks(workingDir: string): Promise<Block[]> {
     const settingsLocations = await globProm("*.blockSettings.js", workingDir);
-    const nameRegex = ProjectFactory.getRegex("blockSettings");
+    const nameRegex = ProjectFactory.getNameRegex("blockSettings");
     const settings = settingsLocations.map(loc => {
       return { loc, name: loc.match(nameRegex)[1] };
     });
@@ -150,7 +156,12 @@ export class ProjectFactory {
     return projectReport;
   }
 
-  private static getRegex(settingsFileName: string) {
+  /**
+   * Returns a regex that matches a name from a file in the format of <name>.<settingsFileName>.js
+   * @param settingsFileName - string file name to match on
+   * @returns {RegExp}
+   */
+  private static getNameRegex(settingsFileName: string) {
     return new RegExp(`(.*)\.${settingsFileName}\.js`);
   }
 }

@@ -1,8 +1,10 @@
 import { Block, MetaTag } from "../interfaces";
 import { Material } from "./";
+import { asyncMap } from "../utils";
 
-
+// TODO: add page template which wraps all blocks.
 export interface PageConstructorArg {
+  name: string;
   deployPath: string;
   blocks?: string[];
   materials?: { scripts?: Material[], styles: Material[], assets: Material[] };
@@ -16,25 +18,37 @@ export class Page {
   materials: { scripts: Material[], styles: Material[], assets: Material[] };
   meta: MetaTag[];
   resources: { head: string[], body: string[] };
+  name: string;
 
-  constructor({ deployPath, blocks, materials, meta, resources }: PageConstructorArg) {
+  constructor({ deployPath, blocks, materials, meta, resources, name }: PageConstructorArg) {
+    this.name = name;
     this.deployPath = deployPath;
     this.blocks = blocks || [];
     this.meta = meta || [];
-    this.materials = { styles: [], scripts: [], assets: [] };
+    this.materials = { styles: [], scripts: [], assets: []};
     this.resources = { head: [], body: [] };
 
-    if (materials) {
-      this.materials.styles = materials.styles || [];
-      this.materials.scripts = materials.scripts || [];
-      this.materials.assets = materials.assets || [];
-    }
+    this.materials.styles = materials && materials.styles ? materials.styles.map(constructMaterial("style")) : [];
+    this.materials.scripts = materials && materials.scripts ? materials.scripts.map(constructMaterial("script")) : [];
+    this.materials.assets = materials && materials.assets ? materials.assets.map(constructMaterial("asset")) : [];
 
     if (resources) {
       this.resources.head = resources.head || [];
       this.resources.body = resources.body || [];
     }
+
+    function constructMaterial(type) {
+      return function(location) {
+        return new Material({location, type});
+      };
+    }
   };
+
+  async init(): Promise<Page> {
+    this.materials.styles = await asyncMap(this.materials.styles, async (m) => await m.fetch());
+    this.materials.scripts = await asyncMap(this.materials.scripts, async (m) => await m.fetch());
+    this.materials.assets = await asyncMap(this.materials.assets, async (m) => await m.fetch());
+  }
 }
 
 // /**

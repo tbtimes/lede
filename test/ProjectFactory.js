@@ -56,8 +56,8 @@ test("Static getPages method should return an array of instantiated Pages.", asy
     materials: { styles: [], scripts: [], assets: [] },
     resources: { head: [], body: [] }
   };
-  const pageOne = Object.assign({}, expectedBase, { deployPath: "pageOne/should/deploy/here", blocks: ["header"] });
-  const pageTwo = Object.assign({}, expectedBase, { deployPath: "pageTwo/should/deploy/here", blocks: ["header", "article", "footer"] });
+  const pageOne = Object.assign({}, expectedBase, { deployPath: "pageOne/should/deploy/here", blocks: ["header"], name: "testpage" });
+  const pageTwo = Object.assign({}, expectedBase, { deployPath: "pageTwo/should/deploy/here", blocks: ["header", "article", "footer"], name: "testpage2" });
 
   pages.forEach(p => t.true(p instanceof Page));
   t.deepEqual(pages[0], pageOne, "Page1 should instantiate correctly");
