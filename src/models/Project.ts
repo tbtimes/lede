@@ -1,6 +1,7 @@
 import { MetaTag } from "../interfaces";
 import { Material, Page, Block, Bit } from "./";
 import { NunjucksCompiler, SassCompiler, Es6Compiler } from "../compilers";
+import { PageTree } from "../ProjectDirector";
 
 
 export interface CompilerInitializer {
@@ -33,14 +34,18 @@ export interface ProjectConstructorArg {
 }
 
 export interface Compiler {
-  compile(report: ProjectReport): Promise<any>;
+  compile(workingDir, tree: PageTree): Promise<any>;
+}
+
+export interface HtmlCompiler {
+  compile(arg: {report: ProjectReport, styles: any, scripts: any}): Promise<any>;
 }
 
 export class Project {
   name: string;
   deployRoot: string;
   defaults: { materials: Material[], blocks: Block[], metaTags: MetaTag[] };
-  compilers: { html: Compiler, style: Compiler, script: Compiler };
+  compilers: { html: HtmlCompiler, style: Compiler, script: Compiler };
   context: any;
 
   constructor({ name, deployRoot, defaults, compilers, context }: ProjectConstructorArg) {

@@ -3,14 +3,27 @@ import { join } from "path";
 const sander = require("sander");
 
 import { defaultLogger } from "./DefaultLogger";
-import { ProjectReport } from "./models";
+import { ProjectReport } from "./models/Project";
 import { ProjectFactory } from "./ProjectFactory";
+import { BitReference } from "./models/Bit";
+import { Page } from "./models/Page";
+import { Block } from "./models/Block";
+import { Bit } from "./models/Bit";
+import { Material } from "./models/Material";
+import { Deployer } from "./FileSystemDeployer";
 
+
+export interface PageTree {
+  scripts: {[pageName: string]: { globals: Material[], bits: Material[] }};
+  styles: {[pageName: string]: { globals: Material[], bits: Material[] }};
+  workingDir: string;
+}
 
 export interface ProjectDirectorArgs {
   workingDir: string;
   logger?: Logger;
   projectFactory: ProjectFactory;
+  deployer: Deployer;
 }
 
 /**
@@ -22,10 +35,13 @@ export class ProjectDirector {
   projectFactory: ProjectFactory;
   logger: Logger;
   workingDir: string;
+  deployer: Deployer;
 
-  constructor({workingDir, logger, projectFactory}: ProjectDirectorArgs) {
-    if (!workingDir) throw new Error("workingDir is a required parameter");
-    if (!projectFactory) throw new Error("projectFactory is a required parameter");
+  constructor({workingDir, logger, projectFactory, deployer}: ProjectDirectorArgs) {
+    if (!workingDir) throw new Error("workingDir is a required parameter.");
+    if (!projectFactory) throw new Error("projectFactory is a required parameter.");
+    if (!deployer) throw new Error("A deployer must be specified.");
+    this.deployer = deployer;
     this.logger = logger || defaultLogger();
     this.workingDir = workingDir;
     this.projectFactory = projectFactory;
@@ -41,38 +57,50 @@ export class ProjectDirector {
     // Loop through bits and look for materials
   }
 
-  // public async buildCache(report: ProjectReport): Promise<any> {
-  //   const cacheReport = {};
-  //   for (let page of report.pages) {
-  //     const cacheDir = join(this.workingDir, ".ledeCache", page.name);
-  //     cacheReport[page.name] = {};
-  //     for (let type of Object.keys(page.materials)) {
-  //       const cachePath = join(cacheDir, type);
-  //       cacheReport[page.name][type] = {};
-  //       const toWrite = page.materials[type].reduce((state: any, mat: Material) => {
-  //         state[mat.overridableName] = mat.content;
-  //         cacheReport[page.name][type][mat.overridableName] = join(cachePath, mat.overridableName);
-  //         return state;
-  //       }, {});
-  //       for (let file of Object.keys(toWrite)) {
-  //         await sander.writeFile(join(cachePath, file), toWrite[file]);
-  //       }
-  //     }
-  //   }
-  //   return cacheReport;
-  // }
+  async buildPageTree(report: ProjectReport): Promise<PageTree> {
+    return report["pages"].reduce((state: any, p: Page) => {
+      state.scripts[p.name] = {};
+      state.styles[p.name] = {};
+      state.scripts[p.name].globals = p.materials.scripts;
+      state.styles[p.name].globals = p.materials.styles;
+
+
+      // This next part is a little sticky. First we loop through the Page's blocks list to find the name of the blocks
+      // that are included on the Page. We use that name to find the full block object from the ProjectReport's blocks.
+      // Then we loop over that block's bits to find references to every bit it needs to work. We use the bit references to find
+      // the actual bits from the ProjectReport's bits and then return each included bit's script material. The result is
+      // that we get an array of arrays of script materials that need to be put on the page.
+      const scriptBitsWithDupes = p.blocks.map((blockName: string) => {
+        return report["blocks"]
+          .find((block: Block) => block.name === blockName).bits
+          .map((bitref: BitReference) => {
+            return report["bits"]
+              .find((bit: Bit) => bit.name === bitref.bit).script;
+          });
+      });
+
+      // Doing the same thing for styles here. TODO: merge this with above step
+      const styleBitsWithDupes = p.blocks.map((blockName: string) => {
+        return report["blocks"]
+          .find((block: Block) => block.name === blockName).bits
+          .map((bitref: BitReference) => {
+            return report["bits"]
+              .find((bit: Bit) => bit.name === bitref.bit).style;
+          });
+      });
+
+      // Here we just flatten and dedupe the above array by using a set
+      state.scripts[p.name].bits = [...new Set(...scriptBitsWithDupes)];
+      state.styles[p.name].bits = [... new Set(...styleBitsWithDupes)];
+      return state;
+    }, { scripts: {}, styles: {} });
+  }
 
   public async compile(report: ProjectReport) {
-
-    await report.project.compilers.script.compile(report);
-    // Set up compilers
-        // let styleCompiler = this.projectReport.project.compilers.style;
-        // let scriptCompiler = this.projectReport.project.compilers.script;
-        // let htmlCompiler = this.projectReport.project.compilers.script;
-        // styleCompiler = new styleCompiler.compilerClass(styleCompiler.constructorArg);
-        // scriptCompiler = new scriptCompiler.compilerClass(scriptCompiler.constructorArg);
-        // htmlCompiler = new htmlCompiler.compilerClass(htmlCompiler.constructorArg);
-    // Compile styles and scripts
-    // Compile html
+    const pageTree = await this.buildPageTree(report);
+    const scripts = await report.project.compilers.script.compile(this.workingDir, pageTree);
+    const styles = await report.project.compilers.style.compile(this.workingDir, pageTree);
+    const renderedPages = await report.project.compilers.html.compile({styles, scripts, report});
+    this.deployer.deploy(renderedPages);
   };
 }

@@ -5,7 +5,7 @@ export interface MaterialConstructorArgs {
   type: string;
   location?: string;
   content?: string;
-  overridableName: string;
+  overridableName?: string;
 }
 
 export class Material {

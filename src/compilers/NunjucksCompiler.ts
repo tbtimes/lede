@@ -1,6 +1,13 @@
 import { Environment, FileSystemLoader } from "nunjucks";
-import { ComponentExtensionFactory } from "./ComponentExtension";
 import * as slug from "slug";
+import { join } from "path";
+
+import { ComponentExtensionFactory } from "./ComponentExtension";
+import { ProjectReport, Project } from "../models/Project";
+import { Page } from "../models/Page";
+import { Block } from "../models/Block";
+import { BitReference } from "../models/Bit";
+import { asyncMap } from "../utils";
 
 
 export class NunjucksCompiler {
@@ -64,5 +71,102 @@ export class NunjucksCompiler {
     for (let ext of extensions) {
       this.env.addExtension(ext.name, ext.ext);
     }
+  }
+
+  async compile({report, styles, scripts}: {report: ProjectReport, scripts: any, styles: any}) {
+    let context = this.getContext(report);
+    let pages = asyncMap(context, async(c) => {
+      const pageStyles = {
+        bits: styles["bits"][c["$PAGE"]["name"]],
+        globals: styles["globals"][c["$PAGE"]["name"]]
+      };
+      const pageScripts = {
+        bits: scripts["bits"][c["$PAGE"]["name"]],
+        globals: scripts["bits"][c["$PAGE"]["name"]]
+      };
+      return await this.buildPage({context: c, styles: pageStyles, scripts: pageScripts});
+    });
+    return pages;
+  }
+
+  async buildPage({context, styles, scripts}) {
+    const shell = `
+<Doctype html>
+<html>
+<head>
+<title>{{ $PAGE.seo.title }}</title>
+{% for item in $PAGE.meta %}
+<meta{% if item.name %} name="{{item.name}}"{% endif %}{% if item.content %} content="{{item.content}}"{% endif %}{% if item.props | length %}{% for prop in item.props %} {{prop.prop}}="{{prop.val}}"{% endfor %}{% endif %} />
+{% endfor %}
+{% if $PROJECT.debug %}
+<meta NAME="ROBOTS" Content="NOINDEX, NOFOLLOW">
+{% endif %}
+{% if $PAGE.resources and $PAGE.resources.head %}
+{% for resource in $PAGE.resources.body %}
+{{ resource }}
+{% endfor %}
+{% endif %}
+<!-- GLOBAL -->
+<style>
+${ styles.globals }
+</style>
+<!-- BITS -->
+<style>
+${ styles.bits }
+</style>
+</head>
+<body>
+${ context.$PAGE.template }
+{% if $PAGE.resources and $PAGE.resources.body %}
+{% for resource in $PAGE.resources.body %}
+{{ resource }}
+{% endfor %}
+{% endif %}
+<script type="text/javascript" src="globalScripts.js"></script>
+<script type="text/javascript" src="bitScripts.js"></script>
+{% if $PROJECT.debug %}
+<script>
+  document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
+  ':35729/livereload.js?snipver=1"></' + 'script>')
+</script>
+{% endif %}
+</body>
+</html>
+`;
+    const rendered = await this.renderPage({shell, context});
+    return {
+      renderedPage: rendered,
+      path: join(context.$PROJECT.deployRoot, context.$PAGE.deployPath),
+      files: [
+        { name: "globalScripts.js", content: scripts.globals[context.$PAGE.name] },
+        { name: "bitScripts.js", content: scripts.bits[context.$PAGE.name] }
+      ]
+    };
+  }
+
+  renderPage({shell, context}) {
+    return new Promise((resolve, reject) => {
+      this.env.renderString(shell, context, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  }
+
+  getContext(report: ProjectReport) {
+    return report.pages.map((page: Page) => {
+      const blocks = page.blocks.map((blockName: string) => {
+        const block: any = Object.assign({}, report.blocks.find(x => x.name === blockName));
+        block.bits = block.bits.map((bit: BitReference) => {
+          return report.bits.find(x => x.name === bit.bit);
+        });
+        return block;
+      });
+      return {
+        $PROJECT: report.project,
+        $PAGE: page,
+        $BLOCKS: blocks
+      };
+    });
   }
 }

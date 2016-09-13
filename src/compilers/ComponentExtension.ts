@@ -20,6 +20,6 @@ export class ComponentExtensionFactory implements Extension {
 
   run(context, arg, cb) {
     let ctx = Object.assign({}, context.ctx, { [this.elementName]: arg});
-    context.env.renderString(arg.template, ctx, cb);
+    context.env.renderString(arg.template || arg.html.content, ctx, cb);
   }
 }

@@ -8,11 +8,20 @@ import { asyncMap } from "../utils";
 export interface PageConstructorArg {
   name: string;
   deployPath: string;
+  template?: string
   blocks?: string[];
   materials?: { scripts?: Material[], styles: Material[], assets: Material[] };
   meta?: MetaTag[];
   resources?: { head?: string[], body: string[] };
 }
+
+const TEMPLATE = `
+<div id="ledeRoot">
+  {% asyncAll $block in $BLOCKS %}
+    {% BLOCK $block %}
+  {% endall %}
+</div>
+`;
 
 export class Page {
   deployPath: string;
@@ -21,14 +30,16 @@ export class Page {
   meta: MetaTag[];
   resources: { head: string[], body: string[] };
   name: string;
+  template: string;
 
-  constructor({ deployPath, blocks, materials, meta, resources, name }: PageConstructorArg) {
+  constructor({ deployPath, blocks, materials, meta, resources, name, template }: PageConstructorArg) {
     this.name = name;
     this.deployPath = deployPath;
     this.blocks = blocks || [];
     this.meta = meta || [];
-    this.materials = { styles: [], scripts: [], assets: []};
+    this.materials = { styles: [], scripts: [], assets: [] };
     this.resources = { head: [], body: [] };
+    this.template = template || TEMPLATE;
 
     this.materials.styles = materials && materials.styles ? materials.styles.map(constructMaterial("style")) : [];
     this.materials.scripts = materials && materials.scripts ? materials.scripts.map(constructMaterial("script")) : [];
