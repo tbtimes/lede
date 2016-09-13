@@ -13,22 +13,26 @@ const testBitPath = join(__dirname, "fixtures", "test-project", "bits", "test-bi
 const testPagePath = join(__dirname, "fixtures", "test-project", "pages");
 const testBlockPath = join(__dirname, "fixtures", "test-project", "blocks");
 
+async function writeActual(data) {
+  await sander.writeFile("actual.json", JSON.stringify(data, null, 2));
+}
+
+async function writeExpected(data) {
+  await sander.writeFile("expected.json", JSON.stringify(data, null ,2));
+}
+
 test("Static getProject method should return an instantiated Project.", async t => {
   const proj = await ProjectFactory.getProject(testProjPath);
   const expected = {
     name: "tester",
-    deployRoot: "some/root/directory",
+    deployRoot: "some-seo-root-path-here",
     defaults: { materials: [], metaTags: [], blocks: [] },
-    compilers: {
-      html: new NunjucksCompiler({}),
-      style: new SassCompiler(),
-      script: new Es6Compiler(),
-    },
     context: { baz: "qux" }
   };
 
-  t.true(proj instanceof Project, "Should return an instance of Project.");
-  t.deepEqual(JSON.stringify(proj), JSON.stringify(expected), "Should be correctly instantiated.")
+  t.true(proj instanceof Project);
+  t.deepEqual({ name: proj.name, deployRoot: proj.deployRoot, defaults: proj.defaults, context: proj.context },
+    { name: expected.name, deployRoot: expected.deployRoot, defaults: expected.defaults, context: expected.context })
 });
 
 test("Static getBit method should return an instantiated Bit.", async t => {
@@ -38,7 +42,7 @@ test("Static getBit method should return an instantiated Bit.", async t => {
   const html = await (new Material({type: "html", location: join(testBitPath, "test.html")})).fetch();
   const expected = {
     version: 0,
-    name: "testBit",
+    name: "test-bit",
     context: { foo: "bar" },
     script,
     style,
@@ -48,7 +52,7 @@ test("Static getBit method should return an instantiated Bit.", async t => {
   t.deepEqual(bit, expected, "Should be correctly instantiated.")
 });
 
-test("Static getPages method should return an array of instantiated Pages.", async t => {
+test.only("Static getPages method should return an array of instantiated Pages.", async t => {
   const pages = await ProjectFactory.getPages(testPagePath);
   const expectedBase = {
     blocks: [],
@@ -56,9 +60,21 @@ test("Static getPages method should return an array of instantiated Pages.", asy
     materials: { styles: [], scripts: [], assets: [] },
     resources: { head: [], body: [] }
   };
-  const pageOne = Object.assign({}, expectedBase, { deployPath: "pageOne/should/deploy/here", blocks: ["header"], name: "testpage" });
-  const pageTwo = Object.assign({}, expectedBase, { deployPath: "pageTwo/should/deploy/here", blocks: ["header", "article", "footer"], name: "testpage2" });
+  const pageOne = Object.assign({}, expectedBase,
+    {
+      deployPath: "pageOne/should/deploy/here",
+      blocks: ["header"],
+      name: "testpage"
+    });
+  const pageTwo = Object.assign({}, expectedBase,
+    {
+      deployPath: "pageTwo/should/deploy/here",
+      blocks: ["header", "article", "footer"],
+      name: "testpage2"
+    });
 
+  await writeActual(pages);
+  await writeExpected([pageOne, pageTwo]);
   pages.forEach(p => t.true(p instanceof Page));
   t.deepEqual(pages[0], pageOne, "Page1 should instantiate correctly");
   t.deepEqual(pages[1], pageTwo, "Page2 should instantiate correctly");
@@ -91,6 +107,4 @@ test("Public buildReport method should return a ProjectReport", async t => {
   t.true(projectReport.blocks[0] instanceof Block);
   t.true(projectReport.pages[0] instanceof Page);
   t.true(projectReport.bits[0] instanceof Bit);
-  // const inspect = require('util').inspect;
-  // sander.writeFileSync("report.txt", inspect(projectReport, {depth:Infinity}));
 });

@@ -2,7 +2,7 @@ const resolve = require("path").resolve;
 
 class SettingsConfig {
   constructor() {
-    this.deployPath = "pageOne/should/deploy/here";
+    this.deployPath = "a-great-seo-headline";
     this.blocks = ["header"];
     this.materials = {
       scripts: [

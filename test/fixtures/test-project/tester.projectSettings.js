@@ -1,6 +1,6 @@
 class SettingsConfig {
   constructor() {
-    this.deployRoot = "some/root/directory";
+    this.deployRoot = "some-seo-root-path-here";
     this.defaults = {
       materials: [],
       blocks: [],

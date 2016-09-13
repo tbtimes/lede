@@ -7,7 +7,7 @@ import { inspect } from "util";
 
 const testProjPath = join(__dirname, "fixtures", "test-project");
 
-test.only("Testing compiler", async t => {
+test.skip("Testing compiler", async t => {
   const pf = new ProjectFactory({workingDir: testProjPath});
   const deployer = new FileSystemDeployer({workingDir: testProjPath});
   const pd = new ProjectDirector({workingDir: testProjPath, projectFactory: pf, deployer});
