@@ -3,8 +3,8 @@ import { render, Options } from "node-sass";
 import { inspect } from "util";
 const sander = require("sander");
 
-import { PageTree } from "../ProjectDirector";
-import { Compiler } from "../models/Project";
+import { PageTree } from "../interfaces/PageTree";
+import { Compiler } from "../interfaces/Compiler";
 import { Material } from "../models/Material";
 import { asyncMap } from "../utils";
 

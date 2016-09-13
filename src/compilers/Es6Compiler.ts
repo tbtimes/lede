@@ -4,7 +4,7 @@ const sander = require("sander");
 
 import { Material } from "../models/Material";
 import { asyncMap } from "../utils";
-import { PageTree } from "../ProjectDirector";
+import { PageTree } from "../interfaces/PageTree";
 
 
 // Rollup stuffs

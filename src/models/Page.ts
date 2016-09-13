@@ -1,7 +1,7 @@
 import { basename } from "path";
 
-import { Block, MetaTag } from "../interfaces";
-import { Material } from "./";
+import { MetaTag } from "../interfaces/MetaTag";
+import { Material } from "./Material";
 import { asyncMap } from "../utils";
 
 // TODO: add page template which wraps all blocks.

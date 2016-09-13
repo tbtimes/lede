@@ -1,13 +1,13 @@
-import { MetaTag } from "../interfaces";
-import { Material, Page, Block, Bit } from "./";
-import { NunjucksCompiler, SassCompiler, Es6Compiler } from "../compilers";
-import { PageTree } from "../ProjectDirector";
+import { MetaTag } from "../interfaces/MetaTag";
+import { Material } from "./Material";
+import { Page } from "./Page";
+import { Block } from "./Block";
+import { Bit } from "./Bit";
+import { NunjucksCompiler } from "../compilers/NunjucksCompiler";
+import { SassCompiler } from "../compilers/SassCompiler";
+import { Es6Compiler } from "../compilers/Es6Compiler";
+import { Compiler, CompilerInitializer, HtmlCompiler } from "../interfaces/Compiler";
 
-
-export interface CompilerInitializer {
-  compilerClass: any;
-  constructorArg: any;
-}
 
 export interface ProjectReport {
   workingDir: string;
@@ -31,14 +31,6 @@ export interface ProjectConstructorArg {
     script?: CompilerInitializer
   };
   context?: any;
-}
-
-export interface Compiler {
-  compile(workingDir, tree: PageTree): Promise<any>;
-}
-
-export interface HtmlCompiler {
-  compile(arg: {report: ProjectReport, styles: any, scripts: any}): Promise<any>;
 }
 
 export class Project {

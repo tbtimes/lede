@@ -1,5 +1,5 @@
-import { Resolver } from "../interfaces";
-import { BitReference } from "./";
+import { Resolver } from "../interfaces/Resolver";
+import { BitReference } from "./Bit";
 
 
 const BLOCK_TEMPLATE = `

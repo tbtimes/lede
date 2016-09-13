@@ -2,7 +2,7 @@ import { Logger, createLogger, stdSerializers } from "bunyan";
 const PrettyStream = require("bunyan-prettystream");
 
 
-export function defaultLogger() {
+export function defaultLogger(): Logger {
   const stream = new PrettyStream();
   stream.pipe(process.stdout);
   return createLogger({

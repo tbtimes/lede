@@ -1,5 +1,4 @@
 import { Logger } from "bunyan";
-import { join } from "path";
 const sander = require("sander");
 
 import { defaultLogger } from "./DefaultLogger";
@@ -10,14 +9,9 @@ import { Page } from "./models/Page";
 import { Block } from "./models/Block";
 import { Bit } from "./models/Bit";
 import { Material } from "./models/Material";
-import { Deployer } from "./FileSystemDeployer";
+import { Deployer } from "./interfaces/Deployer";
+import { PageTree } from "./interfaces/PageTree";
 
-
-export interface PageTree {
-  scripts: {[pageName: string]: { globals: Material[], bits: Material[] }};
-  styles: {[pageName: string]: { globals: Material[], bits: Material[] }};
-  workingDir: string;
-}
 
 export interface ProjectDirectorArgs {
   workingDir: string;
@@ -47,6 +41,10 @@ export class ProjectDirector {
     this.projectFactory = projectFactory;
   };
 
+  /**
+   * Builds a ProjectReport using the projectFactory.
+   * @returns {Promise<ProjectReport>}
+   */
   public async buildReport(): Promise<ProjectReport> {
     return await this.projectFactory.buildReport();
   }
@@ -57,6 +55,11 @@ export class ProjectDirector {
     // Loop through bits and look for materials
   }
 
+  /**
+   * Takes a ProjectReport and returns a PageTree detailing the pages and materials for each page.
+   * @param report
+   * @returns {Promise<PageTree>}
+   */
   async buildPageTree(report: ProjectReport): Promise<PageTree> {
     return report["pages"].reduce((state: any, p: Page) => {
       state.scripts[p.name] = {};
@@ -96,6 +99,10 @@ export class ProjectDirector {
     }, { scripts: {}, styles: {} });
   }
 
+  /**
+   * Compiles and deploys a project according to a ProjectReport
+   * @param report
+   */
   public async compile(report: ProjectReport) {
     const pageTree = await this.buildPageTree(report);
     const scripts = await report.project.compilers.script.compile(this.workingDir, pageTree);

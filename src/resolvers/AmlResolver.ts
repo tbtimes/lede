@@ -1,16 +1,16 @@
 import { load } from "archieml";
 
 import { httpsGetProm } from "../utils";
-import { Resolver, GoogleRestAPI } from "../interfaces";
-import { BitReference } from "../models";
+import { Resolver } from "../interfaces/Resolver";
+import { GoogleRestAPI } from "../interfaces/GoogleRestAPI";
+import { BitReference } from "../models/Bit";
 
 
 export class AmlResolver implements Resolver {
   constructor(public googleId: string, public gapikey: string) {};
 
   /**
-   * Fetches content from googledocs and parses it with archieml. NOTE: This incorrectly implements the resolver interface
-   * right now because it returns any but it should return an array of bit references.
+   * Fetches content from googledocs and parses it with archieml.
    */
   async fetch(): Promise<BitReference[]> {
     const descriptorOpts = {

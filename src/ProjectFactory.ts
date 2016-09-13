@@ -4,17 +4,10 @@ import { Logger } from "bunyan";
 
 import { defaultLogger } from "./DefaultLogger";
 import { globProm, asyncMap } from "./utils";
-import {
-  Project,
-  Bit,
-  Page,
-  PageConstructorArg,
-  ProjectConstructorArg,
-  BitConstructorArg,
-  Block,
-  BlockConstructorArg,
-  ProjectReport
-} from "./models";
+import { Project, ProjectReport, ProjectConstructorArg } from "./models/Project";
+import { Bit, BitConstructorArg } from "./models/Bit";
+import { Page, PageConstructorArg } from "./models/Page";
+import { Block, BlockConstructorArg } from "./models/Block";
 
 
 /**
