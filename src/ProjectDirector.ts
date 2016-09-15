@@ -56,47 +56,108 @@ export class ProjectDirector {
   }
 
   /**
-   * Takes a ProjectReport and returns a PageTree detailing the pages and materials for each page.
+   * Takes a ProjectReport and returns a PageTree detailing the pages and materials for each page. All dependencies
+   * should be resolved on the ProjectReport BEFORE calling this method.
    * @param report
    * @returns {Promise<PageTree>}
    */
   async buildPageTree(report: ProjectReport): Promise<PageTree> {
     return report["pages"].reduce((state: any, p: Page) => {
-      state.scripts[p.name] = {};
-      state.styles[p.name] = {};
-      state.scripts[p.name].globals = p.materials.scripts;
-      state.styles[p.name].globals = p.materials.styles;
+      const pageState = {
+        scripts: {
+          globals: [],
+          bits: []
+        },
+        styles: {
+          globals: [],
+          bits: []
+        },
+        context: {}
+      };
 
+      const pageBlocks = report["project"].defaults.blocks.concat(p.blocks);
 
-      // This next part is a little sticky. First we loop through the Page's blocks list to find the name of the blocks
-      // that are included on the Page. We use that name to find the full block object from the ProjectReport's blocks.
-      // Then we loop over that block's bits to find references to every bit it needs to work. We use the bit references to find
-      // the actual bits from the ProjectReport's bits and then return each included bit's script material. The result is
-      // that we get an array of arrays of script materials that need to be put on the page.
-      const scriptBitsWithDupes = p.blocks.map((blockName: string) => {
+      // -----------
+      // --GLOBALS--
+      // -----------
+
+      // For globals we just need to deduplicate on the material's overridableName
+
+      pageState.scripts.globals = report["project"].defaults.scripts
+        .concat(p.materials.scripts)
+        .reduce((state: Material[], mat: Material) => {
+          const indexOfPresent = state.map(x => x.overridableName).indexOf(mat.overridableName);
+          if (indexOfPresent < 0) state.push(mat);
+          else state[indexOfPresent] = mat;
+          return state;
+        }, []);
+
+      pageState.styles.globals = report["project"].defaults.styles
+        .concat(p.materials.scripts)
+        .reduce((state: Material[], mat: Material) => {
+          const indexOfPresent = state.map(x => x.overridableName).indexOf(mat.overridableName);
+          if (indexOfPresent < 0) state.push(mat);
+          else state[indexOfPresent] = mat;
+          return state;
+        }, []);
+
+      // --------
+      // --BITS--
+      // --------
+
+      // Bits are a little more involved. We need to first find all the blocks used by a page, then find all the bits used
+      // by those blocks.
+
+      const bitsWithDupes: [{script: Material, style: Material}] = pageBlocks.map((blockName: string) => {
         return report["blocks"]
           .find((block: Block) => block.name === blockName).bits
           .map((bitref: BitReference) => {
-            return report["bits"]
-              .find((bit: Bit) => bit.name === bitref.bit).script;
-          });
-      });
-
-      // Doing the same thing for styles here. TODO: merge this with above step
-      const styleBitsWithDupes = p.blocks.map((blockName: string) => {
-        return report["blocks"]
-          .find((block: Block) => block.name === blockName).bits
-          .map((bitref: BitReference) => {
-            return report["bits"]
-              .find((bit: Bit) => bit.name === bitref.bit).style;
+            const bit = report["bits"].find((bit: Bit) => bit.name === bitref.bit);
+            return {
+              script: bit.script,
+              style: bit.style
+            };
           });
       });
 
       // Here we just flatten and dedupe the above array by using a set
-      state.scripts[p.name].bits = [...new Set(...scriptBitsWithDupes)];
-      state.styles[p.name].bits = [... new Set(...styleBitsWithDupes)];
+      const flatten = a => Array.isArray(a) ? [].concat(...a.map(flatten)) : a;
+      const styleMats = flatten(bitsWithDupes).map(x => x.style);
+      const scriptMats = flatten(bitsWithDupes).map(x => x.script);
+
+      pageState.scripts.bits = [... new Set(scriptMats)];
+      pageState.styles.bits = [... new Set(styleMats)];
+
+      // -----------
+      // --CONTEXT--
+      // -----------
+
+      const $PROJECT = Object.assign({}, report.project.context, { $name: report.project.name });
+      const pageDefaultProps = {
+        $name: p.name,
+        $meta: report.project.defaults.metaTags.concat(p.meta),
+        $template: p.template
+      };
+      const $PAGE = Object.assign({}, p.context, pageDefaultProps);
+      const $BLOCKS = pageBlocks.map((blockName: string) => {
+        const block = Object.assign({}, report["blocks"].find(x => x["name"] === blockName));
+        const bits = block["bits"].map((bit: BitReference) => {
+          const fullBit: Bit = report["bits"].find(x => x["name"] === bit.bit);
+          return Object.assign({}, fullBit.context, { $name: fullBit.name, $template: fullBit.html.content });
+        });
+        return Object.assign({}, block.context, { $name: block.name, $template: block.template, $BITS: bits});
+      });
+
+      pageState.context = {
+        $PROJECT,
+        $PAGE,
+        $BLOCKS
+      };
+
+      state.pages.push(pageState);
+
       return state;
-    }, { scripts: {}, styles: {} });
+    }, { workingDir: report.workingDir, pages: [] });
   }
 
   /**

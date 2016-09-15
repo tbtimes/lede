@@ -114,3 +114,4 @@ dist/
 .idea/
 typings/
 docs/
+.ledeCache/

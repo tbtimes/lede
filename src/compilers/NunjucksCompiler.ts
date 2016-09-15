@@ -74,8 +74,8 @@ export class NunjucksCompiler {
   }
 
   async compile({report, styles, scripts}: {report: ProjectReport, scripts: any, styles: any}) {
-    let context = this.getContext(report);
-    let pages = asyncMap(context, async(c) => {
+    const context = this.getContext(report);
+    const pages = asyncMap(context, async(c) => {
       const pageStyles = {
         bits: styles["bits"][c["$PAGE"]["name"]],
         globals: styles["globals"][c["$PAGE"]["name"]]

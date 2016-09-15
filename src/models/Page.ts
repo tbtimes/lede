@@ -8,11 +8,12 @@ import { asyncMap } from "../utils";
 export interface PageConstructorArg {
   name: string;
   deployPath: string;
-  template?: string
+  template?: string;
   blocks?: string[];
   materials?: { scripts?: Material[], styles: Material[], assets: Material[] };
   meta?: MetaTag[];
   resources?: { head?: string[], body: string[] };
+  context?: any;
 }
 
 const TEMPLATE = `
@@ -31,9 +32,11 @@ export class Page {
   resources: { head: string[], body: string[] };
   name: string;
   template: string;
+  context: any;
 
-  constructor({ deployPath, blocks, materials, meta, resources, name, template }: PageConstructorArg) {
+  constructor({ deployPath, blocks, materials, meta, resources, name, template, context }: PageConstructorArg) {
     this.name = name;
+    this.context = context || {};
     this.deployPath = deployPath;
     this.blocks = blocks || [];
     this.meta = meta || [];

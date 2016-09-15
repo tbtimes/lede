@@ -1,28 +1,33 @@
+import { basename } from "path";
+
 import { MetaTag } from "../interfaces/MetaTag";
 import { Material } from "./Material";
 import { Page } from "./Page";
 import { Block } from "./Block";
-import { Bit } from "./Bit";
+import { BitReference } from "./Bit";
 import { NunjucksCompiler } from "../compilers/NunjucksCompiler";
 import { SassCompiler } from "../compilers/SassCompiler";
 import { Es6Compiler } from "../compilers/Es6Compiler";
 import { Compiler, CompilerInitializer, HtmlCompiler } from "../interfaces/Compiler";
+import { asyncMap } from "../utils";
 
 
 export interface ProjectReport {
   workingDir: string;
   project: Project;
-  blocks: Block[];
+  blocks: string[];
   pages: Page[];
-  bits: Bit[];
+  bits: BitReference[];
 }
 
 export interface ProjectConstructorArg {
   name: string;
   deployRoot: string;
   defaults?: {
-    materials?: Material[],
-    blocks?: Block[],
+    scripts?: string[],
+    styles?: string[],
+    assets?: string[],
+    blocks?: string[],
     metaTags?: MetaTag[]
   };
   compilers?: {
@@ -36,27 +41,22 @@ export interface ProjectConstructorArg {
 export class Project {
   name: string;
   deployRoot: string;
-  defaults: { materials: Material[], blocks: Block[], metaTags: MetaTag[] };
+  blocks: string[];
+  defaults: { scripts: Material[], styles: Material[], assets: Material[], blocks: Block[], metaTags: MetaTag[] };
   compilers: { html: HtmlCompiler, style: Compiler, script: Compiler };
   context: any;
 
-  constructor({ name, deployRoot, defaults, compilers, context }: ProjectConstructorArg) {
+  constructor({ name, deployRoot, defaults, compilers, context, blocks  }: ProjectConstructorArg) {
     this.name = name;
     this.deployRoot = deployRoot;
-    this.defaults = { materials: [], metaTags: [], blocks: [] };
+    this.defaults = { scripts: [], assets: [], styles: [], metaTags: [], blocks: [] };
     const defaultCompilers = {
       html: { compilerClass: NunjucksCompiler, constructorArg: {} },
       style: { compilerClass: SassCompiler, constructorArg: {} },
       script: { compilerClass: Es6Compiler, constructorArg: {} }
     };
-
-    this.context = context ? context : {};
-
-    if (defaults) {
-      this.defaults.materials = defaults.materials ? defaults.materials : [];
-      this.defaults.blocks = defaults.blocks ? defaults.blocks : [];
-      this.defaults.metaTags = defaults.metaTags ? defaults.metaTags : [];
-    }
+    this.blocks = blocks || [];
+    this.context = context || {};
 
     // Initialize compilers
     const instantiatedCompilers = { html: null, style: null, script: null};
@@ -72,6 +72,29 @@ export class Project {
       new compilers.script.compilerClass(compilers.script.constructorArg) :
       new defaultCompilers.script.compilerClass(defaultCompilers.script.constructorArg);
     this.compilers = instantiatedCompilers;
+
+    //
+
+    this.defaults.styles = defaults && defaults.styles ? defaults.styles.map(constructMaterial("style")) : [];
+    this.defaults.scripts = defaults && defaults.scripts ? defaults.scripts.map(constructMaterial("script")) : [];
+    this.defaults.assets = defaults && defaults.assets ? defaults.assets.map(constructMaterial("asset")) : [];
+
+    function constructMaterial(type) {
+      return function(input) {
+        if (typeof input === "string") {
+          return new Material({location: input, type, overridableName: basename(input)});
+        }
+        const {location, as} = input;
+        return new Material({location, type, overridableName: as});
+      };
+    }
+  }
+
+  async init(): Promise<Project> {
+    this.defaults.styles = await asyncMap(this.defaults.styles, async (m) => await m.fetch());
+    this.defaults.scripts = await asyncMap(this.defaults.scripts, async (m) => await m.fetch());
+    this.defaults.assets = await asyncMap(this.defaults.assets, async (m) => await m.fetch());
+    return this;
   }
 }
 

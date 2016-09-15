@@ -52,7 +52,7 @@ test("Static getBit method should return an instantiated Bit.", async t => {
   t.deepEqual(bit, expected, "Should be correctly instantiated.")
 });
 
-test.only("Static getPages method should return an array of instantiated Pages.", async t => {
+test("Static getPages method should return an array of instantiated Pages.", async t => {
   const pages = await ProjectFactory.getPages(testPagePath);
   const expectedBase = {
     blocks: [],

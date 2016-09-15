@@ -48,7 +48,7 @@ export class ProjectFactory {
     const SettingsConfig: ProjectConstructorArg = new (require(join(workingDir, settings[0]))).default();
     SettingsConfig.name = settings[0].match(nameRegex)[1];
 
-    return new Project(SettingsConfig);
+    return await (new Project(SettingsConfig)).init();
   }
 
   /**

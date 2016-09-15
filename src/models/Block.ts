@@ -4,7 +4,7 @@ import { BitReference } from "./Bit";
 
 const BLOCK_TEMPLATE = `
 <div class="lede-block">
-  {% asyncAll $bit in $block.bits %}
+  {% asyncAll $bit in $block.$BITS %}
     {% BIT $bit %}
   {% endall %}
 </div>

@@ -27,7 +27,6 @@ export class AmlResolver implements Resolver {
     const file = await httpsGetProm(fileOpts);
     const bitRefs = load(file).CONTENT;
 
-    //
     return bitRefs.map(b => {
       return Object.keys(b).reduce((state, key) => {
         if (key !== "bit") {
