@@ -1,4 +1,5 @@
 import { basename } from "path";
+import { Logger } from "bunyan";
 
 import { MetaTag } from "../interfaces/MetaTag";
 import { Material } from "./Material";
@@ -36,6 +37,7 @@ export interface ProjectConstructorArg {
     script?: CompilerInitializer
   };
   context?: any;
+  logger: Logger;
 }
 
 export class Project {
@@ -46,7 +48,7 @@ export class Project {
   compilers: { html: HtmlCompiler, style: Compiler, script: Compiler };
   context: any;
 
-  constructor({ name, deployRoot, defaults, compilers, context, blocks  }: ProjectConstructorArg) {
+  constructor({ name, deployRoot, defaults, compilers, context, blocks, logger  }: ProjectConstructorArg) {
     this.name = name;
     this.deployRoot = deployRoot;
     this.defaults = { scripts: [], assets: [], styles: [], metaTags: [], blocks: [] };
@@ -71,9 +73,12 @@ export class Project {
     instantiatedCompilers.script = compilers && compilers.script ?
       new compilers.script.compilerClass(compilers.script.constructorArg) :
       new defaultCompilers.script.compilerClass(defaultCompilers.script.constructorArg);
-    this.compilers = instantiatedCompilers;
 
-    //
+    for (let comp in instantiatedCompilers) {
+      instantiatedCompilers[comp].configure({ logger });
+    }
+
+    this.compilers = instantiatedCompilers;
 
     this.defaults.styles = defaults && defaults.styles ? defaults.styles.map(constructMaterial("style")) : [];
     this.defaults.scripts = defaults && defaults.scripts ? defaults.scripts.map(constructMaterial("script")) : [];

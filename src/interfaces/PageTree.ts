@@ -1,7 +1,13 @@
 import { Material } from "../models/Material";
 
+export interface PageModel {
+  styles: { globals: Material[], bits: Material[] };
+  scripts: { globals: Material[], bits: Material[] };
+  context: any;
+  name: string;
+}
+
 export interface PageTree {
-  scripts: {[pageName: string]: { globals: Material[], bits: Material[] }};
-  styles: {[pageName: string]: { globals: Material[], bits: Material[] }};
   workingDir: string;
+  pages: Array<PageModel>;
 }

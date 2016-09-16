@@ -14,3 +14,14 @@ export function defaultLogger(): Logger {
     }
   });
 }
+
+export function mockLogger() {
+  return {
+    info: function() {},
+    warn: function() {},
+    error: function() {},
+    trace: function() {},
+    debug: function() {},
+    fatal: function() {}
+  };
+}

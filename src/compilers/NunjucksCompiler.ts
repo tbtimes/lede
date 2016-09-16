@@ -1,17 +1,20 @@
 import { Environment, FileSystemLoader } from "nunjucks";
 import * as slug from "slug";
 import { join } from "path";
+import { Logger } from "bunyan";
 
 import { ComponentExtensionFactory } from "./ComponentExtension";
-import { ProjectReport, Project } from "../models/Project";
-import { Page } from "../models/Page";
+import { PageTree } from "../interfaces/PageTree";
+import { CompiledAssets, CompiledPage } from "../interfaces/Compiler";
 import { Block } from "../models/Block";
-import { BitReference } from "../models/Bit";
+import { HtmlCompiler } from "../interfaces/Compiler";
 import { asyncMap } from "../utils";
+import { mockLogger } from "../DefaultLogger";
 
 
-export class NunjucksCompiler {
+export class NunjucksCompiler implements HtmlCompiler {
   env: Environment;
+  logger: Logger;
 
   constructor(opts: {
     filters?: any[],
@@ -20,6 +23,7 @@ export class NunjucksCompiler {
     envOptions?: any,
     loaderPaths?: string[]
   }) {
+    this.logger = <any>mockLogger();
     const loaderOptions = Object.assign({watch: false, noCache: true}, opts.loaderOptions || {});
     const envOptions = Object.assign({autoescape: false, watch: false, noCache: true}, opts.envOptions || {});
 
@@ -73,18 +77,21 @@ export class NunjucksCompiler {
     }
   }
 
-  async compile({report, styles, scripts}: {report: ProjectReport, scripts: any, styles: any}) {
-    const context = this.getContext(report);
-    const pages = asyncMap(context, async(c) => {
+  configure({ logger }) {
+    this.logger = logger;
+  }
+
+  async compile({pageTree, styles, scripts}: {pageTree: PageTree, styles: CompiledAssets, scripts: CompiledAssets}): Promise<CompiledPage[]> {
+    const pages = asyncMap(pageTree.pages, async(p) => {
       const pageStyles = {
-        bits: styles["bits"][c["$PAGE"]["name"]],
-        globals: styles["globals"][c["$PAGE"]["name"]]
+        bits: styles.bits[p.name],
+        globals: styles.globals[p.name]
       };
       const pageScripts = {
-        bits: scripts["bits"][c["$PAGE"]["name"]],
-        globals: scripts["bits"][c["$PAGE"]["name"]]
+        bits: scripts.bits[p.name],
+        globals: scripts.bits[p.name]
       };
-      return await this.buildPage({context: c, styles: pageStyles, scripts: pageScripts});
+      return await this.buildPage({context: p.context, styles: pageStyles, scripts: pageScripts});
     });
     return pages;
   }
@@ -98,7 +105,7 @@ export class NunjucksCompiler {
 {% for item in $PAGE.meta %}
 <meta{% if item.name %} name="{{item.name}}"{% endif %}{% if item.content %} content="{{item.content}}"{% endif %}{% if item.props | length %}{% for prop in item.props %} {{prop.prop}}="{{prop.val}}"{% endfor %}{% endif %} />
 {% endfor %}
-{% if $PROJECT.debug %}
+{% if $PROJECT.$debug %}
 <meta NAME="ROBOTS" Content="NOINDEX, NOFOLLOW">
 {% endif %}
 {% if $PAGE.resources and $PAGE.resources.head %}
@@ -116,7 +123,7 @@ ${ styles.bits }
 </style>
 </head>
 <body>
-${ context.$PAGE.template }
+${ context.$PAGE.$template }
 {% if $PAGE.resources and $PAGE.resources.body %}
 {% for resource in $PAGE.resources.body %}
 {{ resource }}
@@ -124,7 +131,7 @@ ${ context.$PAGE.template }
 {% endif %}
 <script type="text/javascript" src="globalScripts.js"></script>
 <script type="text/javascript" src="bitScripts.js"></script>
-{% if $PROJECT.debug %}
+{% if $PROJECT.$debug %}
 <script>
   document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] +
   ':35729/livereload.js?snipver=1"></' + 'script>')
@@ -136,10 +143,10 @@ ${ context.$PAGE.template }
     const rendered = await this.renderPage({shell, context});
     return {
       renderedPage: rendered,
-      path: join(context.$PROJECT.deployRoot, context.$PAGE.deployPath),
+      path: join(context.$PROJECT.$deployRoot, context.$PAGE.$deployPath),
       files: [
-        { name: "globalScripts.js", content: scripts.globals[context.$PAGE.name] },
-        { name: "bitScripts.js", content: scripts.bits[context.$PAGE.name] }
+        { name: "globalScripts.js", content: scripts.globals.code },
+        { name: "bitScripts.js", content: scripts.bits.code }
       ]
     };
   }
@@ -150,23 +157,6 @@ ${ context.$PAGE.template }
         if (err) return reject(err);
         return resolve(res);
       });
-    });
-  }
-
-  getContext(report: ProjectReport) {
-    return report.pages.map((page: Page) => {
-      const blocks = page.blocks.map((blockName: string) => {
-        const block: any = Object.assign({}, report.blocks.find(x => x.name === blockName));
-        block.bits = block.bits.map((bit: BitReference) => {
-          return report.bits.find(x => x.name === bit.bit);
-        });
-        return block;
-      });
-      return {
-        $PROJECT: report.project,
-        $PAGE: page,
-        $BLOCKS: blocks
-      };
     });
   }
 }

@@ -1,4 +1,4 @@
-const resolvers = require("../../../../dist/resolvers");
+const resolvers = require("../../../../dist/resolvers/AmlResolver");
 
 class SettingsConfig {
   constructor() {

@@ -2,7 +2,7 @@ import { test } from "ava";
 import { join } from "path";
 import { ProjectDirector } from "../dist/ProjectDirector";
 import { ProjectFactory } from "../dist/ProjectFactory";
-import { FileSystemDeployer } from "../dist/FileSystemDeployer";
+import { FileSystemDeployer } from "../dist/deployers/FileSystemDeployer";
 import { inspect } from "util";
 
 const testProjPath = join(__dirname, "fixtures", "test-project");

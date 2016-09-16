@@ -4,9 +4,12 @@ import { join } from "path";
 const sander = require("sander");
 
 import { ProjectFactory } from "../dist/ProjectFactory";
-import { Project, Bit, Page, Block, Material } from "../dist/models";
-import { AmlResolver } from "../dist/resolvers";
-import { NunjucksCompiler, SassCompiler, Es6Compiler } from "../dist/compilers";
+import { Project } from "../dist/models/Project";
+import { Page } from "../dist/models/Page";
+import { Block } from "../dist/models/Block";
+import { Bit } from "../dist/models/Bit";
+import { Material } from "../dist/models/Material";
+import { AmlResolver } from "../dist/resolvers/AmlResolver";
 
 const testProjPath = join(__dirname, "fixtures", "test-project");
 const testBitPath = join(__dirname, "fixtures", "test-project", "bits", "test-bit");
@@ -49,7 +52,7 @@ test("Static getBit method should return an instantiated Bit.", async t => {
     html,
   };
   t.true(bit instanceof Bit, "Should return an instance of Bit.");
-  t.deepEqual(bit, expected, "Should be correctly instantiated.")
+  t.deepEqual(bit, expected, "Should be correctly instantiated.");
 });
 
 test("Static getPages method should return an array of instantiated Pages.", async t => {

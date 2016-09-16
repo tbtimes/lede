@@ -1,10 +1,11 @@
-import { inspect } from "util";
 import { join } from "path";
+import { Logger } from "bunyan";
 const sander = require("sander");
 
 import { Material } from "../models/Material";
+import { mockLogger } from "../DefaultLogger";
 import { asyncMap } from "../utils";
-import { PageTree } from "../interfaces/PageTree";
+import { PageTree, PageModel } from "../interfaces/PageTree";
 
 
 // Rollup stuffs
@@ -19,27 +20,51 @@ const includes = require("rollup-plugin-includepaths");
 export class Es6Compiler {
   cacheBits: any;
   cacheGlobals: any;
+  logger: Logger;
 
   constructor(opts: any) {
     this.cacheBits = {};
     this.cacheGlobals = {};
+    this.logger = <any>mockLogger();
   };
 
-  async compile(workingDir, tree: PageTree) {
-    const cachePath = join(workingDir, ".ledeCache");
-    await this.buildCache(cachePath, tree);
-    const globals = await this.compileGlobals(cachePath, tree);
-    const bits = await this.compileBits(cachePath, tree);
+  configure({ logger }) {
+    this.logger = logger;
+  }
+
+  async compile(tree: PageTree) {
+    const cachePath = join(tree.workingDir, ".ledeCache");
+    try {
+      await this.buildCache(cachePath, tree);
+    } catch (err) {
+      this.logger.error({err}, "An error occurred while caching the scripts");
+      process.exit(1);
+    }
+    let globals, bits;
+    try {
+      globals = await this.compileGlobals(cachePath, tree);
+    } catch (err) {
+      this.logger.error({err}, "An error occurred while compiling global scripts");
+      process.exit(1);
+    }
+
+    try {
+      bits = await this.compileBits(cachePath, tree);
+    } catch (err) {
+      this.logger.error({err}, "An error occurred while compiling bit scripts");
+      process.exit(1);
+    }
+
     return {bits, globals};
   };
 
   async compileGlobals(cachePath: string, pageTree: PageTree) {
     const globals = {};
-    for (let page in pageTree["scripts"]) {
-      const pageCachePath = join(cachePath, page);
+    for (let page: PageModel of pageTree.pages) {
+      const pageCachePath = join(cachePath, page.name);
       const bundle = await rollup.rollup({
         entry: join(pageCachePath, "scripts", "**/*.js"),
-        cache: this.cacheGlobals[page],
+        cache: this.cacheGlobals[page.name],
         plugins: [
           includes({ paths: [ join(pageCachePath, "scripts")] }),
           multientry({ exports: false }),
@@ -47,19 +72,19 @@ export class Es6Compiler {
           babel({ presets: [rollupPreset] })
         ]
       });
-      this.cacheGlobals[page] = bundle;
-      globals[page] = bundle.generate({ format: "iife", exports: "none", sourceMap: true });
+      this.cacheGlobals[page.name] = bundle;
+      globals[page.name] = bundle.generate({ format: "iife", exports: "none", sourceMap: true });
     }
     return globals;
   }
 
   async compileBits(cachePath: string, pageTree: PageTree) {
     const bits = {};
-    for (let page in pageTree["scripts"]) {
-      const pageCachePath = join(cachePath, page);
+    for (let page: PageModel of pageTree.pages) {
+      const pageCachePath = join(cachePath, page.name);
       const bundle = await rollup.rollup({
         entry: join(pageCachePath, "bits", "**/*.js"),
-        cache: this.cacheBits[page],
+        cache: this.cacheBits[page.name],
         plugins: [
           includes({ paths: [ join(pageCachePath, "scripts")] }),
           multientry({ exports: false }),
@@ -67,21 +92,21 @@ export class Es6Compiler {
           babel({ presets: [rollupPreset] })
         ]
       });
-      this.cacheBits[page] = bundle;
-      bits[page] = bundle.generate({ format: "iife", exports: "none", sourceMap: true });
+      this.cacheBits[page.name] = bundle;
+      bits[page.name] = bundle.generate({ format: "iife", exports: "none", sourceMap: true });
     }
     return bits;
   }
 
   async buildCache(cachePath: string, pageTree: PageTree) {
-    for (let page in pageTree.scripts) {
+    for (let page: PageModel of pageTree.pages) {
       const bitPathRegex = new RegExp(".*\/(.*\/.*\.js)$");
-      const pageCachePath = join(cachePath, page);
+      const pageCachePath = join(cachePath, page.name);
 
-      await asyncMap(pageTree["scripts"][page].globals, async(mat: Material) => {
+      await asyncMap(page.scripts.globals, async(mat: Material) => {
         await sander.writeFile(join(pageCachePath, "scripts", mat.overridableName), mat.content);
       });
-      await asyncMap(pageTree["scripts"][page].bits, async(mat: Material) => {
+      await asyncMap(page.scripts.bits, async(mat: Material) => {
         await sander.writeFile(join(pageCachePath, "bits", mat.location.match(bitPathRegex)[1]), mat.content);
       });
     }

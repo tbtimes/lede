@@ -1,44 +1,62 @@
 import { join } from "path";
 import { render, Options } from "node-sass";
-import { inspect } from "util";
 const sander = require("sander");
+import { Logger } from "bunyan";
 
 import { PageTree } from "../interfaces/PageTree";
 import { Compiler } from "../interfaces/Compiler";
 import { Material } from "../models/Material";
 import { asyncMap } from "../utils";
+import { mockLogger } from "../DefaultLogger";
 
 
 export class SassCompiler implements Compiler {
   renderOpts: Options;
+  logger: Logger;
 
   constructor(opts: any) {
     this.renderOpts = Object.assign({}, {outputStyle: "compressed", sourceComments: false}, opts);
+    this.logger = <any>mockLogger();
   };
 
-  async compile(workingDir: string, tree: PageTree) {
-    const cachePath = join(workingDir, ".ledeCache");
-    await this.buildCache(cachePath, tree);
-    const globals = await this.compileGlobals(cachePath, tree);
-    const bits = await this.compileBits(cachePath, tree);
+  configure({ logger }) {
+    this.logger = logger;
+  }
+
+  async compile(tree: PageTree) {
+    const cachePath = join(tree.workingDir, ".ledeCache");
+    let globals, bits;
+
+    try {
+      await this.buildCache(cachePath, tree);
+    } catch (err) {
+      this.logger.error({err}, "An error occurred while caching styles");
+    }
+
+    try {
+      globals = await this.compileGlobals(cachePath, tree);
+    } catch (err) {
+      this.logger.error({err}, "An error occurred while compiling global styles");
+    }
+
+    try {
+      bits = await this.compileBits(cachePath, tree);
+    } catch (err) {
+      this.logger.error({err}, "An error occurred while compiling bit styles");
+    }
+
     return { bits, globals };
   }
 
   async compileGlobals(cachePath, tree) {
     const globals = {};
-    for (let page in tree["styles"]) {
-      const pageCachePath = join(cachePath, page);
+    for (let page of tree.pages) {
+      const pageCachePath = join(cachePath, page.name);
       const includePaths = [join(pageCachePath, "styles")];
-      const filesToRender = tree["styles"][page]["globals"].reduce((state: any[], mat: Material) => {
-        const indexOfPresent = state.map(x => x.overridableName).indexOf(mat.overridableName);
-        if (indexOfPresent < 0) state.push(mat);
-        else state[indexOfPresent] = mat;
-        return state;
-      }, []);
-      const renderedGlobals = await asyncMap(filesToRender, async(mat: Material) => {
+      const renderedGlobals = await asyncMap(page.styles.globals, async(mat: Material) => {
         return await SassCompiler.renderFile(mat.location, Object.assign({}, this.renderOpts, {includePaths}));
       });
-      globals[page] = renderedGlobals.reduce((state, rendered) => {
+      globals[page.name] = renderedGlobals.reduce((state, rendered) => {
         return state += rendered.css.toString();
       }, "");
     }
@@ -47,13 +65,13 @@ export class SassCompiler implements Compiler {
 
   async compileBits(cachePath, tree) {
     const bits = {};
-    for (let page in tree["styles"]) {
-      const pageCachePath = join(cachePath, page);
+    for (let page of tree.pages) {
+      const pageCachePath = join(cachePath, page.name);
       const includePaths = [join(pageCachePath, "styles")];
-      const renderedBits = await asyncMap(tree["styles"][page]["bits"], async(mat: Material) => {
+      const renderedBits = await asyncMap(page.styles.bits, async(mat: Material) => {
         return await SassCompiler.renderFile(mat.location, Object.assign({}, this.renderOpts, {includePaths}));
       });
-      bits[page] = renderedBits.reduce((state, rendered) => {
+      bits[page.name] = renderedBits.reduce((state, rendered) => {
         return state += rendered.css.toString();
       }, "");
     }
@@ -72,14 +90,14 @@ export class SassCompiler implements Compiler {
 
   async buildCache(cachePath: string, tree: PageTree) {
     // console.log(inspect(tree, {depth: Infinity}));
-    for (let page in tree.styles) {
+    for (let page of tree.pages) {
       const bitPathRegex = new RegExp(".*\/(.*\/.*\.scss)$");
-      const pageCachePath = join(cachePath, page);
+      const pageCachePath = join(cachePath, page.name);
 
-      await asyncMap(tree["styles"][page].globals, async(mat: Material) => {
+      await asyncMap(page.styles.globals, async(mat: Material) => {
         await sander.writeFile(join(pageCachePath, "styles", mat.overridableName), mat.content);
       });
-      await asyncMap(tree["styles"][page].bits, async(mat: Material) => {
+      await asyncMap(page.styles.bits, async(mat: Material) => {
         await sander.writeFile(join(pageCachePath, "bits", mat.location.match(bitPathRegex)[1]), mat.content);
       });
     }

@@ -1,5 +1,6 @@
+import { Logger } from "bunyan";
+
 import { PageTree } from "./PageTree";
-import { ProjectReport } from "../models/Project";
 
 export interface CompilerInitializer {
   compilerClass: any;
@@ -12,8 +13,14 @@ export interface CompiledPage {
   files: Array<{name: string, content: string}>;
 }
 
+export interface CompiledAssets {
+  bits: { [pageName: string]: string };
+  globals: { [pageName: string]: string };
+}
+
 export interface HtmlCompiler {
-  compile(arg: {report: ProjectReport, styles: any, scripts: any}): Promise<CompiledPage[]>;
+  configure(arg: {logger: Logger});
+  compile(arg: {pageTree: PageTree, styles: CompiledAssets, scripts: CompiledAssets}): Promise<CompiledPage[]>;
 }
 
 export interface CompiledIncludes {
@@ -22,5 +29,6 @@ export interface CompiledIncludes {
 }
 
 export interface Compiler {
-  compile(workingDir, tree: PageTree): Promise<CompiledIncludes>;
+  configure(arg: {logger: Logger});
+  compile(tree: PageTree): Promise<CompiledIncludes>;
 }

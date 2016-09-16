@@ -2,7 +2,8 @@ const sander = require("sander"); // No type defs so we will require it for now 
 import { join } from "path";
 import { Logger } from "bunyan";
 
-import { defaultLogger } from "./DefaultLogger";
+import { mockLogger } from "./DefaultLogger";
+import { MissingFile, ManyFiles, LoadFile } from "./errors/ProjectFactoryErrors";
 import { globProm, asyncMap } from "./utils";
 import { Project, ProjectReport, ProjectConstructorArg } from "./models/Project";
 import { Bit, BitConstructorArg } from "./models/Bit";
@@ -22,30 +23,41 @@ export class ProjectFactory {
 
   constructor({workingDir, logger}: {workingDir: string, logger?: Logger}) {
     if (!workingDir) throw new Error("Must specify a workingDir for ProjectFactory.");
-    this.logger = logger || defaultLogger();
+    this.logger = logger || <any>mockLogger();
     this.workingDir = workingDir;
+  }
+
+  configure(opts: {logger: Logger}) {
+    this.logger = opts.logger;
   }
 
   /**
    * Takes a directory string and returns an instantiated Project.
    * @param workingDir: string – Directory containing a projectSettings file.
+   * @param logger: Logger
    * @returns {Promise<Project>} – Instantiated project
    */
-  static async getProject(workingDir: string): Promise<Project> {
+  static async getProject(workingDir: string, logger: Logger): Promise<Project> {
     const settings = await globProm("*.projectSettings.js", workingDir);
     const nameRegex = ProjectFactory.getNameRegex("projectSettings");
 
-    // Check that working directory contains a projectSettings file.
+    // Check that working directory contains a single settings file.
     if (!settings) {
-      // TODO: Make this a custom error so we can catch it higher up
-      throw new Error(`Could not find a s file in ${workingDir}`);
+      throw new MissingFile({ file: "projectSettings.js", dir: workingDir});
     } else if (settings.length > 1) {
-      // TODO: Make this a custom error so we can catch it higher up
-      throw new Error(`Found multiple projectSettings files in ${workingDir}`);
+      throw new ManyFiles({ file: "projectSettings.js", dir: workingDir });
     }
 
-    // Since this is user-defined, it could throw. TODO: remember to catch/log this case higher
-    const SettingsConfig: ProjectConstructorArg = new (require(join(workingDir, settings[0]))).default();
+    logger.info(`Loading ${settings[0]}`);
+
+    // Since this is user-defined, it could throw.
+    let SettingsConfig: ProjectConstructorArg;
+
+    try {
+      SettingsConfig = new (require(join(workingDir, settings[0]))).default();
+    } catch (e) {
+      throw new LoadFile({ file: settings[0], dir: workingDir, detail: e});
+    }
     SettingsConfig.name = settings[0].match(nameRegex)[1];
 
     return await (new Project(SettingsConfig)).init();
@@ -56,21 +68,28 @@ export class ProjectFactory {
    * @param workingDir: string – Directory containing a bitSettings file.
    * @returns {Promise<Bit>}
    */
-  static async getBit(workingDir: string): Promise<Bit> {
+  static async getBit(workingDir: string, logger): Promise<Bit> {
     const settings = await globProm("*.bitSettings.js", workingDir);
     const nameRegex = ProjectFactory.getNameRegex("bitSettings");
 
-    // Check that working directory contains a projectSettings file.
+    // Check that working directory contains a single settings file.
     if (!settings) {
-      // TODO: Make this a custom error so we can catch it higher up
-      throw new Error(`Could not find a bitSettings file in ${workingDir}`);
+      throw new MissingFile({ file: "bitSettings.js", dir: workingDir});
     } else if (settings.length > 1) {
-      // TODO: Make this a custom error so we can catch it higher up
-      throw new Error(`Found multiple bitSettings files in ${workingDir}`);
+      throw new ManyFiles({ file: "bitSettings.js", dir: workingDir });
     }
 
-    // Since this is user-defined, it could throw. TODO: remember to catch/log this case higher
-    const SettingsConfig: BitConstructorArg = new (require(join(workingDir, settings[0]))).default();
+    logger.info(`Loading ${settings[0]}`);
+
+    // Since this is user-defined, it could throw.
+    let SettingsConfig: BitConstructorArg;
+
+    try {
+      SettingsConfig = new (require(join(workingDir, settings[0]))).default();
+    } catch (e) {
+      throw new LoadFile({ file: settings[0], dir: workingDir, detail: e});
+    }
+
     SettingsConfig.name = settings[0].match(nameRegex)[1];
 
 
@@ -82,19 +101,27 @@ export class ProjectFactory {
    * @param workingDir: string – Directory containing one or more pageSettings files.
    * @returns {Promise<Page[]>}
    */
-  static async getPages(workingDir: string): Promise<Page[]> {
+  static async getPages(workingDir: string, logger: Logger): Promise<Page[]> {
     const settings = await globProm("*.pageSettings.js", workingDir);
     const nameRegex = ProjectFactory.getNameRegex("pageSettings");
 
-    // Check that working directory contains a projectSettings file.
+    // Check that working directory contains at least one settings file.
     if (!settings) {
-      // TODO: Make this a custom error so we can catch it higher up
-      throw new Error(`Could not find a pageSettings file in ${workingDir}`);
+      throw new MissingFile({ file: "pageSettings.js", dir: workingDir});
     }
 
-    // Since this is user-defined, it could throw. TODO: remember to catch/log this case higher
+    logger.info(`Detected ${settings.length} pages`);
+
+    // Since this is user-defined, it could throw.
    return asyncMap(settings, async (s) => {
-     const cfg: PageConstructorArg = new (require(join(workingDir, s))).default();
+     let cfg: PageConstructorArg;
+     logger.info(`Loading ${s}`);
+     try {
+       cfg = new (require(join(workingDir, s))).default();
+     } catch (e) {
+       throw new LoadFile({file: s, dir: workingDir, detail: e});
+     }
+
      cfg.name = s.match(nameRegex)[1];
      return await (new Page(cfg)).init();
     });
@@ -105,22 +132,28 @@ export class ProjectFactory {
    * @param workingDir
    * @returns {Promise<Block[]>}
    */
-  static async getBlocks(workingDir: string): Promise<Block[]> {
-    const settingsLocations = await globProm("*.blockSettings.js", workingDir);
+  static async getBlocks(workingDir: string, logger: Logger): Promise<Block[]> {
+    const settings = await globProm("*.blockSettings.js", workingDir);
     const nameRegex = ProjectFactory.getNameRegex("blockSettings");
-    const settings = settingsLocations.map(loc => {
-      return { loc, name: loc.match(nameRegex)[1] };
-    });
 
+    // Check that working directory contains at least one settings file.
     if (!settings) {
-      // TODO: Make this a custom error to catch higher up
-      throw new Error(`Could not find a blockSettings file in ${workingDir}`);
+      throw new MissingFile({ file: "blockSettings.js", dir: workingDir});
     }
+
+    logger.info(`Detected ${settings.length} blocks`);
 
     // instantiate blocks here
     const blocks = settings.map(x => {
-      const cfg: BlockConstructorArg = new (require(join(workingDir, x.loc))).default();
-      cfg.name = x.name;
+      let cfg: BlockConstructorArg;
+      logger.info(`Loading ${x}`);
+      try {
+        cfg = new (require(join(workingDir, x))).default();
+      } catch (e) {
+        throw new LoadFile({file: x, dir: workingDir, detail: e});
+      }
+
+      cfg.name = x.match(nameRegex)[1];
       return new Block(cfg);
     });
 
@@ -133,17 +166,25 @@ export class ProjectFactory {
    * the project.
    */
   public async buildReport(): Promise<ProjectReport> {
-    // TODO: error handling in this method
-    const projectReport = { workingDir: this.workingDir, project: null, pages: [], blocks: [], bits: [] };
-    const bitDirs = await globProm("*", join(this.workingDir, "bits"));
+    this.logger.info(`Analyzing project components.`);
 
-    projectReport["project"] = await ProjectFactory.getProject(this.workingDir);
-    projectReport["pages"] = await ProjectFactory.getPages(join(this.workingDir, "pages"));
-    projectReport["blocks"] = await ProjectFactory.getBlocks(join(this.workingDir, "blocks"));
-    projectReport["bits"] = await asyncMap(
-      await globProm("*", join(this.workingDir, "bits")),
-      async (path) => await ProjectFactory.getBit(join(this.workingDir, "bits", path))
-    );
+    const projectReport = { workingDir: this.workingDir, project: null, pages: [], blocks: [], bits: [] };
+
+    try {
+      projectReport["project"] = await ProjectFactory.getProject(this.workingDir, this.logger);
+      projectReport["pages"] = await ProjectFactory.getPages(join(this.workingDir, "pages"), this.logger);
+      projectReport["blocks"] = await ProjectFactory.getBlocks(join(this.workingDir, "blocks"), this.logger);
+      projectReport["bits"] = await asyncMap(
+        await globProm("*", join(this.workingDir, "bits")),
+        async (path) => await ProjectFactory.getBit(join(this.workingDir, "bits", path), this.logger)
+      );
+    } catch (err) {
+      this.logger.error({err});
+      if (err.detail) {
+        this.logger.error({err: err.detail}, "^^ details for above error");
+      }
+    }
+
     return projectReport;
   }
 

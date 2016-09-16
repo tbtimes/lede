@@ -39,6 +39,10 @@ export class ProjectDirector {
     this.logger = logger || defaultLogger();
     this.workingDir = workingDir;
     this.projectFactory = projectFactory;
+
+    // Inject logger into delegate components
+    this.deployer.configure({logger: this.logger});
+    this.projectFactory.configure({logger: this.logger });
   };
 
   /**
@@ -62,7 +66,8 @@ export class ProjectDirector {
    * @returns {Promise<PageTree>}
    */
   async buildPageTree(report: ProjectReport): Promise<PageTree> {
-    return report["pages"].reduce((state: any, p: Page) => {
+    this.logger.info(`Generating tree of dependencies`);
+    const tree = report["pages"].reduce((state: any, p: Page) => {
       const pageState = {
         scripts: {
           globals: [],
@@ -72,6 +77,7 @@ export class ProjectDirector {
           globals: [],
           bits: []
         },
+        name: p.name,
         context: {}
       };
 
@@ -93,7 +99,7 @@ export class ProjectDirector {
         }, []);
 
       pageState.styles.globals = report["project"].defaults.styles
-        .concat(p.materials.scripts)
+        .concat(p.materials.styles)
         .reduce((state: Material[], mat: Material) => {
           const indexOfPresent = state.map(x => x.overridableName).indexOf(mat.overridableName);
           if (indexOfPresent < 0) state.push(mat);
@@ -132,11 +138,12 @@ export class ProjectDirector {
       // --CONTEXT--
       // -----------
 
-      const $PROJECT = Object.assign({}, report.project.context, { $name: report.project.name });
+      const $PROJECT = Object.assign({}, report.project.context, { $name: report.project.name, $deployRoot: report.project.deployRoot });
       const pageDefaultProps = {
         $name: p.name,
         $meta: report.project.defaults.metaTags.concat(p.meta),
-        $template: p.template
+        $template: p.template,
+        $deployPath: p.deployPath
       };
       const $PAGE = Object.assign({}, p.context, pageDefaultProps);
       const $BLOCKS = pageBlocks.map((blockName: string) => {
@@ -158,6 +165,9 @@ export class ProjectDirector {
 
       return state;
     }, { workingDir: report.workingDir, pages: [] });
+
+    this.logger.debug({tree});
+    return tree;
   }
 
   /**
@@ -165,10 +175,14 @@ export class ProjectDirector {
    * @param report
    */
   public async compile(report: ProjectReport) {
-    const pageTree = await this.buildPageTree(report);
-    const scripts = await report.project.compilers.script.compile(this.workingDir, pageTree);
-    const styles = await report.project.compilers.style.compile(this.workingDir, pageTree);
-    const renderedPages = await report.project.compilers.html.compile({styles, scripts, report});
-    this.deployer.deploy(renderedPages);
+    try {
+      const pageTree = await this.buildPageTree(report);
+      const scripts = await report.project.compilers.script.compile(pageTree);
+      const styles = await report.project.compilers.style.compile(pageTree);
+      const renderedPages = await report.project.compilers.html.compile({styles, scripts, pageTree});
+      await this.deployer.deploy(renderedPages);
+    } catch (err) {
+      this.logger.error({err});
+    }
   };
 }
