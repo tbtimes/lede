@@ -13,7 +13,7 @@ export class FileSystemDeployer implements Deployer {
   logger: Logger;
 
   constructor({workingDir}) {
-    this.deployDir = join(workingDir, ".ledeCache", "built");
+    this.deployDir = workingDir;
     this.logger = <any>mockLogger();
   }
 

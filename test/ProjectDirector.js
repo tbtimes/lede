@@ -9,9 +9,9 @@ const testProjPath = join(__dirname, "fixtures", "test-project");
 
 test.only("Testing compiler", async t => {
   const pf = new ProjectFactory({workingDir: testProjPath});
-  const deployer = new FileSystemDeployer({workingDir: testProjPath});
+  const deployer = new FileSystemDeployer({workingDir: resolve(testProjPath, ".ledeCache", "built")});
   const pd = new ProjectDirector({workingDir: testProjPath, projectFactory: pf, deployer});
   const report = await pd.buildReport();
-  const page = await pd.compile(report);
+  await pd.compile(report);
   // inspect(page, {depth: Infinity})
 });
