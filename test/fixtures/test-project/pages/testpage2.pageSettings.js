@@ -1,4 +1,3 @@
-const resolve = require("path").resolve;
 
 class SettingsConfig {
   constructor() {
@@ -6,16 +5,20 @@ class SettingsConfig {
     this.blocks = ["header", "article", "footer"];
     this.materials = {
       scripts: [
-        { location: resolve(__dirname, "..", "scripts", "a.js"), as: "a.js" },
-        { location: resolve(__dirname, "..", "scripts", "b.js"), as: "b.js" },
-        { location: resolve(__dirname, "..", "scripts", "c.js"), as: "a.js" },
+        { id: "tester/a.js", as: "a.js" },
+        { id: "tester/b.js", as: "b.js" },
+        { id: "tester/c.js", as: "a.js" },
       ],
       styles: [
-        { location: resolve(__dirname, "..", "styles", "a.scss"), as: "a.scss" },
-        { location: resolve(__dirname, "..", "styles", "b.scss"), as: "b.scss" },
-        { location: resolve(__dirname, "..", "styles", "c.scss"), as: "a.scss" }
+        { id: "tester/a.scss", as: "a.scss" },
+        { id: "tester/b.scss", as: "b.scss" },
+        { id: "tester/c.scss", as: "a.scss" },
       ],
-      assets: []
+      assets: [
+        { id: "tester/a.json", as: "a.json" },
+        { id: "tester/b.json", as: "b.json" },
+        { id: "tester/c.json", as: "a.json" },
+      ]
     };
     this.resources = {};
     this.meta = [];

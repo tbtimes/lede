@@ -55,21 +55,18 @@ export class Page {
 
     function constructMaterial(type) {
       return function(input) {
-        if (typeof input === "string") {
-          return new Material({location: input, type, overridableName: basename(input)});
-        }
-        const {location, as} = input;
-        return new Material({location, type, overridableName: as});
+        const overridableName = input.as || basename(input.id);
+        return { type, id: input.id, overridableName };
       };
     }
   };
 
-  async init(): Promise<Page> {
-    this.materials.styles = await asyncMap(this.materials.styles, async (m) => await m.fetch());
-    this.materials.scripts = await asyncMap(this.materials.scripts, async (m) => await m.fetch());
-    this.materials.assets = await asyncMap(this.materials.assets, async (m) => await m.fetch());
-    return this;
-  }
+  // async init(): Promise<Page> {
+  //   this.materials.styles = await asyncMap(this.materials.styles, async (m) => await m.fetch());
+  //   this.materials.scripts = await asyncMap(this.materials.scripts, async (m) => await m.fetch());
+  //   this.materials.assets = await asyncMap(this.materials.assets, async (m) => await m.fetch());
+  //   return this;
+  // }
 }
 
 // /**

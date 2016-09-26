@@ -1,5 +1,5 @@
 const sander = require("sander"); // No type defs so we will require it for now TODO: write type defs for sander
-import { join } from "path";
+import { join, basename } from "path";
 import { Logger } from "bunyan";
 
 import { mockLogger } from "./DefaultLogger";
@@ -59,6 +59,7 @@ export class ProjectFactory {
       throw new LoadFile({ file: settings[0], dir: workingDir, detail: e});
     }
     SettingsConfig.name = settings[0].match(nameRegex)[1];
+    SettingsConfig.logger = logger;
 
     return await (new Project(SettingsConfig)).init();
   }
@@ -123,7 +124,7 @@ export class ProjectFactory {
      }
 
      cfg.name = s.match(nameRegex)[1];
-     return await (new Page(cfg)).init();
+     return await (new Page(cfg));
     });
   }
 
@@ -161,6 +162,71 @@ export class ProjectFactory {
     return <any>Promise.all(blocks.map(b => b.fetch()));
   }
 
+  static async getScripts(workingDir: string, namespace: string) {
+    const scripts = await globProm("*", workingDir);
+    return await asyncMap(scripts, async(s) => {
+      const content = await sander.readFile(join(workingDir, s));
+      return {
+        namespace,
+        type: "script",
+        location: join(workingDir, s),
+        name: basename(s),
+        content: content.toString()
+      };
+    });
+  }
+
+  static async getStyles(workingDir: string, namespace: string) {
+    const styles = await globProm("*", workingDir);
+    return await asyncMap(styles, async(s) => {
+      const content = await sander.readFile(join(workingDir, s));
+      return {
+        namespace,
+        type: "style",
+        location: join(workingDir, s),
+        name: basename(s),
+        content: content.toString()
+      };
+    });
+  }
+
+  static async getAssets(workingDir: string, namespace: string) {
+    const assets = await globProm("*", workingDir);
+    return await asyncMap(assets, async(s) => {
+      const content = await sander.readFile(join(workingDir, s));
+      return {
+        namespace,
+        type: "asset",
+        location: join(workingDir, s),
+        name: basename(s),
+        content: content.toString()
+      };
+    });
+  }
+
+  static async getMaterials(workingDir: string) {
+    const settings = await globProm("*.projectSettings.js", workingDir);
+    const nameRegex = ProjectFactory.getNameRegex("projectSettings");
+
+    // Check that working directory contains a single settings file.
+    if (!settings) {
+      throw new MissingFile({ file: "projectSettings.js", dir: workingDir});
+    } else if (settings.length > 1) {
+      throw new ManyFiles({ file: "projectSettings.js", dir: workingDir });
+    }
+
+    const namespace = settings[0].match(nameRegex)[1];
+
+    const scripts = await ProjectFactory.getScripts(join(workingDir, "scripts"), namespace);
+    const styles = await ProjectFactory.getStyles(join(workingDir, "styles"), namespace);
+    const assets = await ProjectFactory.getAssets(join(workingDir, "assets"), namespace);
+    return {
+      styles,
+      scripts,
+      assets
+    };
+  }
+
   /**
    * This method essentially calls all the static methods in the proper sequence and returns a datastructure detailing
    * the project.
@@ -168,7 +234,7 @@ export class ProjectFactory {
   public async buildReport(): Promise<ProjectReport> {
     this.logger.info(`Analyzing project components.`);
 
-    const projectReport = { workingDir: this.workingDir, project: null, pages: [], blocks: [], bits: [] };
+    const projectReport = { workingDir: this.workingDir, project: null, pages: [], blocks: [], bits: [], materials: {} };
 
     try {
       projectReport["project"] = await ProjectFactory.getProject(this.workingDir, this.logger);
@@ -178,6 +244,7 @@ export class ProjectFactory {
         await globProm("*", join(this.workingDir, "bits")),
         async (path) => await ProjectFactory.getBit(join(this.workingDir, "bits", path), this.logger)
       );
+      projectReport["materials"] = await ProjectFactory.getMaterials(this.workingDir);
     } catch (err) {
       this.logger.error({err});
       if (err.detail) {

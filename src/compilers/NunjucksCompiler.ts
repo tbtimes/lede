@@ -91,12 +91,12 @@ export class NunjucksCompiler implements HtmlCompiler {
         bits: scripts.bits[p.name],
         globals: scripts.bits[p.name]
       };
-      return await this.buildPage({context: p.context, styles: pageStyles, scripts: pageScripts});
+      return await this.buildPage({context: p.context, styles: pageStyles, scripts: pageScripts, assets: p.assets });
     });
     return pages;
   }
 
-  async buildPage({context, styles, scripts}) {
+  async buildPage({context, styles, scripts, assets}) {
     const shell = `
 <Doctype html>
 <html>
@@ -141,13 +141,14 @@ ${ context.$PAGE.$template }
 </html>
 `;
     const rendered = await this.renderPage({shell, context});
+
     return {
       renderedPage: rendered,
       path: join(context.$PROJECT.$deployRoot, context.$PAGE.$deployPath),
       files: [
         { name: "globalScripts.js", content: scripts.globals.code },
         { name: "bitScripts.js", content: scripts.bits.code }
-      ]
+      ].concat(assets.map(a => this.convertAssetToFile(a)))
     };
   }
 
@@ -158,5 +159,12 @@ ${ context.$PAGE.$template }
         return resolve(res);
       });
     });
+  }
+
+  convertAssetToFile(asset) {
+    return {
+      name: asset.overridableName || asset.name,
+      content: asset.content
+    };
   }
 }

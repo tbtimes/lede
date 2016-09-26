@@ -77,6 +77,7 @@ export class ProjectDirector {
           globals: [],
           bits: []
         },
+        assets: [],
         name: p.name,
         context: {}
       };
@@ -91,8 +92,10 @@ export class ProjectDirector {
 
       pageState.scripts.globals = report["project"].defaults.scripts
         .concat(p.materials.scripts)
-        .reduce((state: Material[], mat: Material) => {
+        .reduce((state: Array<{id: string, type: string, overridableName?: string, content?: string}>,
+                 mat: {id: string, type: string, overridableName?: string, content?: string}) => {
           const indexOfPresent = state.map(x => x.overridableName).indexOf(mat.overridableName);
+          mat = retrieveMaterial(mat);
           if (indexOfPresent < 0) state.push(mat);
           else state[indexOfPresent] = mat;
           return state;
@@ -100,8 +103,21 @@ export class ProjectDirector {
 
       pageState.styles.globals = report["project"].defaults.styles
         .concat(p.materials.styles)
-        .reduce((state: Material[], mat: Material) => {
+        .reduce((state: Array<{id: string, type: string, overridableName?: string, content?: string}>,
+                 mat: {id: string, type: string, overridableName?: string, content?: string}) => {
           const indexOfPresent = state.map(x => x.overridableName).indexOf(mat.overridableName);
+          mat = retrieveMaterial(mat);
+          if (indexOfPresent < 0) state.push(mat);
+          else state[indexOfPresent] = mat;
+          return state;
+        }, []);
+
+      pageState.assets = report["project"].defaults.assets
+        .concat(p.materials.assets)
+        .reduce((state: Array<{id: string, type: string, overridableName?: string, content?: string}>,
+                 mat: {id: string, type: string, overridableName?: string, content?: string}) => {
+           const indexOfPresent = state.map(x => x.overridableName).indexOf(mat.overridableName);
+          mat = retrieveMaterial(mat);
           if (indexOfPresent < 0) state.push(mat);
           else state[indexOfPresent] = mat;
           return state;
@@ -167,6 +183,14 @@ export class ProjectDirector {
     }, { workingDir: report.workingDir, pages: [] });
 
     this.logger.debug({tree});
+
+    function retrieveMaterial({type, id, overridableName}: {type: string, id: string, overridableName: string}) {
+      const [namespace, name] = id.split("/");
+      const mat = report.materials[`${type}s`].find((m) => m.namespace === namespace && m.name === name);
+      mat["overridableName"] = overridableName;
+      return mat;
+    }
+
     return tree;
   }
 

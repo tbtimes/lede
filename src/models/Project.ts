@@ -19,6 +19,7 @@ export interface ProjectReport {
   blocks: string[];
   pages: Page[];
   bits: BitReference[];
+  materials: any;
 }
 
 export interface ProjectConstructorArg {
