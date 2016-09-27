@@ -1,4 +1,4 @@
-import { join } from "path";
+import { join, basename } from "path";
 import { render, Options } from "node-sass";
 const sander = require("sander");
 import { Logger } from "bunyan";
@@ -94,12 +94,17 @@ export class SassCompiler implements Compiler {
       const bitPathRegex = new RegExp(".*\/(.*\/.*\.scss)$");
       const pageCachePath = join(cachePath, page.name);
 
-      await asyncMap(page.styles.globals, async(mat: Material) => {
-        await sander.writeFile(join(pageCachePath, "styles", mat.overridableName), mat.content);
-      });
-      await asyncMap(page.styles.bits, async(mat: Material) => {
-        await sander.writeFile(join(pageCachePath, "bits", mat.location.match(bitPathRegex)[1]), mat.content);
-      });
+      await Promise.all(page.cache.styles.map(mat => {
+        return sander.writeFile(join(pageCachePath, "styles", mat.overridableName || mat.name || basename(mat.location)), mat.content);
+      }));
+
+      await Promise.all(page.styles.globals.map(mat => {
+        return sander.writeFile(join(pageCachePath, "styles", mat.overridableName || mat.name || basename(mat.location)), mat.content);
+      }));
+
+      await Promise.all(page.styles.bits.map(mat => {
+        return sander.writeFile(join(pageCachePath, "bits", mat.location.match(bitPathRegex)[1]), mat.content);
+      }));
     }
   }
 }

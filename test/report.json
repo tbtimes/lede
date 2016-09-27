@@ -1,0 +1,485 @@
+{
+  "workingDir": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project",
+  "project": {
+    "name": "tester",
+    "deployRoot": "some-seo-root-path-here",
+    "defaults": {
+      "scripts": [],
+      "assets": [],
+      "styles": [],
+      "metaTags": [],
+      "blocks": []
+    },
+    "blocks": [],
+    "context": {
+      "baz": "qux"
+    },
+    "compilers": {
+      "html": {
+        "logger": {
+          "domain": null,
+          "_events": {},
+          "_eventsCount": 0,
+          "_level": 50,
+          "streams": [
+            {
+              "type": "stream",
+              "stream": {
+                "readable": true,
+                "writable": true,
+                "domain": null,
+                "_events": {},
+                "_eventsCount": 4
+              },
+              "closeOnExit": false,
+              "level": 50,
+              "raw": false
+            }
+          ],
+          "serializers": {},
+          "src": false,
+          "fields": {
+            "name": "LedeLogger",
+            "hostname": "sp3489anw032738.ad.sptimes.com",
+            "pid": 7316
+          }
+        },
+        "env": {
+          "opts": {
+            "autoescape": false,
+            "watch": false,
+            "noCache": true,
+            "dev": false,
+            "throwOnUndefined": false,
+            "trimBlocks": false,
+            "lstripBlocks": false
+          },
+          "loaders": [
+            {
+              "pathsToNames": {},
+              "noCache": true,
+              "searchPaths": [
+                "."
+              ],
+              "cache": {},
+              "listeners": {
+                "update": [
+                  null
+                ]
+              }
+            }
+          ],
+          "globals": {},
+          "filters": {},
+          "asyncFilters": [],
+          "extensions": {
+            "Bit": {
+              "tags": [
+                "BIT",
+                "bit"
+              ],
+              "elementName": "$bit",
+              "_name": "Bit"
+            },
+            "Block": {
+              "tags": [
+                "BLOCK",
+                "block"
+              ],
+              "elementName": "$block",
+              "_name": "Block"
+            }
+          },
+          "extensionsList": [
+            {
+              "tags": [
+                "BIT",
+                "bit"
+              ],
+              "elementName": "$bit",
+              "_name": "Bit"
+            },
+            {
+              "tags": [
+                "BLOCK",
+                "block"
+              ],
+              "elementName": "$block",
+              "_name": "Block"
+            }
+          ]
+        }
+      },
+      "style": {
+        "renderOpts": {
+          "outputStyle": "compressed",
+          "sourceComments": false
+        },
+        "logger": {
+          "domain": null,
+          "_events": {},
+          "_eventsCount": 0,
+          "_level": 50,
+          "streams": [
+            {
+              "type": "stream",
+              "stream": {
+                "readable": true,
+                "writable": true,
+                "domain": null,
+                "_events": {},
+                "_eventsCount": 4
+              },
+              "closeOnExit": false,
+              "level": 50,
+              "raw": false
+            }
+          ],
+          "serializers": {},
+          "src": false,
+          "fields": {
+            "name": "LedeLogger",
+            "hostname": "sp3489anw032738.ad.sptimes.com",
+            "pid": 7316
+          }
+        }
+      },
+      "script": {
+        "cacheBits": {},
+        "cacheGlobals": {},
+        "logger": {
+          "domain": null,
+          "_events": {},
+          "_eventsCount": 0,
+          "_level": 50,
+          "streams": [
+            {
+              "type": "stream",
+              "stream": {
+                "readable": true,
+                "writable": true,
+                "domain": null,
+                "_events": {},
+                "_eventsCount": 4
+              },
+              "closeOnExit": false,
+              "level": 50,
+              "raw": false
+            }
+          ],
+          "serializers": {},
+          "src": false,
+          "fields": {
+            "name": "LedeLogger",
+            "hostname": "sp3489anw032738.ad.sptimes.com",
+            "pid": 7316
+          }
+        }
+      }
+    }
+  },
+  "pages": [
+    {
+      "name": "testpage",
+      "context": {},
+      "deployPath": "a-great-seo-headline",
+      "blocks": [
+        "header"
+      ],
+      "meta": [],
+      "materials": {
+        "styles": [
+          {
+            "type": "style",
+            "id": "tester/a.scss",
+            "overridableName": "a.scss"
+          },
+          {
+            "type": "style",
+            "id": "tester/b.scss",
+            "overridableName": "b.scss"
+          },
+          {
+            "type": "style",
+            "id": "tester/c.scss",
+            "overridableName": "c.scss"
+          }
+        ],
+        "scripts": [
+          {
+            "type": "script",
+            "id": "tester/a.js",
+            "overridableName": "a.js"
+          },
+          {
+            "type": "script",
+            "id": "tester/b.js",
+            "overridableName": "b.js"
+          },
+          {
+            "type": "script",
+            "id": "tester/c.js",
+            "overridableName": "c.js"
+          }
+        ],
+        "assets": [
+          {
+            "type": "asset",
+            "id": "tester/a.json",
+            "overridableName": "a.json"
+          },
+          {
+            "type": "asset",
+            "id": "tester/b.json",
+            "overridableName": "b.json"
+          },
+          {
+            "type": "asset",
+            "id": "tester/c.json",
+            "overridableName": "c.json"
+          }
+        ]
+      },
+      "resources": {
+        "head": [],
+        "body": []
+      },
+      "template": "\n<div id=\"ledeRoot\">\n  {% asyncAll $block in $BLOCKS %}\n    {% BLOCK $block %}\n  {% endall %}\n</div>\n"
+    },
+    {
+      "name": "testpage2",
+      "context": {},
+      "deployPath": "another-great-seo-headline",
+      "blocks": [
+        "header",
+        "article",
+        "footer"
+      ],
+      "meta": [],
+      "materials": {
+        "styles": [
+          {
+            "type": "style",
+            "id": "tester/a.scss",
+            "overridableName": "a.scss"
+          },
+          {
+            "type": "style",
+            "id": "tester/b.scss",
+            "overridableName": "b.scss"
+          },
+          {
+            "type": "style",
+            "id": "tester/c.scss",
+            "overridableName": "a.scss"
+          }
+        ],
+        "scripts": [
+          {
+            "type": "script",
+            "id": "tester/a.js",
+            "overridableName": "a.js"
+          },
+          {
+            "type": "script",
+            "id": "tester/b.js",
+            "overridableName": "b.js"
+          },
+          {
+            "type": "script",
+            "id": "tester/c.js",
+            "overridableName": "a.js"
+          }
+        ],
+        "assets": [
+          {
+            "type": "asset",
+            "id": "tester/a.json",
+            "overridableName": "a.json"
+          },
+          {
+            "type": "asset",
+            "id": "tester/b.json",
+            "overridableName": "b.json"
+          },
+          {
+            "type": "asset",
+            "id": "tester/c.json",
+            "overridableName": "a.json"
+          }
+        ]
+      },
+      "resources": {
+        "head": [],
+        "body": []
+      },
+      "template": "\n<div id=\"ledeRoot\">\n  {% asyncAll $block in $BLOCKS %}\n    {% BLOCK $block %}\n  {% endall %}\n</div>\n"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "article",
+      "bits": [
+        {
+          "bit": "test-bit",
+          "context": {
+            "foo": "bar"
+          }
+        },
+        {
+          "bit": "test-bit",
+          "context": {
+            "baz": "qux"
+          }
+        }
+      ],
+      "source": {
+        "googleId": "1yET-AtSiVJ1L3R0YVt50GfBJHsq242-oltepsxO6FXQ",
+        "gapikey": "AIzaSyBgPi5PrrApUJEs5_00ZWyj9Vs27IDJ6_k"
+      },
+      "context": {},
+      "template": "\n<div class=\"lede-block\">\n  {% asyncAll $bit in $block.$BITS %}\n    {% BIT $bit %}\n  {% endall %}\n</div>\n"
+    },
+    {
+      "name": "footer",
+      "bits": [
+        {
+          "bit": "test-bit",
+          "context": {
+            "foo": "bar"
+          }
+        },
+        {
+          "bit": "test-bit",
+          "context": {
+            "baz": "qux"
+          }
+        }
+      ],
+      "source": {
+        "googleId": "1yET-AtSiVJ1L3R0YVt50GfBJHsq242-oltepsxO6FXQ",
+        "gapikey": "AIzaSyBgPi5PrrApUJEs5_00ZWyj9Vs27IDJ6_k"
+      },
+      "context": {},
+      "template": "\n<div class=\"lede-block\">\n  {% asyncAll $bit in $block.$BITS %}\n    {% BIT $bit %}\n  {% endall %}\n</div>\n"
+    },
+    {
+      "name": "header",
+      "bits": [
+        {
+          "bit": "test-bit",
+          "context": {
+            "foo": "bar"
+          }
+        },
+        {
+          "bit": "test-bit",
+          "context": {
+            "baz": "qux"
+          }
+        }
+      ],
+      "source": {
+        "googleId": "1yET-AtSiVJ1L3R0YVt50GfBJHsq242-oltepsxO6FXQ",
+        "gapikey": "AIzaSyBgPi5PrrApUJEs5_00ZWyj9Vs27IDJ6_k"
+      },
+      "context": {},
+      "template": "\n<div class=\"lede-block\">\n  {% asyncAll $bit in $block.$BITS %}\n    {% BIT $bit %}\n  {% endall %}\n</div>\n"
+    }
+  ],
+  "bits": [
+    {
+      "version": 0,
+      "name": "test-bit",
+      "context": {
+        "foo": "bar"
+      },
+      "script": {
+        "location": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.js",
+        "type": "script",
+        "content": "import letter from \"a\";\n\nconsole.log(letter);"
+      },
+      "style": {
+        "location": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.scss",
+        "type": "style",
+        "content": "h1 {\n  background-color: red;\n}"
+      },
+      "html": {
+        "location": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.html",
+        "type": "html",
+        "content": "<h1>This is a test</h1>"
+      }
+    }
+  ],
+  "materials": {
+    "styles": [
+      {
+        "namespace": "tester",
+        "type": "style",
+        "location": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/a.scss",
+        "name": "a.scss",
+        "content": "h1 {\n  color: green;\n}"
+      },
+      {
+        "namespace": "tester",
+        "type": "style",
+        "location": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/b.scss",
+        "name": "b.scss",
+        "content": "div {\n  background-color: coral;\n}"
+      },
+      {
+        "namespace": "tester",
+        "type": "style",
+        "location": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/c.scss",
+        "name": "c.scss",
+        "content": "body {\n  padding: 2em;\n}"
+      }
+    ],
+    "scripts": [
+      {
+        "namespace": "tester",
+        "type": "script",
+        "location": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/scripts/a.js",
+        "name": "a.js",
+        "content": "export default \"a\";\n"
+      },
+      {
+        "namespace": "tester",
+        "type": "script",
+        "location": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/scripts/b.js",
+        "name": "b.js",
+        "content": "export default \"b\";"
+      },
+      {
+        "namespace": "tester",
+        "type": "script",
+        "location": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/scripts/c.js",
+        "name": "c.js",
+        "content": "export default \"c\";"
+      }
+    ],
+    "assets": [
+      {
+        "namespace": "tester",
+        "type": "asset",
+        "location": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/assets/a.json",
+        "name": "a.json",
+        "content": "{\n  \"this\": \"a.json\"\n}"
+      },
+      {
+        "namespace": "tester",
+        "type": "asset",
+        "location": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/assets/b.json",
+        "name": "b.json",
+        "content": "{\n  \"this\": \"b.json\"\n}"
+      },
+      {
+        "namespace": "tester",
+        "type": "asset",
+        "location": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/assets/c.json",
+        "name": "c.json",
+        "content": "{\n  \"this\": \"c.json\"\n}"
+      }
+    ]
+  }
+}

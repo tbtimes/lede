@@ -1,4 +1,4 @@
-import { join } from "path";
+import { join, basename } from "path";
 import { Logger } from "bunyan";
 const sander = require("sander");
 
@@ -103,12 +103,17 @@ export class Es6Compiler {
       const bitPathRegex = new RegExp(".*\/(.*\/.*\.js)$");
       const pageCachePath = join(cachePath, page.name);
 
-      await asyncMap(page.scripts.globals, async(mat: Material) => {
-        await sander.writeFile(join(pageCachePath, "scripts", mat.overridableName), mat.content);
-      });
-      await asyncMap(page.scripts.bits, async(mat: Material) => {
-        await sander.writeFile(join(pageCachePath, "bits", mat.location.match(bitPathRegex)[1]), mat.content);
-      });
+      await Promise.all(page.cache.scripts.map(mat => {
+        return sander.writeFile(join(pageCachePath, "scripts", mat.overridableName || mat.name || basename(mat.location)), mat.content);
+      }));
+
+      await Promise.all(page.scripts.globals.map(mat => {
+        return sander.writeFile(join(pageCachePath, "scripts", mat.overridableName || mat.name || basename(mat.location)), mat.content);
+      }));
+
+      await Promise.all(page.scripts.bits.map(mat => {
+        return sander.writeFile(join(pageCachePath, "bits", mat.location.match(bitPathRegex)[1]), mat.content);
+      }));
     }
   }
 }

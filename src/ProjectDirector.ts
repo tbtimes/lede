@@ -77,12 +77,20 @@ export class ProjectDirector {
           globals: [],
           bits: []
         },
+        cache: {
+          scripts: [],
+          styles: []
+        },
         assets: [],
         name: p.name,
         context: {}
       };
 
       const pageBlocks = report["project"].defaults.blocks.concat(p.blocks);
+
+      // Copy by value all scripts and styles into cache.
+      pageState["cache"]["scripts"] = report.materials.scripts.slice();
+      pageState["cache"]["styles"] = report.materials.styles.slice();
 
       // -----------
       // --GLOBALS--
@@ -187,8 +195,7 @@ export class ProjectDirector {
     function retrieveMaterial({type, id, overridableName}: {type: string, id: string, overridableName: string}) {
       const [namespace, name] = id.split("/");
       const mat = report.materials[`${type}s`].find((m) => m.namespace === namespace && m.name === name);
-      mat["overridableName"] = overridableName;
-      return mat;
+      return Object.assign({}, mat, {overridableName});
     }
 
     return tree;
