@@ -1,266 +1,343 @@
-const sander = require("sander"); // No type defs so we will require it for now TODO: write type defs for sander
-import { join, basename } from "path";
 import { Logger } from "bunyan";
+const glob = require("glob-promise");
+import { join, basename } from "path";
 
-import { mockLogger } from "./DefaultLogger";
-import { MissingFile, ManyFiles, LoadFile } from "./errors/ProjectFactoryErrors";
-import { globProm, asyncMap } from "./utils";
-import { Project, ProjectReport, ProjectConstructorArg } from "./models/Project";
-import { Bit, BitConstructorArg } from "./models/Bit";
-import { Page, PageConstructorArg } from "./models/Page";
-import { Block, BlockConstructorArg } from "./models/Block";
+import { mockLogger } from "./utils";
+import { ManyFiles, MissingFile, LoadFile } from "./errors/ProjectFactoryErrors";
+import { BitSettings, BlockSettings, PageSettings, ProjectSettings, Material, ProjectModel, UninstantiatedCompiler } from "./interfaces";
+import { Es6Compiler, SassCompiler, NunjucksCompiler } from "./compilers";
 
 
-/**
- * The ProjectFactory is responsible for reading the FileSystem structure and creating objects to represent the
- * various models. The most important method is buildReport which returns an object encompassing all the local information
- * for a project. This report can be used to compile the various pages as well as determine assets that must be requested
- * from the repository.
- */
+const PAGE_TMPL = `
+<div id="ledeRoot">
+  {% asyncAll $block in $BLOCKS %}
+    {% BLOCK $block %}
+  {% endall %}
+</div>
+`;
+
+const BLOCK_TMPL = `
+<div class="lede-block">
+  {% asyncAll $bit in $block.$BITS %}
+    {% BIT $bit %}
+  {% endall %}
+</div>
+`;
+
+export enum SettingsType {
+  Project,
+  Page,
+  Bit,
+  Block
+}
+
+type SETTINGS = BitSettings | BlockSettings | PageSettings | ProjectSettings;
+
 export class ProjectFactory {
   logger: Logger;
   workingDir: string;
+  depCacheDir: string;
 
-  constructor({workingDir, logger}: {workingDir: string, logger?: Logger}) {
+  constructor({workingDir, logger, depCacheDir}: {workingDir: string, logger?: Logger, cacheDir: string}) {
     if (!workingDir) throw new Error("Must specify a workingDir for ProjectFactory.");
-    this.logger = logger || <any>mockLogger();
+    if (!depCacheDir) throw new  Error("Must specify a depCacheDir for ProjectFactory.");
+    this.logger = logger || <Logger>mockLogger;
     this.workingDir = workingDir;
+    this.depCacheDir = depCacheDir;
   }
 
-  configure(opts: {logger: Logger}) {
-    this.logger = opts.logger;
+  static async getProject(workingDir: string, logger: Logger): Promise<ProjectSettings> {
+    const settings = <ProjectSettings>(await this.loadSettingsFile(workingDir, SettingsType.Project, logger))[0];
+    return this.initializeProject(settings, logger);
   }
 
-  /**
-   * Takes a directory string and returns an instantiated Project.
-   * @param workingDir: string – Directory containing a projectSettings file.
-   * @param logger: Logger
-   * @returns {Promise<Project>} – Instantiated project
-   */
-  static async getProject(workingDir: string, logger: Logger): Promise<Project> {
-    const settings = await globProm("*.projectSettings.js", workingDir);
-    const nameRegex = ProjectFactory.getNameRegex("projectSettings");
+  private static initializeProject(settings: ProjectSettings, logger: Logger): ProjectSettings {
+    const defaultCompilers = {
+      html: { compilerClass: NunjucksCompiler, constructorArg: {} },
+      style: { compilerClass: SassCompiler, constructorArg: {} },
+      script: { compilerClass: Es6Compiler, constructorArg: {} }
+    };
 
-    // Check that working directory contains a single settings file.
-    if (!settings) {
-      throw new MissingFile({ file: "projectSettings.js", dir: workingDir});
-    } else if (settings.length > 1) {
-      throw new ManyFiles({ file: "projectSettings.js", dir: workingDir });
+    // Set up defaults
+    if (!settings.defaults) {
+      settings.defaults = { scripts: [], styles: [], assets: [], metaTags: [], blocks: [] };
+    }
+    settings.defaults.scripts = settings.defaults.scripts || [];
+    settings.defaults.assets = settings.defaults.assets || [];
+    settings.defaults.styles = settings.defaults.styles || [];
+    settings.defaults.metaTags = settings.defaults.metaTags || [];
+    settings.defaults.blocks = settings.defaults.blocks || [];
+    settings.context = settings.context || {};
+
+    // Initialize compilers
+    const instantiatedCompilers = { html: null, style: null, script: null };
+
+    instantiatedCompilers.html = settings.compilers && settings.compilers.html ?
+      new settings.compilers.html["compilerClass"](settings.compilers.html["constructorArg"]) :
+      new defaultCompilers.html.compilerClass(defaultCompilers.html.constructorArg);
+
+    instantiatedCompilers.style = settings.compilers && settings.compilers.style ?
+      new settings.compilers.style["compilerClass"](settings.compilers.style["constructorArg"]) :
+      new defaultCompilers.style.compilerClass(defaultCompilers.style.constructorArg);
+
+    instantiatedCompilers.script = settings.compilers && settings.compilers.script ?
+      new settings.compilers.script["compilerClass"](settings.compilers.script["constructorArg"]) :
+      new defaultCompilers.script.compilerClass(defaultCompilers.script.constructorArg);
+
+    for (let comp in instantiatedCompilers) {
+      instantiatedCompilers[comp].configure({ logger });
     }
 
-    logger.info(`Loading ${settings[0]}`);
+    settings.compilers = instantiatedCompilers;
 
-    // Since this is user-defined, it could throw.
-    let SettingsConfig: ProjectConstructorArg;
-
-    try {
-      SettingsConfig = new (require(join(workingDir, settings[0]))).default();
-    } catch (e) {
-      throw new LoadFile({ file: settings[0], dir: workingDir, detail: e});
-    }
-    SettingsConfig.name = settings[0].match(nameRegex)[1];
-    SettingsConfig.logger = logger;
-
-    return await (new Project(SettingsConfig)).init();
+    return settings;
   }
 
-  /**
-   * Takes a directory string and returns a Bit.
-   * @param workingDir: string – Directory containing a bitSettings file.
-   * @returns {Promise<Bit>}
-   */
-  static async getBit(workingDir: string, logger): Promise<Bit> {
-    const settings = await globProm("*.bitSettings.js", workingDir);
-    const nameRegex = ProjectFactory.getNameRegex("bitSettings");
+  static async getBits(workingDir: string, depDir: string, logger: Logger): Promise<BitSettings[]> {
+    const depPath = join(workingDir, depDir);
+    const depDirs = (await glob("*", { cwd: depPath})).map(x => join(depPath, x));
 
-    // Check that working directory contains a single settings file.
-    if (!settings) {
-      throw new MissingFile({ file: "bitSettings.js", dir: workingDir});
-    } else if (settings.length > 1) {
-      throw new ManyFiles({ file: "bitSettings.js", dir: workingDir });
-    }
+    const [locals, deps] = await Promise.all([
+      this.getBitsFrom(workingDir, logger),
+      Promise.all(depDirs.map(p => this.getBitsFrom(p, logger)))
+    ]);
 
-    logger.info(`Loading ${settings[0]}`);
-
-    // Since this is user-defined, it could throw.
-    let SettingsConfig: BitConstructorArg;
-
-    try {
-      SettingsConfig = new (require(join(workingDir, settings[0]))).default();
-    } catch (e) {
-      throw new LoadFile({ file: settings[0], dir: workingDir, detail: e});
-    }
-
-    SettingsConfig.name = settings[0].match(nameRegex)[1];
-
-
-    return await (new Bit(SettingsConfig)).init();
+    // Flatten bitsettings
+    return [].concat.apply([], locals).concat([].concat.apply([], deps));
   }
 
-  /**
-   * Takes a directory string and returns an array of Pages in that directory.
-   * @param workingDir: string – Directory containing one or more pageSettings files.
-   * @returns {Promise<Page[]>}
-   */
-  static async getPages(workingDir: string, logger: Logger): Promise<Page[]> {
-    const settings = await globProm("*.pageSettings.js", workingDir);
-    const nameRegex = ProjectFactory.getNameRegex("pageSettings");
-
-    // Check that working directory contains at least one settings file.
-    if (!settings) {
-      throw new MissingFile({ file: "pageSettings.js", dir: workingDir});
-    }
-
-    logger.info(`Detected ${settings.length} pages`);
-
-    // Since this is user-defined, it could throw.
-   return asyncMap(settings, async (s) => {
-     let cfg: PageConstructorArg;
-     logger.info(`Loading ${s}`);
-     try {
-       cfg = new (require(join(workingDir, s))).default();
-     } catch (e) {
-       throw new LoadFile({file: s, dir: workingDir, detail: e});
-     }
-
-     cfg.name = s.match(nameRegex)[1];
-     return await (new Page(cfg));
-    });
+  static async getBitsFrom(workingDir: string, logger: Logger): Promise<BitSettings[]> {
+    const bitPaths = (await glob("*", {cwd: join(workingDir, "bits")})).map(x => join(workingDir, "bits", x));
+    const settings: BitSettings[] = await Promise.all(
+      bitPaths.map(path => this.loadSettingsFile(path, SettingsType.Bit, logger))
+    );
+    return [].concat.apply([], settings).map(this.initializeBit);
   }
 
-  /**
-   * Takes a directory string and returns an array of Blocks in that directory.
-   * @param workingDir
-   * @returns {Promise<Block[]>}
-   */
-  static async getBlocks(workingDir: string, logger: Logger): Promise<Block[]> {
-    const settings = await globProm("*.blockSettings.js", workingDir);
-    const nameRegex = ProjectFactory.getNameRegex("blockSettings");
+  private static initializeBit(settings: BitSettings): BitSettings {
+    settings.context = settings.context || {};
 
-    // Check that working directory contains at least one settings file.
-    if (!settings) {
-      throw new MissingFile({ file: "blockSettings.js", dir: workingDir});
+    return settings;
+  }
+
+  static async getPages(workingDir: string, logger: Logger): Promise<PageSettings[]> {
+    const settings = <PageSettings[]>(await this.loadSettingsFile(workingDir, SettingsType.Page, logger));
+    return settings.map(this.initializePage);
+  }
+
+  private static initializePage(settings: PageSettings): PageSettings {
+    settings.context = settings.context || {};
+    settings.blocks = settings.blocks || [];
+    settings.meta = settings.meta || [];
+    settings.template = settings.template || PAGE_TMPL;
+
+    if (!settings.materials) {
+      settings.materials = { scripts: [], styles: [], assets: [] };
+    }
+    if (!settings.resources) {
+      settings.resources = { head: [], body: [] };
     }
 
-    logger.info(`Detected ${settings.length} blocks`);
+    settings.materials.styles = settings.materials.styles || [];
+    settings.materials.scripts = settings.materials.scripts || [];
+    settings.materials.assets = settings.materials.assets || [];
+    settings.resources.head = settings.resources.head || [];
+    settings.resources.body = settings.resources.body || [];
 
-    // instantiate blocks here
-    const blocks = settings.map(x => {
-      let cfg: BlockConstructorArg;
-      logger.info(`Loading ${x}`);
+    return settings;
+  }
+
+  static async getBlocks(workingDir: string, logger: Logger): Promise<BlockSettings[]> {
+    const settings = <BlockSettings[]>(await this.loadSettingsFile(workingDir, SettingsType.Block, logger));
+    return await Promise.all(settings.map(this.initalizeBlock));
+  }
+
+  private static async initalizeBlock(settings: BlockSettings): Promise<BlockSettings> {
+    settings.bits = settings.bits || [];
+    settings.source = settings.source || null;
+    settings.context = settings.context || {};
+    settings.template = settings.template || BLOCK_TMPL;
+
+    if (settings.source) {
+      settings.bits = await settings.source.fetch();
+    }
+
+    return settings;
+  }
+
+  private static async loadSettingsFile(workingDir: string, type: SettingsType, logger: Logger): Promise<SETTINGS[]> {
+    let settingsFiles: string[];
+    const nameRegex = this.getNameRegex(type);
+
+    // Search for settings
+    switch (type) {
+      case SettingsType.Project:
+        settingsFiles = await glob("*.projectSettings.js", { cwd: workingDir });
+        break;
+      case SettingsType.Page:
+        settingsFiles = await glob("*.pageSettings.js", { cwd: workingDir });
+        break;
+      case SettingsType.Bit:
+        settingsFiles = await glob("*.bitSettings.js", { cwd: workingDir });
+        break;
+      case SettingsType.Block:
+        settingsFiles = await glob("*.blockSettings.js", { cwd: workingDir });
+        break;
+    }
+
+    // Check for errors in number of settings found
+    switch (type) {
+      case SettingsType.Project:
+        if (!settingsFiles) throw new MissingFile({file: "projectSettings.js", dir: workingDir});
+        if (settingsFiles.length > 1) throw new ManyFiles({file: "projectSettings.js", dir: workingDir });
+        break;
+      case SettingsType.Bit:
+        if (!settingsFiles) throw new MissingFile({file: "bitSettings.js", dir: workingDir });
+        if (settingsFiles.length > 1) throw new ManyFiles({file: "bitSettings.js", dir: workingDir });
+        break;
+      default:
+        if (!settingsFiles) throw new MissingFile({file: (type === SettingsType.Block) ? "blockSettings.js" : "pageSettings.js" , dir: workingDir });
+    }
+
+    // Finally, load the user module and check for errors
+    return settingsFiles.map(x => {
+      let cfg: any;
+      logger.info(`Loading ${join(workingDir, x)}`);
       try {
         cfg = new (require(join(workingDir, x))).default();
       } catch (e) {
-        throw new LoadFile({file: x, dir: workingDir, detail: e});
+        throw new LoadFile({file: s, dir: workingDir, detail: e});
       }
-
       cfg.name = x.match(nameRegex)[1];
-      return new Block(cfg);
+      return cfg;
     });
-
-    // make sure blocks have all their bits
-    return <any>Promise.all(blocks.map(b => b.fetch()));
   }
 
-  static async getScripts(workingDir: string, namespace: string) {
-    const scripts = await globProm("*", workingDir);
-    return await asyncMap(scripts, async(s) => {
-      const content = await sander.readFile(join(workingDir, s));
+  private static getNameRegex(type: SettingsType): RegExp {
+    let settingsFileName: string;
+
+    switch (type) {
+      case SettingsType.Project:
+        settingsFileName = "*.projectSettings";
+        break;
+      case SettingsType.Page:
+        settingsFileName = "*.pageSettings";
+        break;
+      case SettingsType.Bit:
+        settingsFileName = "*.bitSettings";
+        break;
+      case SettingsType.Block:
+        settingsFileName = "*.blockSettings";
+        break;
+    }
+    return new RegExp(`(.*)\.${settingsFileName}\.js`);
+  }
+
+  private static async getScripts(workingDir: string, namespace: string): Promise<Material[]> {
+    const scripts = await glob("**/*", {cwd: workingDir});
+    return scripts.map(s => {
       return {
         namespace,
         type: "script",
-        location: join(workingDir, s),
-        name: basename(s),
-        content: content.toString()
+        path: join(workingDir, s),
+        name: basename(s)
       };
     });
   }
 
-  static async getStyles(workingDir: string, namespace: string) {
-    const styles = await globProm("*", workingDir);
-    return await asyncMap(styles, async(s) => {
-      const content = await sander.readFile(join(workingDir, s));
+  private static async getStyles(workingDir: string, namespace: string): Promise<Material[]> {
+    const styles = await glob("**/*", {cwd: workingDir});
+    return styles.map(s => {
       return {
         namespace,
         type: "style",
-        location: join(workingDir, s),
-        name: basename(s),
-        content: content.toString()
+        path: join(workingDir, s),
+        name: basename(s)
       };
     });
   }
 
-  static async getAssets(workingDir: string, namespace: string) {
-    const assets = await globProm("*", workingDir);
-    return await asyncMap(assets, async(s) => {
-      const content = await sander.readFile(join(workingDir, s));
+  private static async getAssets(workingDir: string, namespace: string): Promise<Material[]> {
+    const assets = await glob("**/*", {cwd: workingDir });
+    return assets.map(s => {
       return {
         namespace,
         type: "asset",
-        location: join(workingDir, s),
-        name: basename(s),
-        content: content.toString()
+        path: join(workingDir, s),
+        name: basename(s)
       };
     });
   }
 
-  static async getMaterials(workingDir: string) {
-    const settings = await globProm("*.projectSettings.js", workingDir);
-    const nameRegex = ProjectFactory.getNameRegex("projectSettings");
+  static async getLocalMaterials(workingDir: string, logger: Logger): Promise<Mats> {
+    const settings = await glob("*.projectSettings.js", { cwd: workingDir });
+    const nameRegex = this.getNameRegex(SettingsType.Project);
 
-    // Check that working directory contains a single settings file.
     if (!settings) {
-      throw new MissingFile({ file: "projectSettings.js", dir: workingDir});
+      throw new MissingFile({ file: "projectSettings.js", dir: workingDir });
     } else if (settings.length > 1) {
       throw new ManyFiles({ file: "projectSettings.js", dir: workingDir });
     }
 
-    const namespace = settings[0].match(nameRegex)[1];
+    const localNamespace = settings[0].match(nameRegex)[1];
+    const [scripts, styles, assets] = await Promise.all([
+      this.getScripts(join(workingDir, "scripts"), localNamespace),
+      this.getStyles(join(workingDir, "styles"), localNamespace),
+      this.getAssets(join(workingDir, "assets"), localNamespace)
+    ]);
 
-    const scripts = await ProjectFactory.getScripts(join(workingDir, "scripts"), namespace);
-    const styles = await ProjectFactory.getStyles(join(workingDir, "styles"), namespace);
-    const assets = await ProjectFactory.getAssets(join(workingDir, "assets"), namespace);
     return {
-      styles,
-      scripts,
-      assets
+      scripts: scripts ? scripts : [],
+      styles: styles ? styles : [],
+      assets: assets ? assets : []
     };
   }
 
-  /**
-   * This method essentially calls all the static methods in the proper sequence and returns a datastructure detailing
-   * the project.
-   */
-  public async buildReport(): Promise<ProjectReport> {
-    this.logger.info(`Analyzing project components.`);
+  static async getDepMaterials(workingDir: string, logger: Logger): Promise<Mats> {
+    const deps = await glob("*", {cwd: workingDir});
+    const [scripts, styles, assets] = await Promise.all([
+      Promise.all(deps.map(namespace => this.getScripts(join(workingDir, namespace, "scripts"), namespace))),
+      Promise.all(deps.map(namespace => this.getStyles(join(workingDir, namespace, "styles"), namespace))),
+      Promise.all(deps.map(namespace => this.getAssets(join(workingDir, namespace, "assets"), namespace)))
+    ]);
 
-    const projectReport = { workingDir: this.workingDir, project: null, pages: [], blocks: [], bits: [], materials: {} };
-
-    try {
-      projectReport["project"] = await ProjectFactory.getProject(this.workingDir, this.logger);
-      projectReport["pages"] = await ProjectFactory.getPages(join(this.workingDir, "pages"), this.logger);
-      projectReport["blocks"] = await ProjectFactory.getBlocks(join(this.workingDir, "blocks"), this.logger);
-      projectReport["bits"] = await asyncMap(
-        await globProm("*", join(this.workingDir, "bits")),
-        async (path) => await ProjectFactory.getBit(join(this.workingDir, "bits", path), this.logger)
-      );
-      projectReport["materials"] = await ProjectFactory.getMaterials(this.workingDir);
-    } catch (err) {
-      this.logger.error({err});
-      if (err.detail) {
-        this.logger.error({err: err.detail}, "^^ details for above error");
-      }
-    }
-
-    return projectReport;
+    // Flatten material arrays
+    return {
+      scripts: [].concat.apply([], scripts),
+      styles: [].concat.apply([], styles),
+      assets: [].concat.apply([], assets)
+    };
   }
 
-  /**
-   * Returns a regex that matches a name from a file in the format of <name>.<settingsFileName>.js
-   * @param settingsFileName - string file name to match on
-   * @returns {RegExp}
-   */
-  private static getNameRegex(settingsFileName: string) {
-    return new RegExp(`(.*)\.${settingsFileName}\.js`);
+  static async getMaterials(workingDir: string, depDir: string, logger: Logger): Promise<Mats> {
+
+    const [ locals, deps ]: Mats[] = await Promise.all([
+      this.getLocalMaterials(workingDir, logger),
+      this.getDepMaterials(join(workingDir, depDir), logger)
+    ]);
+
+    return {
+      scripts: locals.scripts.concat(deps.scripts),
+      styles: locals.styles.concat(deps.styles),
+      assets: locals.assets.concat(deps.assets)
+    };
   }
+
+  static async buildProjectModel(workingDir, depDir, logger): ProjectModel {
+    const proj = await ProjectFactory.getProject(workingDir, logger );
+    const bits = await ProjectFactory.getBits(workingDir, "lede_modules", logger );
+    const pages = await ProjectFactory.getPages(join(workingDir, "pages"), logger);
+    const blocks = await ProjectFactory.getBlocks(join(workingDir, "blocks"), logger);
+    const mats = await ProjectFactory.getMaterials(workingDir, "lede_modules", logger);
+  }
+
+  public async load(): ProjectModel {
+    return await ProjectFactory.buildProjectModel(this.workingDir, this.depCacheDir, this.logger);
+  }
+}
+
+export interface Mats {
+  scripts: Material[];
+  styles: Material[];
+  assets: Material[];
 }

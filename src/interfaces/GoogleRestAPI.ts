@@ -1,5 +1,3 @@
-
-
 export interface GoogleUser {
   kind: string;
   displayName: string;

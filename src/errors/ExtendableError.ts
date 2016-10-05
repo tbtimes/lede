@@ -1,5 +1,3 @@
-
-
 export class ExtendableError extends Error {
   fatal: boolean;
 

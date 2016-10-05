@@ -1,0 +1,20 @@
+[
+  {
+    "context": {
+      "foo": "bar"
+    },
+    "script": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.js",
+    "style": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.scss",
+    "html": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.html",
+    "name": "test-bit"
+  },
+  {
+    "context": {
+      "foo": "bar"
+    },
+    "script": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/lede_modules/test-dependency/bits/fakie/test.js",
+    "style": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/lede_modules/test-dependency/bits/fakie/test.scss",
+    "html": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/lede_modules/test-dependency/bits/fakie/test.html",
+    "name": "fakie"
+  }
+]

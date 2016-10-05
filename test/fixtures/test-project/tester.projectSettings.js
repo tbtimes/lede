@@ -2,7 +2,9 @@ class SettingsConfig {
   constructor() {
     this.deployRoot = "some-seo-root-path-here";
     this.defaults = {
-      materials: [],
+      scripts: [],
+      assets: [],
+      styles: [],
       blocks: [],
       metaTags: []
     };

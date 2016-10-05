@@ -1,17 +1,9 @@
 {
   "name": "ledeTwo",
   "dependencies": {
-    "archieml": "registry:npm/archieml#0.4.2+20160830175942",
-    "nock": "registry:npm/nock#0.7.0+20160723033700",
-    "slug": "registry:npm/slug#0.9.0+20160723033700"
+
   },
   "globalDependencies": {
-    "bunyan": "registry:dt/bunyan#0.0.0+20160412155112",
-    "bunyan-prettystream": "registry:dt/bunyan-prettystream#0.0.0+20160316155526",
-    "glob": "registry:dt/glob#5.0.10+20160317120654",
-    "minimatch": "registry:dt/minimatch#2.0.8+20160317120654",
-    "node": "registry:env/node#6.0.0+20160902022231",
-    "node-sass": "registry:dt/node-sass#0.0.0+20160316155526",
-    "nunjucks": "registry:dt/nunjucks#0.0.0+20160802155009"
+
   }
 }

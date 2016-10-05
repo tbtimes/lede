@@ -1,0 +1,71 @@
+[
+  {
+    "source": {
+      "googleId": "1yET-AtSiVJ1L3R0YVt50GfBJHsq242-oltepsxO6FXQ",
+      "gapikey": "AIzaSyBgPi5PrrApUJEs5_00ZWyj9Vs27IDJ6_k"
+    },
+    "name": "article",
+    "bits": [
+      {
+        "bit": "test-bit",
+        "context": {
+          "foo": "bar"
+        }
+      },
+      {
+        "bit": "test-bit",
+        "context": {
+          "baz": "qux"
+        }
+      }
+    ],
+    "context": {},
+    "template": "\n<div class=\"lede-block\">\n  {% asyncAll $bit in $block.$BITS %}\n    {% BIT $bit %}\n  {% endall %}\n</div>\n"
+  },
+  {
+    "source": {
+      "googleId": "1yET-AtSiVJ1L3R0YVt50GfBJHsq242-oltepsxO6FXQ",
+      "gapikey": "AIzaSyBgPi5PrrApUJEs5_00ZWyj9Vs27IDJ6_k"
+    },
+    "name": "footer",
+    "bits": [
+      {
+        "bit": "test-bit",
+        "context": {
+          "foo": "bar"
+        }
+      },
+      {
+        "bit": "test-bit",
+        "context": {
+          "baz": "qux"
+        }
+      }
+    ],
+    "context": {},
+    "template": "\n<div class=\"lede-block\">\n  {% asyncAll $bit in $block.$BITS %}\n    {% BIT $bit %}\n  {% endall %}\n</div>\n"
+  },
+  {
+    "source": {
+      "googleId": "1yET-AtSiVJ1L3R0YVt50GfBJHsq242-oltepsxO6FXQ",
+      "gapikey": "AIzaSyBgPi5PrrApUJEs5_00ZWyj9Vs27IDJ6_k"
+    },
+    "name": "header",
+    "bits": [
+      {
+        "bit": "test-bit",
+        "context": {
+          "foo": "bar"
+        }
+      },
+      {
+        "bit": "test-bit",
+        "context": {
+          "baz": "qux"
+        }
+      }
+    ],
+    "context": {},
+    "template": "\n<div class=\"lede-block\">\n  {% asyncAll $bit in $block.$BITS %}\n    {% BIT $bit %}\n  {% endall %}\n</div>\n"
+  }
+]

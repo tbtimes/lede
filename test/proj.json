@@ -1,0 +1,25 @@
+{
+  "deployRoot": "some-seo-root-path-here",
+  "defaults": {
+    "scripts": [],
+    "assets": [],
+    "styles": [],
+    "blocks": [],
+    "metaTags": []
+  },
+  "context": {
+    "baz": "qux"
+  },
+  "name": "tester",
+  "compilers": {
+    "html": {
+      "logger": {}
+    },
+    "style": {
+      "logger": {}
+    },
+    "script": {
+      "logger": {}
+    }
+  }
+}
