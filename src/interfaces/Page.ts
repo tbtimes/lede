@@ -19,10 +19,41 @@ export interface PageSettings {
   context?: any;
 }
 
+export interface BitContext {
+  $name: string;
+  $template: string;
+}
+
+export interface BlockContext {
+  $name: string;
+  $template: string;
+  $BITS: BitContext[];
+}
+
 export interface PageModel {
-  styles: { globals: Material[], bits: Material[] };
-  scripts: { globals: Material[], bits: Material[] };
-  cache: { scripts: Material[], styles: Material[] };
-  context: any;
-  name: string;
+  styles: { globals: Material[], bits: string[] };
+  scripts: { globals: Material[], bits: string[] };
+  assets: Material[];
+  cache: {
+    scripts: Material[],
+    styles: Material[],
+    assets: Material[]
+  }
+  context: {
+    $PROJECT: {
+      $name: string,
+      $deployRoot: string
+    },
+    $PAGE: {
+      $name: string,
+      $meta: string[],
+      $resources: {
+        $head: string[],
+        $body: string[]
+      },
+      $template: string,
+      $deployPath: string
+    },
+    $BLOCKS: BlockContext[]
+  };
 }

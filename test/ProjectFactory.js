@@ -21,9 +21,11 @@ test.only("t", async(t) => {
   const pages = await ProjectFactory.getPages(testPagePath, mockLogger);
   const blocks = await ProjectFactory.getBlocks(testBlockPath, mockLogger);
   const mats = await ProjectFactory.getMaterials(testProjPath, "lede_modules", mockLogger);
+  const tree = await ProjectFactory.buildProjectModel(testProjPath, "lede_moduels", mockLogger);
   writeJSON("proj.json", proj);
   writeJSON("bits.json", bits);
   writeJSON("pages.json", pages);
   writeJSON("blocks.json", blocks);
   writeJSON("mats.json", mats);
+  writeJSON("tree.json", tree);
 });

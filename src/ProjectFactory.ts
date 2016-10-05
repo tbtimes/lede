@@ -1,11 +1,13 @@
 import { Logger } from "bunyan";
 const glob = require("glob-promise");
 import { join, basename } from "path";
+const sander = require("sander");
 
 import { mockLogger } from "./utils";
 import { ManyFiles, MissingFile, LoadFile } from "./errors/ProjectFactoryErrors";
-import { BitSettings, BlockSettings, PageSettings, ProjectSettings, Material, ProjectModel, UninstantiatedCompiler } from "./interfaces";
+import { BitSettings, BlockSettings, PageSettings, ProjectSettings, Material, ProjectModel, PageModel, BitRef } from "./interfaces";
 import { Es6Compiler, SassCompiler, NunjucksCompiler } from "./compilers";
+import { BitReference } from "../dist/models/Bit";
 
 
 const PAGE_TMPL = `
@@ -323,15 +325,134 @@ export class ProjectFactory {
     };
   }
 
-  static async buildProjectModel(workingDir, depDir, logger): ProjectModel {
+  static async buildProjectModel(workingDir, depDir, logger): Promise<ProjectModel> {
     const proj = await ProjectFactory.getProject(workingDir, logger );
-    const bits = await ProjectFactory.getBits(workingDir, "lede_modules", logger );
-    const pages = await ProjectFactory.getPages(join(workingDir, "pages"), logger);
+    const fullbits = await ProjectFactory.getBits(workingDir, depDir, logger );
+    const pageSettings = await ProjectFactory.getPages(join(workingDir, "pages"), logger);
     const blocks = await ProjectFactory.getBlocks(join(workingDir, "blocks"), logger);
-    const mats = await ProjectFactory.getMaterials(workingDir, "lede_modules", logger);
+    const mats = await ProjectFactory.getMaterials(workingDir, depDir, logger);
+
+    const pages = pageSettings.reduce((state: PageModel[], page: PageSettings) => {
+      const PAGEBLOCKS = proj.defaults.blocks.concat(page.blocks);
+      const PAGESCRIPTS = proj.defaults.scripts.concat(page.materials.scripts);
+      const PAGESTYLES = proj.defaults.styles.concat(page.materials.styles);
+      const PAGEASSETS = proj.defaults.assets.concat(page.materials.assets);
+
+      const cache = {
+        scripts: PAGESCRIPTS.slice().map(x => retrieveMaterial({ type: "script", id: x.id })),
+        styles: PAGESTYLES.slice().map(x => retrieveMaterial({ type: "style", id: x.id })),
+        assets: PAGEASSETS.slice().map(x => retrieveMaterial({ type: "asset", id: x.id })),
+      };
+
+      /////////////
+      // CONTEXT //
+      /////////////
+      const pageCtx = {
+        $name: page.name,
+        $meta: page.meta,
+        $resources: page.resources,
+        $template: page.template,
+        $deployPath: page.deployPath
+      };
+
+      const context = {
+        $PROJECT: Object.assign({}, proj.context, { $name: proj.name, $deployRoot: proj.deployRoot}),
+        $PAGE: Object.assign({}, page.context, pageCtx),
+        $BLOCKS: PAGEBLOCKS.map((blockName: string) => {
+          const block = Object.assign({}, blocks.find(x => x["name"] === blockName));
+          const bits = block["bits"].map((bit: BitReference) => {
+            const b: BitSettings = fullbits.find(x => x["name"] === bit.bit);
+            return Object.assign({}, b.context, { $name: b.name, $template: b.html});
+          });
+          return Object.assign({}, block.context, { $name: block.name, $template: block.template, $BITS: bits });
+        })
+      };
+
+      /////////////
+      // SCRIPTS //
+      /////////////
+      const scripts = {
+        globals: PAGESCRIPTS.reduce((state: Array<Material>, mat: {id: string, as?: string}) => {
+          const indexOfPresent = state.map(x => x.overridableName).indexOf(mat.as);
+          const material = retrieveMaterial({ type: "script", id: mat.id, overridableName: mat.as || null });
+          if (indexOfPresent < 0) state.push(material);
+          else state[indexOfPresent] = material;
+          return state;
+        }, []),
+        bits: []
+      };
+
+      ////////////
+      // STYLES //
+      ////////////
+      const styles = {
+        globals: PAGESTYLES.reduce((state: Array<Material>, mat: {id: string, as?: string}) => {
+          const indexOfPresent = state.map(x => x.overridableName).indexOf(mat.as);
+          const material = retrieveMaterial({ type: "style", id: mat.id, overridableName: mat.as || null });
+          if (indexOfPresent < 0) state.push(material);
+          else state[indexOfPresent] = material;
+          return state;
+        }, []),
+        bits: []
+      };
+
+      ////////////
+      // ASSETS //
+      ////////////
+      const assets = PAGEASSETS.reduce((state: Array<Material>, mat: {id: string, as?: string}) => {
+        const indexOfPresent = state.map(x => x.overridableName).indexOf(mat.as);
+        const material = retrieveMaterial({ type: "asset", id: mat.id, overridableName: mat.as || null });
+        if (indexOfPresent < 0) state.push(material);
+        else state[indexOfPresent] = material;
+        return state;
+      }, []);
+
+      // Gather bit materials
+      const bitsWithDupes = PAGEBLOCKS.map((blockName: string) => {
+        return blocks.find(x => x.name === blockName).bits
+          .map((bitref: BitRef) => {
+            const bit = fullbits.find(x => x.name === bitref.bit);
+            return {
+              script: bit.script,
+              style: bit.style
+            };
+          });
+      });
+
+      // Flatten and dedupe
+      const flatten = a => Array.isArray(a) ? [].concat(...a.map(flatten)) : a;
+      const styleMats = flatten(bitsWithDupes).map(x => x.style);
+      const scriptMats = flatten(bitsWithDupes).map(x => x.script);
+
+      styles.bits = [... new Set([... styleMats])];
+      scripts.bits = [... new Set([... scriptMats])];
+
+      state.push({ context, styles, scripts, assets, cache });
+      return state;
+    }, []);
+
+    // RN, this runs serially. Would be nice to do it in parallel with Promise.all
+    for (let page of pages) {
+      for (let block of page.context.$BLOCKS) {
+        for (let bit of block.$BITS) {
+          bit.$template = (await sander.readFile(bit.$template)).toString();
+        }
+      }
+    }
+
+    return {
+      workingDir,
+      pages
+    };
+
+    function retrieveMaterial({type, id, overridableName}: {type: string, id: string, overridableName?: string}) {
+      const [namespace, name] = id.split("/");
+      const mat = mats[`${type}s`].find(m => m.namespace === namespace && m.name === name);
+      return Object.assign({}, mat, { overridableName: overridableName || basename(mat.path) });
+    }
   }
 
-  public async load(): ProjectModel {
+  public async load(): Promise<ProjectModel> {
     return await ProjectFactory.buildProjectModel(this.workingDir, this.depCacheDir, this.logger);
   }
 }
