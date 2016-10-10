@@ -62,10 +62,7 @@
           }
         ],
         "bits": [
-          [
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.scss",
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.scss"
-          ]
+          "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.scss"
         ]
       },
       "scripts": {
@@ -93,10 +90,7 @@
           }
         ],
         "bits": [
-          [
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.js",
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.js"
-          ]
+          "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.js"
         ]
       },
       "assets": [
@@ -280,14 +274,7 @@
           }
         ],
         "bits": [
-          [
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.scss",
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.scss",
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.scss",
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.scss",
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.scss",
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.scss"
-          ]
+          "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.scss"
         ]
       },
       "scripts": {
@@ -308,14 +295,7 @@
           }
         ],
         "bits": [
-          [
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.js",
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.js",
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.js",
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.js",
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.js",
-            "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.js"
-          ]
+          "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.js"
         ]
       },
       "assets": [

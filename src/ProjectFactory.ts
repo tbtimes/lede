@@ -53,7 +53,7 @@ export class ProjectFactory {
     return this.initializeProject(settings, logger);
   }
 
-  private static initializeProject(settings: ProjectSettings, logger: Logger): ProjectSettings {
+   static initializeProject(settings: ProjectSettings, logger: Logger): ProjectSettings {
     const defaultCompilers = {
       html: { compilerClass: NunjucksCompiler, constructorArg: {} },
       style: { compilerClass: SassCompiler, constructorArg: {} },
@@ -116,7 +116,7 @@ export class ProjectFactory {
     return [].concat.apply([], settings).map(this.initializeBit);
   }
 
-  private static initializeBit(settings: BitSettings): BitSettings {
+   static initializeBit(settings: BitSettings): BitSettings {
     settings.context = settings.context || {};
 
     return settings;
@@ -127,7 +127,7 @@ export class ProjectFactory {
     return settings.map(this.initializePage);
   }
 
-  private static initializePage(settings: PageSettings): PageSettings {
+   static initializePage(settings: PageSettings): PageSettings {
     settings.context = settings.context || {};
     settings.blocks = settings.blocks || [];
     settings.meta = settings.meta || [];
@@ -154,7 +154,7 @@ export class ProjectFactory {
     return await Promise.all(settings.map(this.initalizeBlock));
   }
 
-  private static async initalizeBlock(settings: BlockSettings): Promise<BlockSettings> {
+   static async initalizeBlock(settings: BlockSettings): Promise<BlockSettings> {
     settings.bits = settings.bits || [];
     settings.source = settings.source || null;
     settings.context = settings.context || {};
@@ -167,7 +167,7 @@ export class ProjectFactory {
     return settings;
   }
 
-  private static async loadSettingsFile(workingDir: string, type: SettingsType, logger: Logger): Promise<SETTINGS[]> {
+   static async loadSettingsFile(workingDir: string, type: SettingsType, logger: Logger): Promise<SETTINGS[]> {
     let settingsFiles: string[];
     const nameRegex = this.getNameRegex(type);
 
@@ -215,7 +215,7 @@ export class ProjectFactory {
     });
   }
 
-  private static getNameRegex(type: SettingsType): RegExp {
+   static getNameRegex(type: SettingsType): RegExp {
     let settingsFileName: string;
 
     switch (type) {
@@ -235,7 +235,7 @@ export class ProjectFactory {
     return new RegExp(`(.*)\.${settingsFileName}\.js`);
   }
 
-  private static async getScripts(workingDir: string, namespace: string): Promise<Material[]> {
+   static async getScripts(workingDir: string, namespace: string): Promise<Material[]> {
     const scripts = await glob("**/*", {cwd: workingDir});
     return scripts.map(s => {
       return {
@@ -247,7 +247,7 @@ export class ProjectFactory {
     });
   }
 
-  private static async getStyles(workingDir: string, namespace: string): Promise<Material[]> {
+   static async getStyles(workingDir: string, namespace: string): Promise<Material[]> {
     const styles = await glob("**/*", {cwd: workingDir});
     return styles.map(s => {
       return {
@@ -259,7 +259,7 @@ export class ProjectFactory {
     });
   }
 
-  private static async getAssets(workingDir: string, namespace: string): Promise<Material[]> {
+   static async getAssets(workingDir: string, namespace: string): Promise<Material[]> {
     const assets = await glob("**/*", {cwd: workingDir });
     return assets.map(s => {
       return {
@@ -453,6 +453,10 @@ export class ProjectFactory {
   }
 
   public async load(): Promise<ProjectModel> {
+    return await ProjectFactory.buildProjectModel(this.workingDir, this.depCacheDir, this.logger);
+  }
+
+  public async getProjectModel(): Promise<ProjectModel> {
     return await ProjectFactory.buildProjectModel(this.workingDir, this.depCacheDir, this.logger);
   }
 }

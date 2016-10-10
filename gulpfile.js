@@ -11,13 +11,13 @@ const projectOpts = ts.createProject({
   module: "commonjs",
   noImplicitAny: false,
   declaration: true,
-  noExternalResolve: true
+  noResolve: true
 });
 
 gulp.task('source', () => {
   let result = gulp.src(['src/**/*.ts', 'typings/**/*.ts'])
     .pipe(srcmap.init())
-    .pipe(ts(projectOpts));
+    .pipe(projectOpts());
 
   return merge([
     result.js
