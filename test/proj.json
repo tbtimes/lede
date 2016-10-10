@@ -19,7 +19,10 @@
       "logger": {}
     },
     "script": {
-      "logger": {}
+      "cacheBits": {},
+      "cacheGlobals": {},
+      "logger": {},
+      "cacheDir": ".ledeCache"
     }
   }
 }

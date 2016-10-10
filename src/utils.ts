@@ -7,7 +7,7 @@ export const mockLogger = {
   error: function() {},
   trace: function() {},
   debug: function() {},
-  fatal: function() {}
+  fatal: function() {},
 };
 
 export function httpsGetProm(options: RequestOptions): Promise<string> {

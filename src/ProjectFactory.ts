@@ -7,7 +7,6 @@ import { mockLogger } from "./utils";
 import { ManyFiles, MissingFile, LoadFile } from "./errors/ProjectFactoryErrors";
 import { BitSettings, BlockSettings, PageSettings, ProjectSettings, Material, ProjectModel, PageModel, BitRef } from "./interfaces";
 import { Es6Compiler, SassCompiler, NunjucksCompiler } from "./compilers";
-import { BitReference } from "../dist/models/Bit";
 
 
 const PAGE_TMPL = `
@@ -33,17 +32,17 @@ export enum SettingsType {
   Block
 }
 
-type SETTINGS = BitSettings | BlockSettings | PageSettings | ProjectSettings;
+export type SETTINGS = BitSettings | BlockSettings | PageSettings | ProjectSettings;
 
 export class ProjectFactory {
   logger: Logger;
   workingDir: string;
   depCacheDir: string;
 
-  constructor({workingDir, logger, depCacheDir}: {workingDir: string, logger?: Logger, cacheDir: string}) {
+  constructor({workingDir, logger, depCacheDir}: {workingDir: string, logger?: Logger, depCacheDir: string}) {
     if (!workingDir) throw new Error("Must specify a workingDir for ProjectFactory.");
     if (!depCacheDir) throw new  Error("Must specify a depCacheDir for ProjectFactory.");
-    this.logger = logger || <Logger>mockLogger;
+    this.logger = logger || <Logger><any>mockLogger;
     this.workingDir = workingDir;
     this.depCacheDir = depCacheDir;
   }
@@ -110,9 +109,9 @@ export class ProjectFactory {
 
   static async getBitsFrom(workingDir: string, logger: Logger): Promise<BitSettings[]> {
     const bitPaths = (await glob("*", {cwd: join(workingDir, "bits")})).map(x => join(workingDir, "bits", x));
-    const settings: BitSettings[] = await Promise.all(
+    const settings: BitSettings[] = <any>(await Promise.all(
       bitPaths.map(path => this.loadSettingsFile(path, SettingsType.Bit, logger))
-    );
+    ));
     return [].concat.apply([], settings).map(this.initializeBit);
   }
 
@@ -208,7 +207,7 @@ export class ProjectFactory {
       try {
         cfg = new (require(join(workingDir, x))).default();
       } catch (e) {
-        throw new LoadFile({file: s, dir: workingDir, detail: e});
+        throw new LoadFile({file: x, dir: workingDir, detail: e});
       }
       cfg.name = x.match(nameRegex)[1];
       return cfg;
@@ -360,7 +359,7 @@ export class ProjectFactory {
         $PAGE: Object.assign({}, page.context, pageCtx),
         $BLOCKS: PAGEBLOCKS.map((blockName: string) => {
           const block = Object.assign({}, blocks.find(x => x["name"] === blockName));
-          const bits = block["bits"].map((bit: BitReference) => {
+          const bits = block["bits"].map((bit: BitRef) => {
             const b: BitSettings = fullbits.find(x => x["name"] === bit.bit);
             return Object.assign({}, b.context, { $name: b.name, $template: b.html});
           });

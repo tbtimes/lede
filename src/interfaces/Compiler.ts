@@ -18,8 +18,8 @@ export interface CompiledPage {
 }
 
 export interface CompiledMaterials {
-  bits: string;
-  globals: string;
+  bits: {[pageName: string]: string};
+  globals: {[pageName: string]: string};
 }
 
 export interface UninstantiatedCompiler {

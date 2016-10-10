@@ -38,7 +38,7 @@ export interface PageModel {
     scripts: Material[],
     styles: Material[],
     assets: Material[]
-  }
+  };
   context: {
     $PROJECT: {
       $name: string,
