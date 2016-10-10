@@ -7,23 +7,7 @@ import { mockLogger } from "./utils";
 import { ManyFiles, MissingFile, LoadFile } from "./errors/ProjectFactoryErrors";
 import { BitSettings, BlockSettings, PageSettings, ProjectSettings, Material, ProjectModel, PageModel, BitRef } from "./interfaces";
 import { Es6Compiler, SassCompiler, NunjucksCompiler } from "./compilers";
-
-
-const PAGE_TMPL = `
-<div id="ledeRoot">
-  {% asyncAll $block in $BLOCKS %}
-    {% BLOCK $block %}
-  {% endall %}
-</div>
-`;
-
-const BLOCK_TMPL = `
-<div class="lede-block">
-  {% asyncAll $bit in $block.$BITS %}
-    {% BIT $bit %}
-  {% endall %}
-</div>
-`;
+import { BLOCK_TMPL, PAGE_TMPL, PROJ_TMPL } from "./DefaultTemplates";
 
 export enum SettingsType {
   Project,
@@ -58,6 +42,9 @@ export class ProjectFactory {
       style: { compilerClass: SassCompiler, constructorArg: {} },
       script: { compilerClass: Es6Compiler, constructorArg: {} }
     };
+
+    // Set up template
+     if (!settings.template) settings.template = PROJ_TMPL;
 
     // Set up defaults
     if (!settings.defaults) {
@@ -355,7 +342,7 @@ export class ProjectFactory {
       };
 
       const context = {
-        $PROJECT: Object.assign({}, proj.context, { $name: proj.name, $deployRoot: proj.deployRoot}),
+        $PROJECT: Object.assign({}, proj.context, { $name: proj.name, $deployRoot: proj.deployRoot, $template: proj.template }),
         $PAGE: Object.assign({}, page.context, pageCtx),
         $BLOCKS: PAGEBLOCKS.map((blockName: string) => {
           const block = Object.assign({}, blocks.find(x => x["name"] === blockName));

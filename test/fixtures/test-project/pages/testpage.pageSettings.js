@@ -22,8 +22,10 @@ class SettingsConfig {
     };
     this.resources = {};
     this.meta = [];
-    this.seo = {
-      title: "Another test"
+    this.context = {
+      seo: {
+        title: "Another test"
+      }
     };
   }
 }

@@ -6,3 +6,4 @@ export * from "./Page";
 export * from "./Bit";
 export * from "./Resolver";
 export * from "./Block";
+export * from "./Deployer";

@@ -37,11 +37,14 @@
     "rollup-plugin-includepaths": "^0.1.6",
     "rollup-plugin-multi-entry": "^2.0.1",
     "rollup-plugin-node-resolve": "^2.0.0",
-    "sander": "^0.5.1"
+    "sander": "^0.5.1",
+    "slug": "^0.9.1"
   },
   "devDependencies": {
     "@types/bunyan": "0.0.30",
     "@types/node": "^6.0.42",
+    "@types/node-sass": "0.0.29",
+    "@types/nunjucks": "0.0.32",
     "ava": "^0.16.0",
     "coveralls": "^2.11.11",
     "gulp": "^3.9.1",

@@ -70,12 +70,11 @@ export class Es6Compiler implements MaterialCompiler {
           nodeResolve({ browser: true }),
           babel({ presets: [rollupPreset]})
         ]
+      }).then(bundle => {
+        this.cacheBits[page.context.$PAGE.$name] = bundle;
+        bits[page.context.$PAGE.$name] = bundle.generate({ format: "iife", exports: "none", sourceMap: true }).code;
       });
-    })).then(bundles => {
-      bundles.forEach((b, i) => {
-        this.cacheBits[tree.pages[i].context.$PAGE.$name] = b;
-        bits[tree.pages[i].context.$PAGE.$name] = b.generate({ format: "iife", exports: "none", sourceMap: true }).code;
-      });
+    })).then(() => {
       return bits;
     });
   }
@@ -93,12 +92,11 @@ export class Es6Compiler implements MaterialCompiler {
           nodeResolve({ browser: true }),
           babel({ presets: [rollupPreset] })
         ]
+      }).then(bundle => {
+        this.cacheGlobals[page.context.$PAGE.$name] = bundle;
+        globals[page.context.$PAGE.$name] = bundle.generate({format: "iife", exports: "none", sourceMap: true }).code;
       });
     })).then(bundles => {
-      bundles.forEach((b, i) => {
-        this.cacheGlobals[tree.pages[i].context.$PAGE.$name] = b;
-        globals[tree.pages[i].context.$PAGE.$name] = b.generate({format: "iife", exports: "none", sourceMap: true }).code;
-      });
       return globals;
     });
   }

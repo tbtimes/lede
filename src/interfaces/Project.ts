@@ -5,6 +5,7 @@ export interface ProjectSettings {
   name: string;
   deployRoot: string;
   blocks: string[];
+  template({styles, scripts, context}): string;
   defaults: {
     scripts: MaterialRef[],
     styles: MaterialRef[],

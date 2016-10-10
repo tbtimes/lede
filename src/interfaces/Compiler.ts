@@ -14,7 +14,7 @@ export interface MaterialCompiler {
 export interface CompiledPage {
   path: string;
   renderedPage: string;
-  files: Array<{name: string, content: string}>;
+  files: Array<{name: string, content?: string, path?: string, overridableName?: string}>;
 }
 
 export interface CompiledMaterials {
