@@ -31,6 +31,10 @@ export class ProjectFactory {
     this.depCacheDir = depCacheDir;
   }
 
+  configure({logger}) {
+    this.logger = logger;
+  }
+
   static async getProject(workingDir: string, logger: Logger): Promise<ProjectSettings> {
     const settings = <ProjectSettings>(await this.loadSettingsFile(workingDir, SettingsType.Project, logger))[0];
     return this.initializeProject(settings, logger);
