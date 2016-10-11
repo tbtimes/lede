@@ -1,6 +1,7 @@
 {
   "name": "ledeTwo",
   "dependencies": {
+    "archieml": "registry:npm/archieml#0.4.2+20160830175942",
     "slug": "registry:npm/slug#0.9.0+20160723033700"
   },
   "globalDependencies": {}
