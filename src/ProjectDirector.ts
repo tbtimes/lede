@@ -1,6 +1,6 @@
 import { Logger } from "bunyan";
 
-import { Deployer, MaterialCompiler, PageCompiler } from "./interfaces";
+import { Deployer, MaterialCompiler, PageCompiler, CompiledMaterials } from "./interfaces";
 import { ProjectFactory } from "./ProjectFactory";
 import { mockLogger } from "./utils";
 
@@ -32,7 +32,7 @@ export class ProjectDirector {
     if (!scriptCompiler) throw new Error("A script compiler must be specified.");
     if (!htmlCompiler) throw new Error("An html compiler must be specified.");
     this.deployer = deployer;
-    this.logger = logger || mockLogger;
+    this.logger = logger || <Logger><any>mockLogger;
     this.workingDir = workingDir;
     this.projectFactory = projectFactory;
     this.scriptCompiler = scriptCompiler;
@@ -46,6 +46,7 @@ export class ProjectDirector {
 
   public async compile() {
     let tree, renderedPages;
+
     this.logger.info("Assembling project dependencies.");
     try {
       tree = await this.projectFactory.getProjectModel();
@@ -53,14 +54,16 @@ export class ProjectDirector {
       this.logger.error({err}, "There was an error assembling dependencies");
       process.exit(1);
     }
+
     this.logger.info("Compiling styles and scripts.");
-    let [scripts, styles] = Promise.all([
+    let [scripts, styles] = <CompiledMaterials[]>(await Promise.all([
       this.scriptCompiler.compile(tree),
       this.styleCompiler.compile(tree)
     ]).catch(err => {
       this.logger.error({err}, "An error occurred while compiling materials.");
       process.exit(1);
-    });
+    }));
+
     this.logger.info("Rendering pages.");
     try {
       renderedPages = await this.htmlCompiler.compile({tree, styles, scripts});
@@ -68,6 +71,7 @@ export class ProjectDirector {
       this.logger.error({err}, "An error occurred while rendering the pages.");
       process.exit(1);
     }
+
     this.logger.info("Deploying pages.");
     try {
       await this.deployer.deploy(renderedPages);

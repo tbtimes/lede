@@ -41,11 +41,6 @@ export class ProjectFactory {
   }
 
    static initializeProject(settings: ProjectSettings, logger: Logger): ProjectSettings {
-    const defaultCompilers = {
-      html: { compilerClass: NunjucksCompiler, constructorArg: {} },
-      style: { compilerClass: SassCompiler, constructorArg: {} },
-      script: { compilerClass: Es6Compiler, constructorArg: {} }
-    };
 
     // Set up template
      if (!settings.template) settings.template = PROJ_TMPL;
@@ -60,27 +55,6 @@ export class ProjectFactory {
     settings.defaults.metaTags = settings.defaults.metaTags || [];
     settings.defaults.blocks = settings.defaults.blocks || [];
     settings.context = settings.context || {};
-
-    // Initialize compilers
-    const instantiatedCompilers = { html: null, style: null, script: null };
-
-    instantiatedCompilers.html = settings.compilers && settings.compilers.html ?
-      new settings.compilers.html["compilerClass"](settings.compilers.html["constructorArg"]) :
-      new defaultCompilers.html.compilerClass(defaultCompilers.html.constructorArg);
-
-    instantiatedCompilers.style = settings.compilers && settings.compilers.style ?
-      new settings.compilers.style["compilerClass"](settings.compilers.style["constructorArg"]) :
-      new defaultCompilers.style.compilerClass(defaultCompilers.style.constructorArg);
-
-    instantiatedCompilers.script = settings.compilers && settings.compilers.script ?
-      new settings.compilers.script["compilerClass"](settings.compilers.script["constructorArg"]) :
-      new defaultCompilers.script.compilerClass(defaultCompilers.script.constructorArg);
-
-    for (let comp in instantiatedCompilers) {
-      instantiatedCompilers[comp].configure({ logger });
-    }
-
-    settings.compilers = instantiatedCompilers;
 
     return settings;
   }
@@ -308,6 +282,9 @@ export class ProjectFactory {
       this.getDepMaterials(join(workingDir, depDir), logger)
     ]);
 
+    // console.log(deps);
+    // console.log(locals);
+
     return {
       scripts: locals.scripts.concat(deps.scripts),
       styles: locals.styles.concat(deps.styles),
@@ -329,9 +306,9 @@ export class ProjectFactory {
       const PAGEASSETS = proj.defaults.assets.concat(page.materials.assets);
 
       const cache = {
-        scripts: PAGESCRIPTS.slice().map(x => retrieveMaterial({ type: "script", id: x.id })),
-        styles: PAGESTYLES.slice().map(x => retrieveMaterial({ type: "style", id: x.id })),
-        assets: PAGEASSETS.slice().map(x => retrieveMaterial({ type: "asset", id: x.id })),
+        scripts: mats.scripts,
+        styles: mats.styles,
+        assets: mats.assets,
       };
 
       /////////////
@@ -440,10 +417,6 @@ export class ProjectFactory {
       const mat = mats[`${type}s`].find(m => m.namespace === namespace && m.name === name);
       return Object.assign({}, mat, { overridableName: overridableName || basename(mat.path) });
     }
-  }
-
-  public async load(): Promise<ProjectModel> {
-    return await ProjectFactory.buildProjectModel(this.workingDir, this.depCacheDir, this.logger);
   }
 
   public async getProjectModel(): Promise<ProjectModel> {

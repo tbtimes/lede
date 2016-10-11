@@ -1,9 +1,7 @@
 {
   "name": "ledeTwo",
   "dependencies": {
-
+    "slug": "registry:npm/slug#0.9.0+20160723033700"
   },
-  "globalDependencies": {
-
-  }
+  "globalDependencies": {}
 }

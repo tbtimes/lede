@@ -122,7 +122,7 @@ export class NunjucksCompiler implements PageCompiler {
     };
   }
 
-  renderPage({shell, context}) {
+  renderPage({shell, context}): Promise<string> {
     return new Promise((resolve, reject) => {
       this.env.renderString(shell, context, (err, res) => {
         if (err) return reject(err);

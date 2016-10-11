@@ -18,6 +18,7 @@ class SettingsConfig {
         { id: "tester/a.json", as: "a.json" },
         { id: "tester/b.json", as: "b.json" },
         { id: "tester/c.json", as: "a.json" },
+        { id: "test-dependency/someFile.json", as: "some_file.json"}
       ]
     };
     this.resources = {};
