@@ -23,16 +23,16 @@ export class ProjectFactory {
   workingDir: string;
   depCacheDir: string;
 
-  constructor({workingDir, logger, depCacheDir}: {workingDir: string, logger?: Logger, depCacheDir: string}) {
-    if (!workingDir) throw new Error("Must specify a workingDir for ProjectFactory.");
+  constructor({logger, depCacheDir}: {logger?: Logger, depCacheDir: string}) {
     if (!depCacheDir) throw new  Error("Must specify a depCacheDir for ProjectFactory.");
     this.logger = logger || <Logger><any>mockLogger;
-    this.workingDir = workingDir;
+    this.workingDir = "";
     this.depCacheDir = depCacheDir;
   }
 
-  configure({logger}) {
+  configure({logger, workingDir}) {
     this.logger = logger;
+    this.workingDir = workingDir;
   }
 
   static async getProject(workingDir: string, logger: Logger): Promise<ProjectSettings> {

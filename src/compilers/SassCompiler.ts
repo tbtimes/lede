@@ -68,7 +68,7 @@ export class SassCompiler implements MaterialCompiler {
         return SassCompiler.renderFile(mat, Object.assign({}, this.renderOpts, {includePaths}));
       })).then(renderedBits => {
         bits[page.context.$PAGE.$name] = renderedBits.reduce((state, rendered: { css: Buffer }) => {
-          return state += rendered.css.toString();
+          return state + rendered.css.toString();
         }, "");
       });
     })).then(() => {
@@ -85,7 +85,7 @@ export class SassCompiler implements MaterialCompiler {
         return SassCompiler.renderFile(mat.path, Object.assign({}, this.renderOpts, {includePaths}));
       })).then(renderedGlobals => {
         globals[page.context.$PAGE.$name] = renderedGlobals.reduce((state, rendered: { css: Buffer }) => {
-          return state += rendered.css.toString();
+          return state + rendered.css.toString();
         }, "");
       });
     })).then(() => {

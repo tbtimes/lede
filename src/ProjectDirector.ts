@@ -41,7 +41,7 @@ export class ProjectDirector {
 
     // Inject logger into delegate components
     this.deployer.configure({logger: this.logger});
-    this.projectFactory.configure({logger: this.logger });
+    this.projectFactory.configure({logger: this.logger, workingDir: this.workingDir});
   }
 
   public async compile() {
