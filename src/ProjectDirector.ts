@@ -51,6 +51,7 @@ export class ProjectDirector {
     this.logger.info("Assembling project dependencies.");
     try {
       tree = await this.projectFactory.getProjectModel();
+      this.tree = tree;
     } catch (err) {
       this.logger.error({err}, "There was an error assembling dependencies");
       process.exit(1);
@@ -80,7 +81,6 @@ export class ProjectDirector {
       this.logger.error({err}, "An error occurred while deploying the pages.");
       process.exit(1);
     }
-    this.tree = tree;
   }
 
   async refresh(type: string) {

@@ -35,7 +35,7 @@ export class NunjucksCompiler implements PageCompiler {
 
   constructor(arg?: {
     filters?: Array<{ name: string, fn: (txt: string) => string }>,
-    extensions?: Array<{ name: string, ext: Extension }>,
+    extensions?: Array<{ name: string, ext: any }>,
     loaderOptions?: any,
     envOptions?: any,
     loaderPaths?: string[]
