@@ -21,8 +21,3 @@ export interface CompiledMaterials {
   bits: {[pageName: string]: string};
   globals: {[pageName: string]: string};
 }
-
-export interface UninstantiatedCompiler {
-  compilerClass: any;
-  constructorArg: any;
-}

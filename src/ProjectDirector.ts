@@ -1,6 +1,6 @@
 import { Logger } from "bunyan";
 
-import { Deployer, MaterialCompiler, PageCompiler, CompiledMaterials } from "./interfaces";
+import { Deployer, MaterialCompiler, PageCompiler, CompiledMaterials, ProjectModel, CompiledPage } from "./interfaces";
 import { ProjectFactory } from "./ProjectFactory";
 import { mockLogger } from "./utils";
 
@@ -23,6 +23,7 @@ export class ProjectDirector {
   htmlCompiler: PageCompiler;
   styleCompiler: MaterialCompiler;
   scriptCompiler: MaterialCompiler;
+  tree: ProjectModel | null;
 
   constructor({workingDir, logger, projectFactory, deployer, htmlCompiler, styleCompiler, scriptCompiler}: ProjectDirectorArgs) {
     if (!workingDir) throw new Error("workingDir is a required parameter.");
@@ -45,7 +46,7 @@ export class ProjectDirector {
   }
 
   public async compile() {
-    let tree, renderedPages;
+    let tree: ProjectModel, renderedPages: CompiledPage[];
 
     this.logger.info("Assembling project dependencies.");
     try {
@@ -79,5 +80,58 @@ export class ProjectDirector {
       this.logger.error({err}, "An error occurred while deploying the pages.");
       process.exit(1);
     }
+    this.tree = tree;
   }
+
+  async refresh(type: string) {
+    switch (type) {
+      case "scripts":
+      case "styles":
+      case "assets":
+        this.refreshMats();
+        break;
+
+      case "bits":
+      case "blocks":
+      case "pages":
+      case "projectSettings":
+      case "deps":
+        this.compile();
+        break;
+    }
+  }
+
+  async refreshMats() {
+    let tree: ProjectModel, renderedPages: CompiledPage[];
+
+    if (!this.tree) {
+      this.tree = await this.projectFactory.getProjectModel();
+    }
+    tree = this.tree;
+
+    this.logger.info("Compiling styles and scripts.");
+    let [scripts, styles] = <CompiledMaterials[]>(await Promise.all([
+      this.scriptCompiler.compile(tree),
+      this.styleCompiler.compile(tree)
+    ]).catch(err => {
+      this.logger.error({err}, "An error occurred while compiling materials.");
+      process.exit(1);
+    }));
+
+    this.logger.info("Rendering pages.");
+    try {
+      renderedPages = await this.htmlCompiler.compile({tree, styles, scripts});
+    } catch (err) {
+      this.logger.error({err}, "An error occurred while rendering the pages.");
+      process.exit(1);
+    }
+
+    this.logger.info("Deploying pages.");
+    try {
+      await this.deployer.deploy(renderedPages);
+    } catch (err) {
+      this.logger.error({err}, "An error occurred while deploying the pages.");
+      process.exit(1);
+    }
+  };
 }
