@@ -1,6 +1,6 @@
 {
   "name": "lede",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "A tool for building and deploying static article pages.",
   "repository": "https://github.com/tbtimes/lede",
   "main": "dist/index.js",
