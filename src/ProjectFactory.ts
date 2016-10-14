@@ -292,7 +292,7 @@ export class ProjectFactory {
     };
   }
 
-  static async buildProjectModel(workingDir, depDir, logger): Promise<ProjectModel> {
+  static async buildProjectModel(workingDir, depDir, debug: boolean, logger): Promise<ProjectModel> {
     const proj = await ProjectFactory.getProject(workingDir, logger );
     const fullbits = await ProjectFactory.getBits(workingDir, depDir, logger );
     const pageSettings = await ProjectFactory.getPages(join(workingDir, "pages"), logger);
@@ -323,7 +323,7 @@ export class ProjectFactory {
       };
 
       const context = {
-        $PROJECT: Object.assign({}, proj.context, { $name: proj.name, $deployRoot: proj.deployRoot, $template: proj.template }),
+        $PROJECT: Object.assign({}, proj.context, { $name: proj.name, $deployRoot: proj.deployRoot, $template: proj.template, $debug: debug }),
         $PAGE: Object.assign({}, page.context, pageCtx),
         $BLOCKS: PAGEBLOCKS.map((blockName: string) => {
           const block = Object.assign({}, blocks.find(x => x["name"] === blockName));
@@ -419,8 +419,8 @@ export class ProjectFactory {
     }
   }
 
-  public async getProjectModel(): Promise<ProjectModel> {
-    return await ProjectFactory.buildProjectModel(this.workingDir, this.depCacheDir, this.logger);
+  public async getProjectModel(debug: boolean): Promise<ProjectModel> {
+    return await ProjectFactory.buildProjectModel(this.workingDir, this.depCacheDir, debug, this.logger);
   }
 }
 

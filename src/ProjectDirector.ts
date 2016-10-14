@@ -13,6 +13,7 @@ export interface ProjectDirectorArgs {
   styleCompiler: MaterialCompiler;
   scriptCompiler: MaterialCompiler;
   htmlCompiler: PageCompiler;
+  debug: boolean;
 }
 
 export class ProjectDirector {
@@ -23,9 +24,10 @@ export class ProjectDirector {
   htmlCompiler: PageCompiler;
   styleCompiler: MaterialCompiler;
   scriptCompiler: MaterialCompiler;
+  debug: boolean;
   tree: ProjectModel | null;
 
-  constructor({workingDir, logger, projectFactory, deployer, htmlCompiler, styleCompiler, scriptCompiler}: ProjectDirectorArgs) {
+  constructor({workingDir, logger, projectFactory, deployer, htmlCompiler, styleCompiler, scriptCompiler, debug}: ProjectDirectorArgs) {
     if (!workingDir) throw new Error("workingDir is a required parameter.");
     if (!projectFactory) throw new Error("projectFactory is a required parameter.");
     if (!deployer) throw new Error("A deployer must be specified.");
@@ -39,6 +41,7 @@ export class ProjectDirector {
     this.scriptCompiler = scriptCompiler;
     this.styleCompiler = styleCompiler;
     this.htmlCompiler = htmlCompiler;
+    this.debug = debug == false ? false : true;
 
     // Inject logger into delegate components
     this.deployer.configure({logger: this.logger});
@@ -50,7 +53,7 @@ export class ProjectDirector {
 
     this.logger.info("Assembling project dependencies.");
     try {
-      tree = await this.projectFactory.getProjectModel();
+      tree = await this.projectFactory.getProjectModel(this.debug);
       this.tree = tree;
     } catch (err) {
       this.logger.error({err}, "There was an error assembling dependencies");
@@ -105,7 +108,7 @@ export class ProjectDirector {
     let tree: ProjectModel, renderedPages: CompiledPage[];
 
     if (!this.tree) {
-      this.tree = await this.projectFactory.getProjectModel();
+      this.tree = await this.projectFactory.getProjectModel(this.debug);
     }
     tree = this.tree;
 
