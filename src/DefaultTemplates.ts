@@ -43,7 +43,7 @@ ${ styles.bits }
 <body>
 ${ context.$PAGE.$template }
 {% if $PAGE.$resources and $PAGE.$resources.body %}
-{% for resource in $PAGE.resources.body %}
+{% for resource in $PAGE.$resources.body %}
 {{ resource }}
 {% endfor %}
 {% endif %}
