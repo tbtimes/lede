@@ -329,7 +329,7 @@ export class ProjectFactory {
           const block = Object.assign({}, blocks.find(x => x["name"] === blockName));
           const bits = block["bits"].map((bit: BitRef) => {
             const b: BitSettings = fullbits.find(x => x["name"] === bit.bit);
-            return Object.assign({}, b.context, { $name: b.name, $template: b.html});
+            return Object.assign({}, b.context, bit.context, { $name: b.name, $template: b.html});
           });
           return Object.assign({}, block.context, { $name: block.name, $template: block.template, $BITS: bits });
         })
