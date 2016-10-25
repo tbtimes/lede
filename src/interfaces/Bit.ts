@@ -2,6 +2,7 @@
 
 export interface BitSettings {
   name: string;
+  namespace: string;
   context?: any;
   script: string;
   style: string;

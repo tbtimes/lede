@@ -1,0 +1,427 @@
+{
+  "workingDir": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project",
+  "pages": [
+    {
+      "context": {
+        "$PROJECT": {
+          "baz": "qux",
+          "$name": "tester",
+          "$deployRoot": "some-seo-root-path-here",
+          "$debug": true
+        },
+        "$PAGE": {
+          "seo": {
+            "title": "Another test"
+          },
+          "$name": "testpage",
+          "$meta": [],
+          "$resources": {
+            "head": [],
+            "body": []
+          },
+          "$template": "\n<div id=\"ledeRoot\">\n  {% asyncAll $block in $BLOCKS %}\n    {% BLOCK $block %}\n  {% endall %}\n</div>\n",
+          "$deployPath": "a-great-seo-headline"
+        },
+        "$BLOCKS": [
+          {
+            "$name": "header",
+            "$template": "\n<div class=\"lede-block\">\n  {% asyncAll $bit in $block.$BITS %}\n    {% BIT $bit %}\n  {% endall %}\n</div>\n",
+            "$BITS": [
+              {
+                "foo": "bar",
+                "$name": "test-bit",
+                "$template": "<h1>This is a test</h1>"
+              },
+              {
+                "foo": "bar",
+                "baz": "qux",
+                "$name": "test-bit",
+                "$template": "<h1>This is a test</h1>"
+              }
+            ]
+          }
+        ]
+      },
+      "styles": {
+        "globals": [
+          {
+            "namespace": "tester",
+            "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/a.scss",
+            "name": "a.scss",
+            "overridableName": "a.scss"
+          },
+          {
+            "namespace": "tester",
+            "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/b.scss",
+            "name": "b.scss",
+            "overridableName": "b.scss"
+          },
+          {
+            "namespace": "tester",
+            "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/c.scss",
+            "name": "c.scss",
+            "overridableName": "c.scss"
+          }
+        ],
+        "bits": [
+          "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.scss"
+        ]
+      },
+      "scripts": {
+        "globals": [
+          {
+            "namespace": "tester",
+            "type": "script",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/scripts/a.js",
+            "name": "a.js",
+            "overridableName": "a.js"
+          },
+          {
+            "namespace": "tester",
+            "type": "script",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/scripts/b.js",
+            "name": "b.js",
+            "overridableName": "b.js"
+          },
+          {
+            "namespace": "tester",
+            "type": "script",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/scripts/c.js",
+            "name": "c.js",
+            "overridableName": "c.js"
+          }
+        ],
+        "bits": [
+          "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.js"
+        ]
+      },
+      "assets": [
+        {
+          "namespace": "tester",
+          "type": "asset",
+          "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/assets/a.json",
+          "name": "a.json",
+          "overridableName": "a.json"
+        },
+        {
+          "namespace": "tester",
+          "type": "asset",
+          "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/assets/b.json",
+          "name": "b.json",
+          "overridableName": "b.json"
+        },
+        {
+          "namespace": "tester",
+          "type": "asset",
+          "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/assets/c.json",
+          "name": "c.json",
+          "overridableName": "c.json"
+        }
+      ],
+      "cache": {
+        "scripts": [
+          {
+            "namespace": "tester",
+            "type": "script",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/scripts/a.js",
+            "name": "a.js"
+          },
+          {
+            "namespace": "tester",
+            "type": "script",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/scripts/b.js",
+            "name": "b.js"
+          },
+          {
+            "namespace": "tester",
+            "type": "script",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/scripts/c.js",
+            "name": "c.js"
+          },
+          {
+            "namespace": "test-dependency",
+            "type": "script",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/lede_modules/test-dependency/scripts/foobar.js",
+            "name": "foobar.js"
+          }
+        ],
+        "styles": [
+          {
+            "namespace": "tester",
+            "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/a.scss",
+            "name": "a.scss"
+          },
+          {
+            "namespace": "tester",
+            "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/b.scss",
+            "name": "b.scss"
+          },
+          {
+            "namespace": "tester",
+            "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/c.scss",
+            "name": "c.scss"
+          },
+          {
+            "namespace": "test-dependency",
+            "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/lede_modules/test-dependency/styles/green.scss",
+            "name": "green.scss"
+          }
+        ],
+        "assets": [
+          {
+            "namespace": "tester",
+            "type": "asset",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/assets/a.json",
+            "name": "a.json"
+          },
+          {
+            "namespace": "tester",
+            "type": "asset",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/assets/b.json",
+            "name": "b.json"
+          },
+          {
+            "namespace": "tester",
+            "type": "asset",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/assets/c.json",
+            "name": "c.json"
+          },
+          {
+            "namespace": "test-dependency",
+            "type": "asset",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/lede_modules/test-dependency/assets/someFile.json",
+            "name": "someFile.json"
+          }
+        ]
+      }
+    },
+    {
+      "context": {
+        "$PROJECT": {
+          "baz": "qux",
+          "$name": "tester",
+          "$deployRoot": "some-seo-root-path-here",
+          "$debug": true
+        },
+        "$PAGE": {
+          "seo": {
+            "title": "A test"
+          },
+          "$name": "testpage2",
+          "$meta": [],
+          "$resources": {
+            "head": [],
+            "body": []
+          },
+          "$template": "\n<div id=\"ledeRoot\">\n  {% asyncAll $block in $BLOCKS %}\n    {% BLOCK $block %}\n  {% endall %}\n</div>\n",
+          "$deployPath": "another-great-seo-headline"
+        },
+        "$BLOCKS": [
+          {
+            "$name": "header",
+            "$template": "\n<div class=\"lede-block\">\n  {% asyncAll $bit in $block.$BITS %}\n    {% BIT $bit %}\n  {% endall %}\n</div>\n",
+            "$BITS": [
+              {
+                "foo": "bar",
+                "$name": "test-bit",
+                "$template": "<h1>This is a test</h1>"
+              },
+              {
+                "foo": "bar",
+                "baz": "qux",
+                "$name": "test-bit",
+                "$template": "<h1>This is a test</h1>"
+              }
+            ]
+          },
+          {
+            "$name": "article",
+            "$template": "\n<div class=\"lede-block\">\n  {% asyncAll $bit in $block.$BITS %}\n    {% BIT $bit %}\n  {% endall %}\n</div>\n",
+            "$BITS": [
+              {
+                "foo": "bar",
+                "$name": "test-bit",
+                "$template": "<h1>This is a test</h1>"
+              },
+              {
+                "foo": "bar",
+                "baz": "qux",
+                "$name": "test-bit",
+                "$template": "<h1>This is a test</h1>"
+              }
+            ]
+          },
+          {
+            "$name": "footer",
+            "$template": "\n<div class=\"lede-block\">\n  {% asyncAll $bit in $block.$BITS %}\n    {% BIT $bit %}\n  {% endall %}\n</div>\n",
+            "$BITS": [
+              {
+                "foo": "bar",
+                "$name": "test-bit",
+                "$template": "<h1>This is a test</h1>"
+              },
+              {
+                "foo": "bar",
+                "baz": "qux",
+                "$name": "test-bit",
+                "$template": "<h1>This is a test</h1>"
+              }
+            ]
+          }
+        ]
+      },
+      "styles": {
+        "globals": [
+          {
+            "namespace": "tester",
+            "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/c.scss",
+            "name": "c.scss",
+            "overridableName": "a.scss"
+          },
+          {
+            "namespace": "tester",
+            "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/b.scss",
+            "name": "b.scss",
+            "overridableName": "b.scss"
+          }
+        ],
+        "bits": [
+          "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.scss"
+        ]
+      },
+      "scripts": {
+        "globals": [
+          {
+            "namespace": "tester",
+            "type": "script",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/scripts/c.js",
+            "name": "c.js",
+            "overridableName": "a.js"
+          },
+          {
+            "namespace": "tester",
+            "type": "script",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/scripts/b.js",
+            "name": "b.js",
+            "overridableName": "b.js"
+          }
+        ],
+        "bits": [
+          "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/bits/test-bit/test.js"
+        ]
+      },
+      "assets": [
+        {
+          "namespace": "tester",
+          "type": "asset",
+          "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/assets/c.json",
+          "name": "c.json",
+          "overridableName": "a.json"
+        },
+        {
+          "namespace": "tester",
+          "type": "asset",
+          "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/assets/b.json",
+          "name": "b.json",
+          "overridableName": "b.json"
+        },
+        {
+          "namespace": "test-dependency",
+          "type": "asset",
+          "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/lede_modules/test-dependency/assets/someFile.json",
+          "name": "someFile.json",
+          "overridableName": "some_file.json"
+        }
+      ],
+      "cache": {
+        "scripts": [
+          {
+            "namespace": "tester",
+            "type": "script",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/scripts/a.js",
+            "name": "a.js"
+          },
+          {
+            "namespace": "tester",
+            "type": "script",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/scripts/b.js",
+            "name": "b.js"
+          },
+          {
+            "namespace": "tester",
+            "type": "script",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/scripts/c.js",
+            "name": "c.js"
+          },
+          {
+            "namespace": "test-dependency",
+            "type": "script",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/lede_modules/test-dependency/scripts/foobar.js",
+            "name": "foobar.js"
+          }
+        ],
+        "styles": [
+          {
+            "namespace": "tester",
+            "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/a.scss",
+            "name": "a.scss"
+          },
+          {
+            "namespace": "tester",
+            "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/b.scss",
+            "name": "b.scss"
+          },
+          {
+            "namespace": "tester",
+            "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/c.scss",
+            "name": "c.scss"
+          },
+          {
+            "namespace": "test-dependency",
+            "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/lede_modules/test-dependency/styles/green.scss",
+            "name": "green.scss"
+          }
+        ],
+        "assets": [
+          {
+            "namespace": "tester",
+            "type": "asset",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/assets/a.json",
+            "name": "a.json"
+          },
+          {
+            "namespace": "tester",
+            "type": "asset",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/assets/b.json",
+            "name": "b.json"
+          },
+          {
+            "namespace": "tester",
+            "type": "asset",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/assets/c.json",
+            "name": "c.json"
+          },
+          {
+            "namespace": "test-dependency",
+            "type": "asset",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/lede_modules/test-dependency/assets/someFile.json",
+            "name": "someFile.json"
+          }
+        ]
+      }
+    }
+  ]
+}

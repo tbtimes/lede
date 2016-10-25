@@ -4,7 +4,7 @@ import { request, RequestOptions } from "https";
 export const mockLogger = {
   info: function() {},
   warn: function() {},
-  error: function() {},
+  error: console.log,
   trace: function() {},
   debug: function() {},
   fatal: function() {},

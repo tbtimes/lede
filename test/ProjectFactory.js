@@ -28,26 +28,35 @@ function writeJSON(filename, obj) {
 
 test.only("t", async(t) => {
 
-  // await director.compile();
+  try {
+    // console.log('x')
+    await director.compile();
+    // console.log('y')
+    writeJSON("tree.json", director.tree);
+  } catch (e) {
+    console.log(e)
+  }
 
-  const proj = await ProjectFactory.getProject(testProjPath, mockLogger );
-  const bits = await ProjectFactory.getBits(testProjPath, "lede_modules", mockLogger );
-  console.log(bits)
-  const pages = await ProjectFactory.getPages(testPagePath, mockLogger);
-  const blocks = await ProjectFactory.getBlocks(testBlockPath, mockLogger);
-  const mats = await ProjectFactory.getMaterials(testProjPath, "lede_modules", mockLogger);
-  const tree = await ProjectFactory.buildProjectModel(testProjPath, "lede_modules", mockLogger);
-  const scripts = await escomp.compile(tree);
-  const styles = await sasscomp.compile(tree);
-  const compiledPages = await njkcomp.compile({ tree, scripts, styles });
-  await deployer.deploy(compiledPages);
-  writeJSON("compiledPage.json", compiledPages);
-  writeJSON("compiledScripts.json", scripts);
-  writeJSON("compiledStyles.json", styles);
-  writeJSON("proj.json", proj);
-  writeJSON("bits.json", bits);
-  writeJSON("pages.json", pages);
-  writeJSON("blocks.json", blocks);
-  writeJSON("mats.json", mats);
-  writeJSON("tree.json", tree);
+
+  // const proj = await ProjectFactory.getProject(testProjPath, mockLogger );
+  // const bits = await ProjectFactory.getBits(testProjPath, "lede_modules", mockLogger );
+  // console.log(bits)
+  // const pages = await ProjectFactory.getPages(testPagePath, mockLogger);
+  // const blocks = await ProjectFactory.getBlocks(testBlockPath, mockLogger);
+  // console.log)
+  // const mats = await ProjectFactory.getMaterials(testProjPath, "lede_modules", mockLogger);
+  // const tree = await ProjectFactory.buildProjectModel(testProjPath, "lede_modules", mockLogger);
+  // const scripts = await escomp.compile(tree);
+  // const styles = await sasscomp.compile(tree);
+  // const compiledPages = await njkcomp.compile({ tree, scripts, styles });
+  // await deployer.deploy(compiledPages);
+  // writeJSON("compiledPage.json", compiledPages);
+  // writeJSON("compiledScripts.json", scripts);
+  // writeJSON("compiledStyles.json", styles);
+  // writeJSON("proj.json", proj);
+  // writeJSON("bits.json", bits);
+  // writeJSON("pages.json", pages);
+  // writeJSON("blocks.json", blocks);
+  // writeJSON("mats.json", mats);
+  // writeJSON("tree.json", tree);
 });

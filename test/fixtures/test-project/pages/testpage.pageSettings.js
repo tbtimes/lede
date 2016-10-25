@@ -2,7 +2,7 @@
 class SettingsConfig {
   constructor() {
     this.deployPath = "a-great-seo-headline";
-    this.blocks = ["header"];
+    this.blocks = ["tester/header"];
     this.materials = {
       scripts: [
         { id: "tester/a.js" },

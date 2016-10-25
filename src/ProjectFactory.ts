@@ -59,16 +59,35 @@ export class ProjectFactory {
     return settings;
   }
 
-  static async getBits(workingDir: string, depDir: string, logger: Logger): Promise<BitSettings[]> {
+  static async getBits({workingDir, depDir, logger, thisNamespace}) {
     const depPath = join(workingDir, depDir);
-    const depDirs = (await glob("*", { cwd: depPath})).map(x => join(depPath, x));
+    const depDirs = (await glob("*", { cwd: depPath })).map( x => {
+      return { namespace: x, path: join(depPath, x) };
+    });
 
     const [locals, deps] = await Promise.all([
-      this.getBitsFrom(workingDir, logger),
-      Promise.all(depDirs.map(p => this.getBitsFrom(p, logger)))
+      new Promise((resolve, reject) => {
+        this.getBitsFrom(workingDir, logger).then(b => {
+         return b.map(x => {
+           x.namespace = thisNamespace;
+           return x
+         });
+        }).then(resolve);
+      }),
+      new Promise((resolve, reject) => {
+        Promise.all(depDirs.map(p => {
+          return new Promise((res, rej) => {
+            return this.getBitsFrom(p.path, logger).then(b => {
+              return b.map(x => {
+                x.namespace = p.namespace;
+                return x
+              });
+            }).then(res);
+          });
+        })).then(resolve);
+      })
     ]);
 
-    // Flatten bitsettings
     return [].concat.apply([], locals).concat([].concat.apply([], deps));
   }
 
@@ -113,12 +132,33 @@ export class ProjectFactory {
     return settings;
   }
 
-  static async getBlocks(workingDir: string, logger: Logger): Promise<BlockSettings[]> {
-    const settings = <BlockSettings[]>(await this.loadSettingsFile(workingDir, SettingsType.Block, logger));
-    return await Promise.all(settings.map(this.initalizeBlock));
+  static async getBlocks({ workingDir, logger, depCache, thisNamespace}) {
+    const localBlocks = <BlockSettings[]>(await this.loadSettingsFile(join(workingDir, "blocks"), SettingsType.Block, logger))
+      .map((x: BlockSettings) => {
+        x.namespace = thisNamespace;
+        return x;
+      });
+    const depBlocks = await this.getDepBlocks(join(workingDir, depCache), logger);
+    return await Promise.all([...localBlocks, ...depBlocks].map(this.initalizeBlock));
   }
 
-   static async initalizeBlock(settings: BlockSettings): Promise<BlockSettings> {
+  static async getDepBlocks(path, logger) {
+    const deps = await glob("*", {cwd: path});
+    return Promise.all(
+      deps.map(dep => {
+        const p = join(path, dep, "blocks");
+        return ProjectFactory.loadSettingsFile(p, SettingsType.Block, logger)
+          .then((x: BlockSettings[]) => {
+            return x.map((b: BlockSettings) => {
+              b.namespace = dep;
+              return b;
+            });
+          });
+      })
+    );
+  }
+
+  static async initalizeBlock(settings: BlockSettings): Promise<BlockSettings> {
     settings.bits = settings.bits || [];
     settings.source = settings.source || null;
     settings.context = settings.context || {};
@@ -282,9 +322,6 @@ export class ProjectFactory {
       this.getDepMaterials(join(workingDir, depDir), logger)
     ]);
 
-    // console.log(deps);
-    // console.log(locals);
-
     return {
       scripts: locals.scripts.concat(deps.scripts),
       styles: locals.styles.concat(deps.styles),
@@ -294,13 +331,23 @@ export class ProjectFactory {
 
   static async buildProjectModel(workingDir, depDir, debug: boolean, logger): Promise<ProjectModel> {
     const proj = await ProjectFactory.getProject(workingDir, logger );
-    const fullbits = await ProjectFactory.getBits(workingDir, depDir, logger );
+    const fullbits = await ProjectFactory.getBits({workingDir, depDir, logger, thisNamespace: proj.name});
+    // console.log(fullbits);
     const pageSettings = await ProjectFactory.getPages(join(workingDir, "pages"), logger);
-    const blocks = await ProjectFactory.getBlocks(join(workingDir, "blocks"), logger);
+    const blocks = await ProjectFactory.getBlocks({ workingDir, logger, depCache: depDir, thisNamespace: proj.name});
     const mats = await ProjectFactory.getMaterials(workingDir, depDir, logger);
 
     const pages = pageSettings.reduce((state: PageModel[], page: PageSettings) => {
-      const PAGEBLOCKS = proj.defaults.blocks.concat(page.blocks);
+      const PAGEBLOCKS = proj.defaults.blocks.concat(page.blocks).map(name => {
+        const splitBlock = name.split("/");
+        if (splitBlock.length === 1) {
+          return { namespace: proj.name, name };
+        } else if (splitBlock.length > 2) {
+          throw new Error(`Cannot parse block ${name}`);
+        } else {
+          return { namespace: splitBlock[0], name: splitBlock[1] };
+        }
+      });
       const PAGESCRIPTS = proj.defaults.scripts.concat(page.materials.scripts);
       const PAGESTYLES = proj.defaults.styles.concat(page.materials.styles);
       const PAGEASSETS = proj.defaults.assets.concat(page.materials.assets);
@@ -325,10 +372,30 @@ export class ProjectFactory {
       const context = {
         $PROJECT: Object.assign({}, proj.context, { $name: proj.name, $deployRoot: proj.deployRoot, $template: proj.template, $debug: debug }),
         $PAGE: Object.assign({}, page.context, pageCtx),
-        $BLOCKS: PAGEBLOCKS.map((blockName: string) => {
-          const block = Object.assign({}, blocks.find(x => x["name"] === blockName));
+        $BLOCKS: PAGEBLOCKS.map((b) => {
+          const block = Object.assign({}, blocks.find(x => {
+            return x.namespace === b.namespace && x.name === b.name;
+          }));
           const bits = block["bits"].map((bit: BitRef) => {
-            const b: BitSettings = fullbits.find(x => x["name"] === bit.bit);
+            const splitBit = bit.bit.split("/");
+            let namespace, name;
+            if (splitBit.length === 1) {
+              namespace = proj.name;
+              name = bit.bit;
+            } else if (splitBit.length > 2) {
+              throw new Error(`Cannot parse bit ${bit.bit}`);
+            } else {
+              namespace = splitBit[0];
+              name = splitBit[1];
+            }
+            const b: BitSettings = fullbits.find(x => {
+              return x.namespace === namespace && x.name === name;
+            });
+            // console.log(fullbits)
+            // console.log(namespace)
+            // console.log(name)
+            // console.log(b)
+            // console.log(bit)
             return Object.assign({}, b.context, bit.context, { $name: b.name, $template: b.html});
           });
           return Object.assign({}, block.context, { $name: block.name, $template: block.template, $BITS: bits });
@@ -375,10 +442,25 @@ export class ProjectFactory {
       }, []);
 
       // Gather bit materials
-      const bitsWithDupes = PAGEBLOCKS.map((blockName: string) => {
-        return blocks.find(x => x.name === blockName).bits
+      const bitsWithDupes = PAGEBLOCKS.map((blockName) => {
+        return blocks.find(x => {
+          return x.namespace === blockName.namespace && x.name === blockName.name;
+        }).bits
           .map((bitref: BitRef) => {
-            const bit = fullbits.find(x => x.name === bitref.bit);
+            let namespace, name;
+            const splitBit = bitref.bit.split("/");
+            if (splitBit.length === 1) {
+              namespace = proj.name;
+              name = bitref.bit;
+            } else if (splitBit.length > 2) {
+              throw new Error(`Unable to find bit ${bitref.bit}`);
+            } else {
+              namespace = splitBit[0];
+              name = splitBit[1];
+            }
+            const bit = fullbits.find(x => {
+              return x.namespace === namespace && x.name === name;
+            });
             return {
               script: bit.script,
               style: bit.style
