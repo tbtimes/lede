@@ -64,6 +64,7 @@ export class Es6Compiler implements MaterialCompiler {
       return rollup.rollup({
         entry: join(pageCachePath, "bits", "**/*.js"),
         cache: this.cacheBits[page.context.$PAGE.$name],
+        context: "window",
         plugins: [
           includes({ paths: [ join(pageCachePath, "scripts")] }),
           multientry({ exports: false }),
