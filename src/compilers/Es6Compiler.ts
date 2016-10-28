@@ -65,7 +65,6 @@ export class Es6Compiler implements MaterialCompiler {
         entry: join(pageCachePath, "bits", "**/*.js"),
         cache: this.cacheBits[page.context.$PAGE.$name],
         context: "window",
-        browser: true,
         plugins: [
           includes({ paths: [ join(pageCachePath, "scripts")] }),
           multientry({ exports: false }),
@@ -89,7 +88,6 @@ export class Es6Compiler implements MaterialCompiler {
         entry: join(pageCachePath, "scripts", "**/*.js"),
         cache: this.cacheGlobals[page.context.$PAGE.$name],
         context: "window",
-        browser: true,
         plugins: [
           includes({ paths: [ join(pageCachePath, "scripts")] }),
           multientry({ exports: false }),
