@@ -13,6 +13,7 @@ const multientry = require("rollup-plugin-multi-entry");
 const nodeResolve = require("rollup-plugin-node-resolve");
 const rollupPreset = require("babel-preset-es2015-rollup");
 const includes = require("rollup-plugin-includepaths");
+const commonjs = require("rollup-plugin-commonjs");
 
 
 export class Es6Compiler implements MaterialCompiler {
@@ -69,6 +70,7 @@ export class Es6Compiler implements MaterialCompiler {
           includes({ paths: [ join(pageCachePath, "scripts")] }),
           multientry({ exports: false }),
           nodeResolve({ browser: true }),
+          commonjs({}),
           babel({ presets: [rollupPreset]})
         ]
       }).then(bundle => {
@@ -92,6 +94,7 @@ export class Es6Compiler implements MaterialCompiler {
           includes({ paths: [ join(pageCachePath, "scripts")] }),
           multientry({ exports: false }),
           nodeResolve({ browser: true }),
+          commonjs({}),
           babel({ presets: [rollupPreset] })
         ]
       }).then(bundle => {

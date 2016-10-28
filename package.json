@@ -33,6 +33,7 @@
     "nunjucks": "^2.4.2",
     "rollup": "^0.36.3",
     "rollup-plugin-babel": "^2.6.1",
+    "rollup-plugin-commonjs": "^5.0.5",
     "rollup-plugin-includepaths": "^0.1.6",
     "rollup-plugin-multi-entry": "^2.0.1",
     "rollup-plugin-node-resolve": "^2.0.0",
