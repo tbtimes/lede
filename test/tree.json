@@ -164,6 +164,12 @@
           {
             "namespace": "tester",
             "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/boost/blable.scss",
+            "name": "boost/blable.scss"
+          },
+          {
+            "namespace": "tester",
+            "type": "style",
             "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/c.scss",
             "name": "c.scss"
           },
@@ -381,6 +387,12 @@
             "type": "style",
             "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/b.scss",
             "name": "b.scss"
+          },
+          {
+            "namespace": "tester",
+            "type": "style",
+            "path": "/Users/emurray/WebstormProjects/lede/test/fixtures/test-project/styles/boost/blable.scss",
+            "name": "boost/blable.scss"
           },
           {
             "namespace": "tester",

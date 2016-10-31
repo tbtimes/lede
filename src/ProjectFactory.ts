@@ -1,13 +1,20 @@
 import { Logger } from "bunyan";
-const glob = require("glob-promise");
 import { join, basename } from "path";
-const sander = require("sander");
-
 import { mockLogger } from "./utils";
 import { ManyFiles, MissingFile, LoadFile } from "./errors/ProjectFactoryErrors";
-import { BitSettings, BlockSettings, PageSettings, ProjectSettings, Material, ProjectModel, PageModel, BitRef } from "./interfaces";
-import { Es6Compiler, SassCompiler, NunjucksCompiler } from "./compilers";
+import {
+  BitSettings,
+  BlockSettings,
+  PageSettings,
+  ProjectSettings,
+  Material,
+  ProjectModel,
+  PageModel,
+  BitRef
+} from "./interfaces";
 import { BLOCK_TMPL, PAGE_TMPL, PROJ_TMPL } from "./DefaultTemplates";
+const glob = require("glob-promise");
+const sander = require("sander");
 
 export enum SettingsType {
   Project,
@@ -24,7 +31,9 @@ export class ProjectFactory {
   depCacheDir: string;
 
   constructor({logger, depCacheDir}: {logger?: Logger, depCacheDir: string}) {
-    if (!depCacheDir) throw new  Error("Must specify a depCacheDir for ProjectFactory.");
+    if (!depCacheDir) {
+      throw new Error("Must specify a depCacheDir for ProjectFactory.");
+    }
     this.logger = logger || <Logger><any>mockLogger;
     this.workingDir = "";
     this.depCacheDir = depCacheDir;
@@ -40,14 +49,16 @@ export class ProjectFactory {
     return this.initializeProject(settings, logger);
   }
 
-   static initializeProject(settings: ProjectSettings, logger: Logger): ProjectSettings {
+  static initializeProject(settings: ProjectSettings, logger: Logger): ProjectSettings {
 
     // Set up template
-     if (!settings.template) settings.template = PROJ_TMPL;
+    if (!settings.template) {
+      settings.template = PROJ_TMPL;
+    }
 
     // Set up defaults
     if (!settings.defaults) {
-      settings.defaults = { scripts: [], styles: [], assets: [], metaTags: [], blocks: [] };
+      settings.defaults = {scripts: [], styles: [], assets: [], metaTags: [], blocks: []};
     }
     settings.defaults.scripts = settings.defaults.scripts || [];
     settings.defaults.assets = settings.defaults.assets || [];
@@ -61,17 +72,17 @@ export class ProjectFactory {
 
   static async getBits({workingDir, depDir, logger, thisNamespace}) {
     const depPath = join(workingDir, depDir);
-    const depDirs = (await glob("*", { cwd: depPath })).map( x => {
-      return { namespace: x, path: join(depPath, x) };
+    const depDirs = (await glob("*", {cwd: depPath})).map(x => {
+      return {namespace: x, path: join(depPath, x)};
     });
 
     const [locals, deps] = await Promise.all([
       new Promise((resolve, reject) => {
         this.getBitsFrom(workingDir, logger).then(b => {
-         return b.map(x => {
-           x.namespace = thisNamespace;
-           return x
-         });
+          return b.map(x => {
+            x.namespace = thisNamespace;
+            return x
+          });
         }).then(resolve);
       }),
       new Promise((resolve, reject) => {
@@ -99,7 +110,7 @@ export class ProjectFactory {
     return [].concat.apply([], settings).map(this.initializeBit);
   }
 
-   static initializeBit(settings: BitSettings): BitSettings {
+  static initializeBit(settings: BitSettings): BitSettings {
     settings.context = settings.context || {};
 
     return settings;
@@ -110,17 +121,17 @@ export class ProjectFactory {
     return settings.map(this.initializePage);
   }
 
-   static initializePage(settings: PageSettings): PageSettings {
+  static initializePage(settings: PageSettings): PageSettings {
     settings.context = settings.context || {};
     settings.blocks = settings.blocks || [];
     settings.meta = settings.meta || [];
     settings.template = settings.template || PAGE_TMPL;
 
     if (!settings.materials) {
-      settings.materials = { scripts: [], styles: [], assets: [] };
+      settings.materials = {scripts: [], styles: [], assets: []};
     }
     if (!settings.resources) {
-      settings.resources = { head: [], body: [] };
+      settings.resources = {head: [], body: []};
     }
 
     settings.materials.styles = settings.materials.styles || [];
@@ -132,8 +143,9 @@ export class ProjectFactory {
     return settings;
   }
 
-  static async getBlocks({ workingDir, logger, depCache, thisNamespace}) {
-    const localBlocks = <BlockSettings[]>(await this.loadSettingsFile(join(workingDir, "blocks"), SettingsType.Block, logger))
+  static async getBlocks({workingDir, logger, depCache, thisNamespace}) {
+    const localBlocks = <BlockSettings[]>(await this.loadSettingsFile(join(workingDir, "blocks"), SettingsType.Block,
+      logger))
       .map((x: BlockSettings) => {
         x.namespace = thisNamespace;
         return x;
@@ -148,12 +160,12 @@ export class ProjectFactory {
       deps.map(dep => {
         const p = join(path, dep, "blocks");
         return ProjectFactory.loadSettingsFile(p, SettingsType.Block, logger)
-          .then((x: BlockSettings[]) => {
-            return x.map((b: BlockSettings) => {
-              b.namespace = dep;
-              return b;
-            });
-          });
+                             .then((x: BlockSettings[]) => {
+                               return x.map((b: BlockSettings) => {
+                                 b.namespace = dep;
+                                 return b;
+                               });
+                             });
       })
     );
   }
@@ -171,38 +183,51 @@ export class ProjectFactory {
     return settings;
   }
 
-   static async loadSettingsFile(workingDir: string, type: SettingsType, logger: Logger): Promise<SETTINGS[]> {
+  static async loadSettingsFile(workingDir: string, type: SettingsType, logger: Logger): Promise<SETTINGS[]> {
     let settingsFiles: string[];
     const nameRegex = this.getNameRegex(type);
 
     // Search for settings
     switch (type) {
       case SettingsType.Project:
-        settingsFiles = await glob("*.projectSettings.js", { cwd: workingDir });
+        settingsFiles = await glob("*.projectSettings.js", {cwd: workingDir});
         break;
       case SettingsType.Page:
-        settingsFiles = await glob("*.pageSettings.js", { cwd: workingDir });
+        settingsFiles = await glob("*.pageSettings.js", {cwd: workingDir});
         break;
       case SettingsType.Bit:
-        settingsFiles = await glob("*.bitSettings.js", { cwd: workingDir });
+        settingsFiles = await glob("*.bitSettings.js", {cwd: workingDir});
         break;
       case SettingsType.Block:
-        settingsFiles = await glob("*.blockSettings.js", { cwd: workingDir });
+        settingsFiles = await glob("*.blockSettings.js", {cwd: workingDir});
         break;
     }
 
     // Check for errors in number of settings found
     switch (type) {
       case SettingsType.Project:
-        if (!settingsFiles) throw new MissingFile({file: "projectSettings.js", dir: workingDir});
-        if (settingsFiles.length > 1) throw new ManyFiles({file: "projectSettings.js", dir: workingDir });
+        if (!settingsFiles) {
+          throw new MissingFile({file: "projectSettings.js", dir: workingDir});
+        }
+        if (settingsFiles.length > 1) {
+          throw new ManyFiles({file: "projectSettings.js", dir: workingDir});
+        }
         break;
       case SettingsType.Bit:
-        if (!settingsFiles) throw new MissingFile({file: "bitSettings.js", dir: workingDir });
-        if (settingsFiles.length > 1) throw new ManyFiles({file: "bitSettings.js", dir: workingDir });
+        if (!settingsFiles) {
+          throw new MissingFile({file: "bitSettings.js", dir: workingDir});
+        }
+        if (settingsFiles.length > 1) {
+          throw new ManyFiles({file: "bitSettings.js", dir: workingDir});
+        }
         break;
       default:
-        if (!settingsFiles) throw new MissingFile({file: (type === SettingsType.Block) ? "blockSettings.js" : "pageSettings.js" , dir: workingDir });
+        if (!settingsFiles) {
+          throw new MissingFile({
+            file: (type === SettingsType.Block) ? "blockSettings.js" : "pageSettings.js",
+            dir: workingDir
+          });
+        }
     }
 
     // Finally, load the user module and check for errors
@@ -219,7 +244,7 @@ export class ProjectFactory {
     });
   }
 
-   static getNameRegex(type: SettingsType): RegExp {
+  static getNameRegex(type: SettingsType): RegExp {
     let settingsFileName: string;
 
     switch (type) {
@@ -239,50 +264,50 @@ export class ProjectFactory {
     return new RegExp(`(.*)\.${settingsFileName}\.js`);
   }
 
-   static async getScripts(workingDir: string, namespace: string): Promise<Material[]> {
-    const scripts = await glob("**/*", {cwd: workingDir});
+  static async getScripts(workingDir: string, namespace: string): Promise<Material[]> {
+    const scripts = await glob("**/*.*", {cwd: workingDir});
     return scripts.map(s => {
       return {
         namespace,
         type: "script",
         path: join(workingDir, s),
-        name: basename(s)
+        name: s
       };
     });
   }
 
-   static async getStyles(workingDir: string, namespace: string): Promise<Material[]> {
-    const styles = await glob("**/*", {cwd: workingDir});
+  static async getStyles(workingDir: string, namespace: string): Promise<Material[]> {
+    const styles = await glob("**/*.*", {cwd: workingDir});
     return styles.map(s => {
       return {
         namespace,
         type: "style",
         path: join(workingDir, s),
-        name: basename(s)
+        name: s
       };
     });
   }
 
-   static async getAssets(workingDir: string, namespace: string): Promise<Material[]> {
-    const assets = await glob("**/*", {cwd: workingDir });
+  static async getAssets(workingDir: string, namespace: string): Promise<Material[]> {
+    const assets = await glob("**/*.*", {cwd: workingDir});
     return assets.map(s => {
       return {
         namespace,
         type: "asset",
         path: join(workingDir, s),
-        name: basename(s)
+        name: s
       };
     });
   }
 
   static async getLocalMaterials(workingDir: string, logger: Logger): Promise<Mats> {
-    const settings = await glob("*.projectSettings.js", { cwd: workingDir });
+    const settings = await glob("*.projectSettings.js", {cwd: workingDir});
     const nameRegex = this.getNameRegex(SettingsType.Project);
 
     if (!settings) {
-      throw new MissingFile({ file: "projectSettings.js", dir: workingDir });
+      throw new MissingFile({file: "projectSettings.js", dir: workingDir});
     } else if (settings.length > 1) {
-      throw new ManyFiles({ file: "projectSettings.js", dir: workingDir });
+      throw new ManyFiles({file: "projectSettings.js", dir: workingDir});
     }
 
     const localNamespace = settings[0].match(nameRegex)[1];
@@ -330,22 +355,22 @@ export class ProjectFactory {
   }
 
   static async buildProjectModel(workingDir, depDir, debug: boolean, logger): Promise<ProjectModel> {
-    const proj = await ProjectFactory.getProject(workingDir, logger );
+    const proj = await ProjectFactory.getProject(workingDir, logger);
     const fullbits = await ProjectFactory.getBits({workingDir, depDir, logger, thisNamespace: proj.name});
     // console.log(fullbits);
     const pageSettings = await ProjectFactory.getPages(join(workingDir, "pages"), logger);
-    const blocks = await ProjectFactory.getBlocks({ workingDir, logger, depCache: depDir, thisNamespace: proj.name});
+    const blocks = await ProjectFactory.getBlocks({workingDir, logger, depCache: depDir, thisNamespace: proj.name});
     const mats = await ProjectFactory.getMaterials(workingDir, depDir, logger);
 
     const pages = pageSettings.reduce((state: PageModel[], page: PageSettings) => {
       const PAGEBLOCKS = proj.defaults.blocks.concat(page.blocks).map(name => {
         const splitBlock = name.split("/");
         if (splitBlock.length === 1) {
-          return { namespace: proj.name, name };
+          return {namespace: proj.name, name};
         } else if (splitBlock.length > 2) {
           throw new Error(`Cannot parse block ${name}`);
         } else {
-          return { namespace: splitBlock[0], name: splitBlock[1] };
+          return {namespace: splitBlock[0], name: splitBlock[1]};
         }
       });
       const PAGESCRIPTS = proj.defaults.scripts.concat(page.materials.scripts);
@@ -357,6 +382,8 @@ export class ProjectFactory {
         styles: mats.styles,
         assets: mats.assets,
       };
+
+      console.log(cache)
 
       /////////////
       // CONTEXT //
@@ -370,7 +397,8 @@ export class ProjectFactory {
       };
 
       const context = {
-        $PROJECT: Object.assign({}, proj.context, { $name: proj.name, $deployRoot: proj.deployRoot, $template: proj.template, $debug: debug }),
+        $PROJECT: Object.assign({}, proj.context,
+          {$name: proj.name, $deployRoot: proj.deployRoot, $template: proj.template, $debug: debug}),
         $PAGE: Object.assign({}, page.context, pageCtx),
         $BLOCKS: PAGEBLOCKS.map((b) => {
           const block = Object.assign({}, blocks.find(x => {
@@ -391,14 +419,10 @@ export class ProjectFactory {
             const b: BitSettings = fullbits.find(x => {
               return x.namespace === namespace && x.name === name;
             });
-            // console.log(fullbits)
-            // console.log(namespace)
-            // console.log(name)
-            // console.log(b)
-            // console.log(bit)
-            return Object.assign({}, b.context, bit.context, { $name: b.name, $template: b.html});
+            // Check if b exists, if not, bit defined in aml does not exist in project
+            return Object.assign({}, b.context, bit.context, {$name: b.name, $template: b.html});
           });
-          return Object.assign({}, block.context, { $name: block.name, $template: block.template, $BITS: bits });
+          return Object.assign({}, block.context, {$name: block.name, $template: block.template, $BITS: bits});
         })
       };
 
@@ -408,9 +432,12 @@ export class ProjectFactory {
       const scripts = {
         globals: PAGESCRIPTS.reduce((state: Array<Material>, mat: {id: string, as?: string}) => {
           const indexOfPresent = state.map(x => x.overridableName).indexOf(mat.as);
-          const material = retrieveMaterial({ type: "script", id: mat.id, overridableName: mat.as || null });
-          if (indexOfPresent < 0) state.push(material);
-          else state[indexOfPresent] = material;
+          const material = retrieveMaterial({type: "script", id: mat.id, overridableName: mat.as || null});
+          if (indexOfPresent < 0) {
+            state.push(material);
+          } else {
+            state[indexOfPresent] = material;
+          }
           return state;
         }, []),
         bits: []
@@ -422,9 +449,12 @@ export class ProjectFactory {
       const styles = {
         globals: PAGESTYLES.reduce((state: Array<Material>, mat: {id: string, as?: string}) => {
           const indexOfPresent = state.map(x => x.overridableName).indexOf(mat.as);
-          const material = retrieveMaterial({ type: "style", id: mat.id, overridableName: mat.as || null });
-          if (indexOfPresent < 0) state.push(material);
-          else state[indexOfPresent] = material;
+          const material = retrieveMaterial({type: "style", id: mat.id, overridableName: mat.as || null});
+          if (indexOfPresent < 0) {
+            state.push(material);
+          } else {
+            state[indexOfPresent] = material;
+          }
           return state;
         }, []),
         bits: []
@@ -435,9 +465,12 @@ export class ProjectFactory {
       ////////////
       const assets = PAGEASSETS.reduce((state: Array<Material>, mat: {id: string, as?: string}) => {
         const indexOfPresent = state.map(x => x.overridableName).indexOf(mat.as);
-        const material = retrieveMaterial({ type: "asset", id: mat.id, overridableName: mat.as || null });
-        if (indexOfPresent < 0) state.push(material);
-        else state[indexOfPresent] = material;
+        const material = retrieveMaterial({type: "asset", id: mat.id, overridableName: mat.as || null});
+        if (indexOfPresent < 0) {
+          state.push(material);
+        } else {
+          state[indexOfPresent] = material;
+        }
         return state;
       }, []);
 
@@ -446,26 +479,26 @@ export class ProjectFactory {
         return blocks.find(x => {
           return x.namespace === blockName.namespace && x.name === blockName.name;
         }).bits
-          .map((bitref: BitRef) => {
-            let namespace, name;
-            const splitBit = bitref.bit.split("/");
-            if (splitBit.length === 1) {
-              namespace = proj.name;
-              name = bitref.bit;
-            } else if (splitBit.length > 2) {
-              throw new Error(`Unable to find bit ${bitref.bit}`);
-            } else {
-              namespace = splitBit[0];
-              name = splitBit[1];
-            }
-            const bit = fullbits.find(x => {
-              return x.namespace === namespace && x.name === name;
-            });
-            return {
-              script: bit.script,
-              style: bit.style
-            };
-          });
+                     .map((bitref: BitRef) => {
+                       let namespace, name;
+                       const splitBit = bitref.bit.split("/");
+                       if (splitBit.length === 1) {
+                         namespace = proj.name;
+                         name = bitref.bit;
+                       } else if (splitBit.length > 2) {
+                         throw new Error(`Unable to find bit ${bitref.bit}`);
+                       } else {
+                         namespace = splitBit[0];
+                         name = splitBit[1];
+                       }
+                       const bit = fullbits.find(x => {
+                         return x.namespace === namespace && x.name === name;
+                       });
+                       return {
+                         script: bit.script,
+                         style: bit.style
+                       };
+                     });
       });
 
       // Flatten and dedupe
@@ -476,7 +509,7 @@ export class ProjectFactory {
       styles.bits = [... new Set([... styleMats])];
       scripts.bits = [... new Set([... scriptMats])];
 
-      state.push({ context, styles, scripts, assets, cache });
+      state.push({context, styles, scripts, assets, cache});
       return state;
     }, []);
 
@@ -496,8 +529,10 @@ export class ProjectFactory {
 
     function retrieveMaterial({type, id, overridableName}: {type: string, id: string, overridableName?: string}) {
       const [namespace, name] = id.split("/");
-      const mat = mats[`${type}s`].find(m => m.namespace === namespace && m.name === name);
-      return Object.assign({}, mat, { overridableName: overridableName || basename(mat.path) });
+      const mat = mats[`${type}s`].find(m => {
+        return m.namespace === namespace && m.name === name
+      });
+      return Object.assign({}, mat, {overridableName: overridableName || basename(mat.path)});
     }
   }
 
