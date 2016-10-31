@@ -383,8 +383,6 @@ export class ProjectFactory {
         assets: mats.assets,
       };
 
-      console.log(cache)
-
       /////////////
       // CONTEXT //
       /////////////
