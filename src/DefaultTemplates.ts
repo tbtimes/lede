@@ -20,7 +20,7 @@ export const PROJ_TMPL = function({styles, scripts, context}) {
 <html>
 <head>
 <title>{{ $PAGE.seo.title }}</title>
-{% for item in $PAGE.meta %}
+{% for item in $PAGE.$meta %}
 <meta{% if item.name %} name ="{{item.name}}"{% endif %}{%if item.content %} content="{{item.content}}"{% endif %}{% if item.props | length %}{% for prop in item.props %} {{prop.prop}}="{{prop.val}}"{% endfor %}{% endif %} />
 {% endfor %}
 {% if $PROJECT.$debug %}
