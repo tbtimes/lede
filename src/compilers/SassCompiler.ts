@@ -94,6 +94,7 @@ export class SassCompiler implements MaterialCompiler {
   }
 
   async buildCache(cachePath: string, tree: ProjectModel) {
+    this.logger.debug({tree}, "Project tree");
     tree.pages.forEach((page: PageModel) => {
       const bitPathRegex = new RegExp(".*\/(.*\/.*\.scss)$");
       const pageCachePath = join(cachePath, page.context.$PAGE.$name);
