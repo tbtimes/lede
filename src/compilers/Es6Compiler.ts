@@ -39,19 +39,19 @@ export class Es6Compiler implements MaterialCompiler {
     try {
       await this.buildCache(cachePath, tree);
     } catch(err) {
-      this.logger.error({err}, "An error occurred while caching the scripts");
+      // this.logger.error({err}, "An error occurred while caching the scripts");
       throw new Es6Failed({detail: err});
     }
     try {
       globals = await this.compileGlobals(cachePath, tree);
     } catch (err) {
-      this.logger.error({err}, "An error occurred while compiling global scripts");
+      // this.logger.error({err}, "An error occurred while compiling global scripts");
       throw new Es6Failed({detail: err});
     }
     try {
       bits = await this.compileBits(cachePath, tree);
     } catch (err) {
-      this.logger.error({err}, "An error occurred while compiling bit scripts");
+      // this.logger.error({err}, "An error occurred while compiling bit scripts");
       throw new Es6Failed({detail: err});
     }
 

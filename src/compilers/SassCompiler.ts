@@ -40,19 +40,19 @@ export class SassCompiler implements MaterialCompiler {
     try {
       await this.buildCache(cachePath, tree);
     } catch (err) {
-      this.logger.error({err}, "An error occurred while caching styles");
+      // this.logger.error({err}, "An error occurred while caching styles");
       throw new SassFailed({detail: err});
     }
     try {
       globals = await this.compileGlobals(cachePath, tree);
     } catch (err) {
-      this.logger.error({err}, "An error occurred while compiling global styles");
+      // this.logger.error({err}, "An error occurred while compiling global styles");
       throw new SassFailed({detail: err});
     }
     try {
       bits = await this.compileBits(cachePath, tree);
     } catch (err) {
-      this.logger.error({err}, "An error occurred while compiling bit styles");
+      // this.logger.error({err}, "An error occurred while compiling bit styles");
       throw new SassFailed({detail: err});
     }
 
@@ -94,7 +94,7 @@ export class SassCompiler implements MaterialCompiler {
   }
 
   async buildCache(cachePath: string, tree: ProjectModel) {
-    this.logger.debug({tree}, "Project tree");
+    // this.logger.debug({tree}, "Project tree");
     tree.pages.forEach((page: PageModel) => {
       const bitPathRegex = new RegExp(".*\/(.*\/.*\.scss)$");
       const pageCachePath = join(cachePath, page.context.$PAGE.$name);

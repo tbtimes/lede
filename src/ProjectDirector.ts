@@ -51,37 +51,37 @@ export class ProjectDirector {
   public async compile() {
     let tree: ProjectModel, renderedPages: CompiledPage[];
 
-    this.logger.info("Assembling project dependencies.");
+    // this.logger.info("Assembling project dependencies.");
     try {
       tree = await this.projectFactory.getProjectModel(this.debug);
       this.tree = tree;
     } catch (err) {
-      this.logger.error({err}, "There was an error assembling dependencies");
+      // this.logger.error({err}, "There was an error assembling dependencies");
       process.exit(1);
     }
 
-    this.logger.info("Compiling styles and scripts.");
+    // this.logger.info("Compiling styles and scripts.");
     let [scripts, styles] = <CompiledMaterials[]>(await Promise.all([
       this.scriptCompiler.compile(tree),
       this.styleCompiler.compile(tree)
     ]).catch(err => {
-      this.logger.error({err}, "An error occurred while compiling materials.");
+      // this.logger.error({err}, "An error occurred while compiling materials.");
       process.exit(1);
     }));
 
-    this.logger.info("Rendering pages.");
+    // this.logger.info("Rendering pages.");
     try {
       renderedPages = await this.htmlCompiler.compile({tree, styles, scripts});
     } catch (err) {
-      this.logger.error({err}, "An error occurred while rendering the pages.");
+      // this.logger.error({err}, "An error occurred while rendering the pages.");
       process.exit(1);
     }
 
-    this.logger.info("Deploying pages.");
+    // this.logger.info("Deploying pages.");
     try {
       await this.deployer.deploy(renderedPages);
     } catch (err) {
-      this.logger.error({err}, "An error occurred while deploying the pages.");
+      // this.logger.error({err}, "An error occurred while deploying the pages.");
       process.exit(1);
     }
   }
@@ -112,28 +112,28 @@ export class ProjectDirector {
     }
     tree = this.tree;
 
-    this.logger.info("Compiling styles and scripts.");
+    // this.logger.info("Compiling styles and scripts.");
     let [scripts, styles] = <CompiledMaterials[]>(await Promise.all([
       this.scriptCompiler.compile(tree),
       this.styleCompiler.compile(tree)
     ]).catch(err => {
-      this.logger.error({err}, "An error occurred while compiling materials.");
+      // this.logger.error({err}, "An error occurred while compiling materials.");
       process.exit(1);
     }));
 
-    this.logger.info("Rendering pages.");
+    // this.logger.info("Rendering pages.");
     try {
       renderedPages = await this.htmlCompiler.compile({tree, styles, scripts});
     } catch (err) {
-      this.logger.error({err}, "An error occurred while rendering the pages.");
+      // this.logger.error({err}, "An error occurred while rendering the pages.");
       process.exit(1);
     }
 
-    this.logger.info("Deploying pages.");
+    // this.logger.info("Deploying pages.");
     try {
       await this.deployer.deploy(renderedPages);
     } catch (err) {
-      this.logger.error({err}, "An error occurred while deploying the pages.");
+      // this.logger.error({err}, "An error occurred while deploying the pages.");
       process.exit(1);
     }
   };

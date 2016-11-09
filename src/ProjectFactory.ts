@@ -233,7 +233,7 @@ export class ProjectFactory {
     // Finally, load the user module and check for errors
     return settingsFiles.map(x => {
       let cfg: any;
-      logger.info(`Loading ${join(workingDir, x)}`);
+      // logger.info(`Loading ${join(workingDir, x)}`);
       try {
         cfg = new (require(join(workingDir, x))).default();
       } catch (e) {

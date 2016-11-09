@@ -20,8 +20,8 @@ export class FileSystemDeployer implements Deployer {
   }
 
   async deploy(pages: CompiledPage[]): Promise<any> {
-    this.logger.info(`Deploying ${pages.length} pages to ${ this.deployDir }`);
-    this.logger.debug({pages: pages});
+    // this.logger.info(`Deploying ${pages.length} pages to ${ this.deployDir }`);
+    // this.logger.debug({pages: pages});
     return Promise.all(pages.map(p => {
       const files = p.files.map(f => {
         if (f.content) {
