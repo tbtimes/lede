@@ -1,14 +1,15 @@
-import { Logger } from "bunyan";
+import { Logger, createLogger } from "bunyan";
 
-import { Deployer, MaterialCompiler, PageCompiler, CompiledMaterials, ProjectModel, CompiledPage } from "./interfaces";
+import { Deployer, MaterialCompiler, PageCompiler, CompiledMaterials, CompiledPage } from "./interfaces";
 import { ProjectFactory } from "./ProjectFactory";
-import { mockLogger } from "./utils";
+import { Es6Compiler } from "./compilers";
+import { ProjectModel } from "./ProjectModel";
 
 
 export interface ProjectDirectorArgs {
   workingDir: string;
-  logger?: Logger;
-  projectFactory: ProjectFactory;
+  logger: Logger;
+  depCacheDir: string;
   deployer: Deployer;
   styleCompiler: MaterialCompiler;
   scriptCompiler: MaterialCompiler;
@@ -16,125 +17,140 @@ export interface ProjectDirectorArgs {
   debug: boolean;
 }
 
-export class ProjectDirector {
-  projectFactory: ProjectFactory;
+export class PD {
+  deployer: Deployer;
   logger: Logger;
   workingDir: string;
-  deployer: Deployer;
-  htmlCompiler: PageCompiler;
-  styleCompiler: MaterialCompiler;
+  projectFactory: ProjectFactory;
   scriptCompiler: MaterialCompiler;
+  styleCompiler: MaterialCompiler;
+  htmlCompiler: PageCompiler;
   debug: boolean;
-  tree: ProjectModel | null;
+  model: ProjectModel;
 
-  constructor({workingDir, logger, projectFactory, deployer, htmlCompiler, styleCompiler, scriptCompiler, debug}: ProjectDirectorArgs) {
-    if (!workingDir) throw new Error("workingDir is a required parameter.");
-    if (!projectFactory) throw new Error("projectFactory is a required parameter.");
-    if (!deployer) throw new Error("A deployer must be specified.");
-    if (!styleCompiler) throw new Error("A style compiler must be specified.");
-    if (!scriptCompiler) throw new Error("A script compiler must be specified.");
-    if (!htmlCompiler) throw new Error("An html compiler must be specified.");
+  constructor({workingDir, logger, depCacheDir, deployer, htmlCompiler, styleCompiler, scriptCompiler, debug}: ProjectDirectorArgs) {
     this.deployer = deployer;
-    this.logger = logger || <Logger><any>mockLogger;
+    this.logger = logger;
     this.workingDir = workingDir;
-    this.projectFactory = projectFactory;
+    this.projectFactory = new ProjectFactory({workingDir, logger, depCacheDir});
     this.scriptCompiler = scriptCompiler;
     this.styleCompiler = styleCompiler;
     this.htmlCompiler = htmlCompiler;
-    this.debug = debug == false ? false : true;
-
-    // Inject logger into delegate components
-    this.deployer.configure({logger: this.logger});
-    this.projectFactory.configure({logger: this.logger, workingDir: this.workingDir});
+    this.debug = debug;
   }
 
-  public async compile() {
-    let tree: ProjectModel, renderedPages: CompiledPage[];
+  async compile() {
+    this.logger.info("Assembling project dependencies");
+    await this.initializeProjectModel();
+    this.logger.debug(this.model.project, "project");
+    this.logger.debug(this.model.pages, "pages");
+    this.logger.debug(this.model.materials, "materials");
+    this.logger.debug(this.model.blocks, "blocks");
+    this.logger.debug(this.model.bits, "bits");
 
+    this.logger.info("Building dependency graph");
+    const trees = await Promise.all(this.model.pages.map(page => {
+      return this.model.getPageTree({name: page.name, debug: this.debug});
+    }));
+    trees.forEach((t, i) => this.logger.debug(t));
+
+    require("fs").writeFileSync("tree0.json", JSON.stringify(trees[0], null, 2));
+
+    this.logger.info("Compiling assets");
+
+    try {
+      await Promise.all(
+        trees.map(tree => {
+          return Promise.all([
+            this.scriptCompiler.compile(tree),
+          ]);
+        })
+      )
+    } catch (e) {
+      console.log(e)
+    }
+
+
+    return "fin";
+
+    // let tree: ProjectModel, renderedPages: CompiledPage[];
+    //
     // this.logger.info("Assembling project dependencies.");
-    try {
-      tree = await this.projectFactory.getProjectModel(this.debug);
-      this.tree = tree;
-    } catch (err) {
-      // this.logger.error({err}, "There was an error assembling dependencies");
-      process.exit(1);
-    }
-
+    // try {
+    //   tree = await this.projectFactory.getProjectModel(this.debug);
+    //   this.tree = tree;
+    //   this.logger.debug({tree}, "Project model");
+    // } catch (err) {
+    //   this.logger.error({err}, "There was an error assembling dependencies");
+    //   return;
+    // }
+    //
     // this.logger.info("Compiling styles and scripts.");
-    let [scripts, styles] = <CompiledMaterials[]>(await Promise.all([
-      this.scriptCompiler.compile(tree),
-      this.styleCompiler.compile(tree)
-    ]).catch(err => {
-      // this.logger.error({err}, "An error occurred while compiling materials.");
-      process.exit(1);
-    }));
-
+    // let [scripts, styles] = <CompiledMaterials[]>(await Promise.all([
+    //   this.scriptCompiler.compile(tree),
+    //   this.styleCompiler.compile(tree)
+    // ]).catch(err => {
+    //   this.logger.error({err}, "An error occurred while compiling materials.");
+    //   return;
+    // }));
+    // this.logger.debug({scripts, styles}, "Compiled materials");
+    //
     // this.logger.info("Rendering pages.");
-    try {
-      renderedPages = await this.htmlCompiler.compile({tree, styles, scripts});
-    } catch (err) {
-      // this.logger.error({err}, "An error occurred while rendering the pages.");
-      process.exit(1);
-    }
-
+    // try {
+    //   renderedPages = await this.htmlCompiler.compile({tree, styles, scripts});
+    //   this.logger.debug({ renderedPages }, "Rendered pages");
+    // } catch (err) {
+    //   this.logger.error({err}, "An error occurred while rendering the pages.");
+    //   return;
+    // }
+    //
     // this.logger.info("Deploying pages.");
-    try {
-      await this.deployer.deploy(renderedPages);
-    } catch (err) {
-      // this.logger.error({err}, "An error occurred while deploying the pages.");
-      process.exit(1);
-    }
+    // try {
+    //   await this.deployer.deploy(renderedPages);
+    // } catch (err) {
+    //   this.logger.error({err}, "An error occurred while deploying the pages.");
+    //   return;
+    // }
   }
 
-  async refresh(type: string) {
-    switch (type) {
-      case "scripts":
-      case "styles":
-      case "assets":
-        this.refreshMats();
-        break;
-
-      case "bits":
-      case "blocks":
-      case "pages":
-      case "projectSettings":
-      case "deps":
-        this.compile();
-        break;
-    }
+  private async compileMaterials() {
+    return await Promise.all([ this.scriptCompiler.compile(this.model)])
   }
 
-  async refreshMats() {
-    let tree: ProjectModel, renderedPages: CompiledPage[];
-
-    if (!this.tree) {
-      this.tree = await this.projectFactory.getProjectModel(this.debug);
-    }
-    tree = this.tree;
-
-    // this.logger.info("Compiling styles and scripts.");
-    let [scripts, styles] = <CompiledMaterials[]>(await Promise.all([
-      this.scriptCompiler.compile(tree),
-      this.styleCompiler.compile(tree)
-    ]).catch(err => {
-      // this.logger.error({err}, "An error occurred while compiling materials.");
-      process.exit(1);
-    }));
-
-    // this.logger.info("Rendering pages.");
-    try {
-      renderedPages = await this.htmlCompiler.compile({tree, styles, scripts});
-    } catch (err) {
-      // this.logger.error({err}, "An error occurred while rendering the pages.");
-      process.exit(1);
-    }
-
-    // this.logger.info("Deploying pages.");
-    try {
-      await this.deployer.deploy(renderedPages);
-    } catch (err) {
-      // this.logger.error({err}, "An error occurred while deploying the pages.");
-      process.exit(1);
-    }
-  };
+  private async initializeProjectModel() {
+    this.logger.info("Assembling project dependencies");
+    this.model = await this.projectFactory.getProjectModel();
+  }
 }
+
+const logger = createLogger({
+  name: "boo",
+  streams: [{
+    level: "debug",
+    path: "boo.log"
+  }]
+});
+
+const elex = {
+  workingDir: "/Users/emurray/WebstormProjects/elections-page",
+  logger,
+  depCacheDir: "lede_modules",
+  deployer: {},
+  styleCompiler: {},
+  scriptCompiler: new Es6Compiler({}),
+  htmlCompiler: {},
+  debug: true
+};
+
+const p = new PD(elex);
+
+p.compile().then(console.log).catch(console.log);
+
+
+
+
+
+
+
+
+
