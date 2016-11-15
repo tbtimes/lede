@@ -30,30 +30,28 @@ export interface BlockContext {
   $BITS: BitContext[];
 }
 
-export interface PageModel {
-  styles: { globals: Material[], bits: string[] };
-  scripts: { globals: Material[], bits: string[] };
+export interface PageContext {
+  $PROJECT: {
+    $name: string,
+    $deployRoot: string
+  };
+  $PAGE: {
+    $name: string,
+    $meta: string[],
+    $resources: {
+      head: string[],
+      body: string[]
+    },
+    $template: string,
+    $deployPath: string
+  };
+  $BLOCKS: BlockContext[];
+}
+
+export interface PageTree {
+  workingDir: string;
+  context: PageContext;
+  styles: { globals: Material[], bits: string[], cache: Material[] };
+  scripts: { globals: Material[], bits: string[], cache: Material[] };
   assets: Material[];
-  cache: {
-    scripts: Material[],
-    styles: Material[],
-    assets: Material[]
-  };
-  context: {
-    $PROJECT: {
-      $name: string,
-      $deployRoot: string
-    },
-    $PAGE: {
-      $name: string,
-      $meta: string[],
-      $resources: {
-        $head: string[],
-        $body: string[]
-      },
-      $template: string,
-      $deployPath: string
-    },
-    $BLOCKS: BlockContext[]
-  };
 }

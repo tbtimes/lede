@@ -70,11 +70,32 @@ export class ProjectModel {
     const globalStyles = this.assembleGlobalMats(styles, "style");
 
     const { bitStyles, bitScripts } = this.assembleBitMats(blocks);
+    const { styleCache, scriptCache } = this.getMatCache({styles, scripts});
 
     return {
-      scripts: { globals: globalScripts, bits: bitScripts },
-      styles: { globals: globalStyles, bits: bitStyles },
+      scripts: { globals: globalScripts, bits: bitScripts, cache: scriptCache },
+      styles: { globals: globalStyles, bits: bitStyles, cache: styleCache },
       assets: globalAssets
+    };
+  }
+
+  private getMatCache({styles, scripts}) {
+    // Using JSON here to clone by value, not reference
+    const styleMats = JSON.parse(JSON.stringify(this.materials.filter(x => x.type === "style")));
+    const scriptMats = JSON.parse(JSON.stringify(this.materials.filter(x => x.type === "script")));
+
+    const reduceFn = (collection, replacers) => {
+      return replacers.reduce((state: Material[], mat) => {
+        const {name, namespace} = this.parseId(mat.id);
+        const toUpdate = state.find(x => x.namespace === namespace && x.name === name);
+        toUpdate.overridableName = mat.as || null;
+        return state;
+      }, collection);
+    };
+
+    return {
+      scriptCache: reduceFn(scriptMats, scripts),
+      styleCache: reduceFn(styleMats, styles)
     };
   }
 
@@ -83,7 +104,7 @@ export class ProjectModel {
       try {
         block = this.parseId(block);
       } catch (err) {
-        throw new Error(`Cannot parse block ${block}`)
+        throw new Error(`Cannot parse block ${block}`);
       }
       return this.blocks.find(x => x.namespace === block.namespace && x.name === block.name).bits
         .map((bitref: BitRef) => {
@@ -139,7 +160,7 @@ export class ProjectModel {
                 throw new Error(`Cannot parse bit ${b.bit}`);
               }
               const bit = this.bits.find(x => {
-                return x.namespace === parsedB.namespace && x.name === parsedB.name
+                return x.namespace === parsedB.namespace && x.name === parsedB.name;
               });
               if (!bit) throw new Error(`Bit ${b.bit} not found`);
               return new Promise((resolve, reject) => {

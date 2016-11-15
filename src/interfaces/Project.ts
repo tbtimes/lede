@@ -1,4 +1,4 @@
-import { MaterialRef, MetaTag, PageModel, CompiledMaterials } from "./";
+import { MaterialRef, MetaTag, CompiledMaterials } from "./";
 
 
 export interface ProjectSettings {
@@ -11,12 +11,16 @@ export interface ProjectSettings {
     styles: MaterialRef[],
     assets: MaterialRef[],
     blocks: string[],
-    metaTags: MetaTag[]
+    metaTags: MetaTag[],
+    resources: {
+      head: string[],
+      body: string[]
+    }
   };
   context: any;
 }
 
-export interface ProjectModel {
-  workingDir: string;
-  pages: Array<PageModel>;
-}
+// export interface ProjectModel {
+//   workingDir: string;
+//   pages: Array<PageModel>;
+// }
