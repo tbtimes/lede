@@ -21,7 +21,7 @@ export class Es6Compiler {
   cacheDir: string;
 
   constructor(arg?) {
-    this.logger = arg.logger || <Logger><any>mockLogger;
+    this.logger = arg && arg.logger || <Logger><any>mockLogger;
     this.cacheDir = arg && arg.cacheDir ? arg.cacheDir : ".ledeCache";
   }
 
@@ -43,7 +43,7 @@ export class Es6Compiler {
     }
   }
 
-  async compileBits(cachePath: string, tree: PageTree) {
+  compileBits(cachePath: string, tree: PageTree) {
     const pageCachePath = join(cachePath, tree.context.$PAGE.$name);
     return rollup.rollup({
       entry: join(pageCachePath, "bits", "**/*.js"),
@@ -58,7 +58,7 @@ export class Es6Compiler {
     }).then(bundle => bundle.generate({ format: "iife", exports: "none", sourcemap: true }).code);
   }
 
-  async compileGlobals(cachePath: string, tree: PageTree) {
+  compileGlobals(cachePath: string, tree: PageTree) {
     const pageCachePath = join(cachePath, tree.context.$PAGE.$name);
     return rollup.rollup({
       entry: join(pageCachePath, "scripts", "**/*.js"),
@@ -73,11 +73,11 @@ export class Es6Compiler {
     }).then(bundle => bundle.generate({format: "iife", exports: "none", sourceMap: true}).code);
   }
 
-  async buildCache(cachePath: string, tree: PageTree) {
+  buildCache(cachePath: string, tree: PageTree) {
     // const bitPathRegex = new RegExp(".*\/(.*\/.*\.js)$")
     const pageCachePath = join(cachePath, tree.context.$PAGE.$name, "scripts");
 
-    return await Promise.all(
+    return Promise.all(
       // Write all scripts to cache
       tree.scripts.cache.map(x => {
         return sander.copyFile(x.path).to(join(pageCachePath, x.overridableName || x.name));
