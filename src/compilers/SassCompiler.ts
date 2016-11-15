@@ -93,27 +93,29 @@ export class SassCompiler implements MaterialCompiler {
     });
   }
 
-  async buildCache(cachePath: string, tree: ProjectModel) {
+  buildCache(cachePath: string, tree: ProjectModel) {
     this.logger.debug({tree}, "Project tree");
-    tree.pages.forEach((page: PageModel) => {
-      const bitPathRegex = new RegExp(".*\/(.*\/.*\.scss)$");
-      const pageCachePath = join(cachePath, page.context.$PAGE.$name);
+    return Promise.all(
+      tree.pages.map((page: PageModel) => {
+        const bitPathRegex = new RegExp(".*\/(.*\/.*\.scss)$");
+        const pageCachePath = join(cachePath, page.context.$PAGE.$name);
 
-      return Promise.all([
-        Promise.all(page.cache.styles.map(mat => {
-          return sander.copyFile(mat.path)
-            .to(join(pageCachePath, "styles", mat.overridableName || mat.name || basename(mat.path)));
-        })).then(() => {
-          return Promise.all(page.styles.globals.map(mat => {
+        return Promise.all([
+          Promise.all(page.cache.styles.map(mat => {
             return sander.copyFile(mat.path)
-              .to(join(pageCachePath, "styles", mat.overridableName || mat.name || basename(mat.path)));
-          }));
-        }),
-        Promise.all(page.styles.bits.map(mat => {
-          return sander.copyFile(mat)
-            .to(join(pageCachePath, "bits", mat.match(bitPathRegex)[1]));
-        }))
-      ]);
-    });
+                         .to(join(pageCachePath, "styles", mat.overridableName || mat.name || basename(mat.path)));
+          })).then(() => {
+            return Promise.all(page.styles.globals.map(mat => {
+              return sander.copyFile(mat.path)
+                           .to(join(pageCachePath, "styles", mat.overridableName || mat.name || basename(mat.path)));
+            }));
+          }),
+          Promise.all(page.styles.bits.map(mat => {
+            return sander.copyFile(mat)
+                         .to(join(pageCachePath, "bits", mat.match(bitPathRegex)[1]));
+          }))
+        ]);
+      })
+    );
   }
 }

@@ -107,30 +107,31 @@ export class Es6Compiler implements MaterialCompiler {
   }
 
   async buildCache(cachePath: string, tree: ProjectModel) {
-    tree.pages.forEach( (page: PageModel) => {
-      const bitPathRegex = new RegExp(".*\/(.*\/.*\.js)$");
-      const pageCachePath = join(cachePath, page.context.$PAGE.$name);
+    return Promise.all(
+      tree.pages.map((page: PageModel) => {
+        const bitPathRegex = new RegExp(".*\/(.*\/.*\.js)$");
+        const pageCachePath = join(cachePath, page.context.$PAGE.$name);
 
-      // Concurrency ALL the things!
-      return Promise.all([
-        // Write all scripts to cache
-        Promise.all(page.cache.scripts.map(mat => {
-          return sander.copyFile(mat.path)
-                       .to(join(pageCachePath, "scripts", mat.overridableName || mat.name || basename(mat.path)));
-        })).then(() => {
+        // Concurrency ALL the things!
+        return Promise.all([
+          // Write all scripts to cache
+          Promise.all(page.cache.scripts.map(mat => {
+            return sander.copyFile(mat.path)
+                         .to(join(pageCachePath, "scripts", mat.overridableName || mat.name || basename(mat.path)));
+          })).then(() => {
             // Overwrite scripts with overridable name
             return Promise.all(page.scripts.globals.map(mat => {
               return sander.copyFile(mat.path)
                            .to(join(pageCachePath, "scripts", mat.overridableName || mat.name || basename(mat.path)));
             }));
-        }),
-        // Write bits
-        Promise.all(page.scripts.bits.map(mat => {
-          return sander.copyFile(mat)
-            .to(join(pageCachePath, "bits", mat.match(bitPathRegex)[1]));
-        }))
-      ]);
-
-    });
+          }),
+          // Write bits
+          Promise.all(page.scripts.bits.map(mat => {
+            return sander.copyFile(mat)
+                         .to(join(pageCachePath, "bits", mat.match(bitPathRegex)[1]));
+          }))
+        ]);
+      })
+    );
   }
 }
