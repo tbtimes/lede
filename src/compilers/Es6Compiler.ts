@@ -69,9 +69,9 @@ export class Es6Compiler implements MaterialCompiler {
         plugins: [
           includes({ paths: [ join(pageCachePath, "scripts")] }),
           multientry({ exports: false }),
-          nodeResolve({ browser: true }),
+          nodeResolve({ jsnext: true }),
           commonjs({}),
-          babel({ presets: [rollupPreset]})
+          babel({ presets: [rollupPreset], exclude: "node_modules/**" })
         ]
       }).then(bundle => {
         this.cacheBits[page.context.$PAGE.$name] = bundle;
@@ -93,9 +93,9 @@ export class Es6Compiler implements MaterialCompiler {
         plugins: [
           includes({ paths: [ join(pageCachePath, "scripts")] }),
           multientry({ exports: false }),
-          nodeResolve({ browser: true }),
+          nodeResolve({ jsnext: true }),
           commonjs({}),
-          babel({ presets: [rollupPreset] })
+          babel({ presets: [rollupPreset], exclude: "node_modules/**" })
         ]
       }).then(bundle => {
         this.cacheGlobals[page.context.$PAGE.$name] = bundle;
