@@ -418,6 +418,7 @@ export class ProjectFactory {
               return x.namespace === namespace && x.name === name;
             });
             // Check if b exists, if not, bit defined in aml does not exist in project
+            throw new Error(`${block.name} is asking for bit ${namespace}/${name} but it doesn't exist.`);
             return Object.assign({}, b.context, bit.context, {$name: b.name, $template: b.html});
           });
           return Object.assign({}, block.context, {$name: block.name, $template: block.template, $BITS: bits});
