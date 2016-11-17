@@ -43,7 +43,8 @@ export class SassCompiler {
 
     return Promise.all(tree.styles.bits.map(mat => {
       return this.renderFile(mat, Object.assign({}, this.renderOpts, {includePaths}));
-    })).then(x => x.css.toString("utf8"));
+    }))
+        .then(console.log);
   }
 
   private compileGlobals(cachePath: string, tree: PageTree) {
@@ -53,7 +54,7 @@ export class SassCompiler {
       tree.styles.globals.map(mat => {
         return this.renderFile(mat.path, Object.assign({}, this.renderOpts, {includePaths}));
       })
-    ).then(x => x.css.toString("utf8"));
+    );
   }
 
   private renderFile(filePath, opts) {

@@ -2,7 +2,7 @@ import { Logger, createLogger } from "bunyan";
 
 import { Deployer, MaterialCompiler, PageCompiler, CompiledMaterials, CompiledPage } from "./interfaces";
 import { ProjectFactory } from "./ProjectFactory";
-import { Es6Compiler } from "./compilers";
+import { Es6Compiler, SassCompiler } from "./compilers";
 import { ProjectModel } from "./ProjectModel";
 
 
@@ -58,17 +58,21 @@ export class PD {
 
     this.logger.info("Compiling assets");
 
+    let pageResources;
     try {
-      await Promise.all(
+      pageResources = await Promise.all(
         trees.map(tree => {
           return Promise.all([
             this.scriptCompiler.compile(tree),
+            this.styleCompiler.compile(tree)
           ]);
         })
-      )
+      );
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
+
+    require("fs").writeFileSync("resources.json", JSON.stringify(pageResources, null, 2));
 
 
     return "fin";
@@ -136,8 +140,8 @@ const elex = {
   logger,
   depCacheDir: "lede_modules",
   deployer: {},
-  styleCompiler: {},
-  scriptCompiler: new Es6Compiler({}),
+  styleCompiler: new SassCompiler(),
+  scriptCompiler: new Es6Compiler(),
   htmlCompiler: {},
   debug: true
 };

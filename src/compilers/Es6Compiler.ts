@@ -51,9 +51,9 @@ export class Es6Compiler {
       plugins: [
         includes({paths: [join(pageCachePath, "scripts")] }),
         multientry({exports: false}),
-        nodeResolve({ browser: true }),
+        nodeResolve({ jsnext: true }),
         commonjs({}),
-        babel({ presets: [rollupPreset] })
+        babel({ presets: [rollupPreset], exclude: "node_modules/**" })
       ]
     }).then(bundle => bundle.generate({ format: "iife", exports: "none", sourcemap: true }).code);
   }
@@ -66,9 +66,9 @@ export class Es6Compiler {
       plugins: [
         includes({ paths: [ join(pageCachePath, "scripts")] }),
         multientry({ exports: false }),
-        nodeResolve({ browser: true }),
+        nodeResolve({ jsnext: true }),
         commonjs({}),
-        babel({ presets: [rollupPreset] })
+        babel({ presets: [rollupPreset], exclude: "node_modules/**" })
       ]
     }).then(bundle => bundle.generate({format: "iife", exports: "none", sourceMap: true}).code);
   }
