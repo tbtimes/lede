@@ -1,6 +1,7 @@
 import { Logger } from "bunyan";
 import { join, basename } from "path";
 const sander = require("sander");
+import includes from "rollup-plugin-includepaths";
 
 import { MaterialCompiler, CompiledMaterials, ProjectModel, PageModel } from "../interfaces";
 import { mockLogger } from "../utils";
@@ -12,7 +13,6 @@ const babel = require("rollup-plugin-babel");
 const multientry = require("rollup-plugin-multi-entry");
 const nodeResolve = require("rollup-plugin-node-resolve");
 const rollupPreset = require("babel-preset-es2015-rollup");
-const includes = require("rollup-plugin-includepaths");
 const commonjs = require("rollup-plugin-commonjs");
 
 
