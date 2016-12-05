@@ -37,7 +37,7 @@ export class Es6Compiler {
         this.compileGlobals(cachePath, tree),
         this.compileBits(cachePath, tree)
       ]);
-      return {bits, globals};
+      return `${globals}\n${bits}`;
     } catch (err) {
       throw err;
     }
@@ -74,7 +74,6 @@ export class Es6Compiler {
   }
 
   buildCache(cachePath: string, tree: PageTree) {
-    // const bitPathRegex = new RegExp(".*\/(.*\/.*\.js)$")
     const pageCachePath = join(cachePath, tree.context.$PAGE.$name, "scripts");
 
     return Promise.all(

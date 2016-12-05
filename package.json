@@ -28,6 +28,7 @@
     "archieml": "^0.3.1",
     "babel-preset-es2015-rollup": "^1.2.0",
     "bunyan": "^1.8.1",
+    "csso": "^2.3.0",
     "glob-promise": "^1.0.6",
     "node-sass": "^3.9.3",
     "nunjucks": "^2.4.2",

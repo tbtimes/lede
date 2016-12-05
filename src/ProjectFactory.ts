@@ -110,7 +110,8 @@ export class ProjectFactory {
               );
             }).then(settings => {
               res(flatten(settings).map(this.initializeBit).map(x => Object.assign(x, {namespace: p.namespace})));
-          });
+          })
+            .catch(rej);
         });
       })
     );

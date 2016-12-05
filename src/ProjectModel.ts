@@ -164,7 +164,7 @@ export class ProjectModel {
               });
               if (!bit) throw new Error(`Bit ${b.bit} not found`);
               return new Promise((resolve, reject) => {
-                sander.readFile(bit.html).then($template => {
+                sander.readFile(bit.html, { encoding: "utf-8" }).then($template => {
                   resolve(Object.assign({}, bit.context, b.context, {$name: bit.name, $template}));
                 }).catch(reject);
               });

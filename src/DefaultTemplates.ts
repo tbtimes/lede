@@ -15,46 +15,43 @@ export const BLOCK_TMPL = `
 `;
 
 export const PROJ_TMPL = function({styles, scripts, context}) {
-  return `
-<!Doctype html>
-<html>
+  return `<!DOCTYPE html>
+<html lang="en">
 <head>
 <title>{{ $PAGE.seo.title }}</title>
-{% for item in $PAGE.$meta %}
-<meta{% if item.name %} name ="{{item.name}}"{% endif %}{%if item.content %} content="{{item.content}}"{% endif %}{% if item.props | length %}{% for prop in item.props %} {{prop.attr}}="{{prop.val}}"{% endfor %}{% endif %} />
-{% endfor %}
-{% if $PROJECT.$debug %}
+{% for item in $PAGE.$meta -%}
+<meta{% if item.name %} name="{{ item.name }}"{% endif %}{% if item.content %} content="{{ item.content }}"{% endif %}{% if item.props | length %}{% for prop in item.props %} {{ prop.attr }}="{{ prop.val }}"{% endfor %}{% endif %}/>
+{% endfor -%}
+{% if $PROJECT.$debug -%}
 <meta NAME="ROBOTS" Content="NOINDEX, NOFOLLOW">
-{% endif %}
+{%- endif %}
 {% if $PAGE.$resources and $PAGE.$resources.head %}
-{% for resource in $PAGE.$resources.head %}
+{% for resource in $PAGE.$resources.head -%}
 {{ resource }}
-{% endfor %}
+{%- endfor %}
 {% endif %}
 <!-- GLOBAL -->
 <style>
-${ styles.globals }
-</style>
+${styles.globals}</style>
 <!-- BITS -->
 <style>
-${ styles.bits }
-</style>
+${styles.bits}</style>
 </head>
 <body>
-${ context.$PAGE.$template }
+${context.$PAGE.$template}
 {% if $PAGE.$resources and $PAGE.$resources.body %}
-{% for resource in $PAGE.$resources.body %}
+{% for resource in $PAGE.$resources.body -%}
 {{ resource }}
-{% endfor %}
+{%- endfor %}
 {% endif %}
 <script type="text/javascript" src="globalScripts.js"></script>
 <script type="text/javascript" src="bitScripts.js"></script>
-{% if $PROJECT.$debug %}
+{% if $PROJECT.$debug -%}
 <script>
 document.write('<script src="http://' + (location.host || 'localhost').split(":")[0] +
 ':35729/livereload.js?snipver=1"></' + 'script>');
 </script>
-{% endif %}
+{%- endif %}
 </body>
 </html>
 `;

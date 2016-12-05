@@ -65,7 +65,10 @@ export class PD {
           return Promise.all([
             this.scriptCompiler.compile(tree),
             this.styleCompiler.compile(tree)
-          ]);
+          ])
+            .then(([scripts, styles]) => {
+              return {scripts, styles};
+            });
         })
       );
     } catch (e) {

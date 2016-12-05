@@ -2,6 +2,7 @@ import { Logger } from "bunyan";
 import { render, Options } from "node-sass";
 import { join, basename } from "path";
 const sander = require("sander");
+const csso = require("csso");
 
 import { MaterialCompiler, PageTree } from "../interfaces";
 import { mockLogger } from "../utils";
@@ -31,7 +32,12 @@ export class SassCompiler {
         this.compileGlobals(cachePath, tree),
         this.compileBits(cachePath, tree)
       ]);
-      return {bits, globals};
+
+      // Compress and dedupe css
+      const styles = [...bits, ...globals].join("\n");
+      let ast = csso.parse(styles);
+      ast = csso.compress(ast).ast;
+      return csso.translate(ast);
     } catch (err) {
       throw err;
     }
@@ -43,8 +49,7 @@ export class SassCompiler {
 
     return Promise.all(tree.styles.bits.map(mat => {
       return this.renderFile(mat, Object.assign({}, this.renderOpts, {includePaths}));
-    }))
-        .then(console.log);
+    }));
   }
 
   private compileGlobals(cachePath: string, tree: PageTree) {
@@ -62,7 +67,7 @@ export class SassCompiler {
     return new Promise((resolve, reject) => {
       render(opts, (err, res) => {
         if (err) return reject(err);
-        return resolve(res);
+        return resolve(res.css.toString("utf8"));
       });
     });
   }
