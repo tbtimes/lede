@@ -6,7 +6,7 @@ import { join } from "path";
 import { PageCompiler, ProjectModel, CompiledMaterials, CompiledPage } from "../interfaces";
 import { mockLogger } from "../utils";
 
-export class ComponentExtensionFactory implements Extension {
+export class ComponentExtension implements Extension {
   tags: string[];
   elementName: string;
 
@@ -29,18 +29,19 @@ export class ComponentExtensionFactory implements Extension {
   }
 }
 
-export class NunjucksCompiler implements PageCompiler {
+export class NunjucksCompiler {
   env: Environment;
   logger: Logger;
 
   constructor(arg?: {
-    filters?: Array<{ name: string, fn: (txt: string) => string }>,
+    filters?: Array<{ name: string, fn: (txt: string) => string}>,
     extensions?: Array<{ name: string, ext: any }>,
     loaderOptions?: any,
     envOptions?: any,
-    loaderPaths?: string[]
+    loaderPaths?: string[],
+    logger?: Logger
   }) {
-    this.logger = <Logger><any>mockLogger;
+    this.logger = arg && arg.logger || <Logger>mockLogger;
     const loaderOptions = Object.assign({watch: false, noCache: true}, arg && arg.loaderOptions ? arg.loaderOptions : {});
     const envOptions = Object.assign({autoescape: false, watch: false, noCache: true}, arg && arg.envOptions ? arg.envOptions : {});
 
@@ -48,14 +49,8 @@ export class NunjucksCompiler implements PageCompiler {
     const bitExt = {tags: ["BIT", "bit"], elementName: "$bit"};
     const blockExt = {tags: ["BLOCK", "block"], elementName: "$block"};
     const baseExtensions = [
-      {
-        name: "Bit",
-        ext: new ComponentExtensionFactory(bitExt)
-      },
-      {
-        name: "Block",
-        ext: new ComponentExtensionFactory(blockExt)
-      }
+      {name: "Bit", ext: new ComponentExtension(bitExt)},
+      {name: "Block", ext: new ComponentExtension(blockExt)}
     ];
     const extensions = arg && arg.extensions ? baseExtensions.concat(arg.extensions) : baseExtensions;
 
@@ -87,37 +82,23 @@ export class NunjucksCompiler implements PageCompiler {
     this.env = new Environment(loader, envOptions);
     filters.forEach(filter => this.env.addFilter(filter.name, filter.fn));
     extensions.forEach(ext => this.env.addExtension(ext.name, ext.ext));
-  };
+  }
 
-  configure({ logger }) {
-    this.logger = logger;
-  };
+  async compile(tree) {
+    const context = tree.context;
+    const styles = tree.resources.styles;
+    const scripts = tree.resources.scripts;
+    const assets = tree.assets;
 
-  async compile({tree, styles, scripts}:
-    {tree: ProjectModel, styles: CompiledMaterials, scripts: CompiledMaterials}): Promise<CompiledPage[]> {
-    return Promise.all(tree.pages.map(p => {
-      const pageStyles = {
-        bits: styles.bits[p.context.$PAGE.$name],
-        globals: styles.globals[p.context.$PAGE.$name]
-      };
-      const pageScripts = {
-        bits: scripts.bits[p.context.$PAGE.$name],
-        globals: scripts.globals[p.context.$PAGE.$name]
-      };
-      return this.buildPage({context: p.context, styles: pageStyles, scripts: pageScripts, assets: p.assets});
-    }));
-  };
-
-  async buildPage({context, styles, scripts, assets}) {
     const shell = context.$PROJECT.$template({styles, scripts, context});
+    console.log(this);
     const rendered = await this.renderPage({shell, context});
 
     return {
       renderedPage: rendered,
       path: join(context.$PROJECT.$deployRoot, context.$PAGE.$deployPath),
       files: [
-        { name: "globalScripts.js", content: scripts.globals },
-        { name: "bitScripts.js", content: scripts.bits }
+        {name: "scripts.js", content: scripts},
       ].concat(assets)
     };
   }

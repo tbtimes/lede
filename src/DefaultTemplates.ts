@@ -30,12 +30,8 @@ export const PROJ_TMPL = function({styles, scripts, context}) {
 {{ resource }}
 {%- endfor %}
 {% endif %}
-<!-- GLOBAL -->
 <style>
-${styles.globals}</style>
-<!-- BITS -->
-<style>
-${styles.bits}</style>
+${styles}</style>
 </head>
 <body>
 ${context.$PAGE.$template}
@@ -44,8 +40,7 @@ ${context.$PAGE.$template}
 {{ resource }}
 {%- endfor %}
 {% endif %}
-<script type="text/javascript" src="globalScripts.js"></script>
-<script type="text/javascript" src="bitScripts.js"></script>
+<script type="text/javascript" src="scripts.js"></script>
 {% if $PROJECT.$debug -%}
 <script>
 document.write('<script src="http://' + (location.host || 'localhost').split(":")[0] +

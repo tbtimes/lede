@@ -2,7 +2,7 @@ import { Logger, createLogger } from "bunyan";
 
 import { Deployer, MaterialCompiler, PageCompiler, CompiledMaterials, CompiledPage } from "./interfaces";
 import { ProjectFactory } from "./ProjectFactory";
-import { Es6Compiler, SassCompiler } from "./compilers";
+import { Es6Compiler, SassCompiler, NunjucksCompiler } from "./compilers";
 import { ProjectModel } from "./ProjectModel";
 
 
@@ -57,7 +57,6 @@ export class PD {
     require("fs").writeFileSync("tree0.json", JSON.stringify(trees[0], null, 2));
 
     this.logger.info("Compiling assets");
-
     let pageResources;
     try {
       pageResources = await Promise.all(
@@ -71,11 +70,27 @@ export class PD {
             });
         })
       );
-    } catch (e) {
-      console.log(e);
+      trees.forEach((t, i) => t.resources = pageResources[i]);
+    } catch (err) {
+      this.logger.error({err});
     }
 
-    require("fs").writeFileSync("resources.json", JSON.stringify(pageResources, null, 2));
+    // require("fs").writeFileSync("resources.json", JSON.stringify(pageResources, null, 2));
+
+    this.logger.info("Rendering pages");
+    let compiledPages;
+    try {
+      compiledPages = await Promise.all(
+        trees.map(this.htmlCompiler.compile.bind(this.htmlCompiler)) // I have no idea why I have to bind here but if I don't, htmlCompiler has no this
+      );
+    } catch (err) {
+      console.log(err)
+      this.logger.error({err});
+    }
+
+    console.log(compiledPages);
+
+    require("fs").writeFileSync("page.json", JSON.stringify(compiledPages, null, 2));
 
 
     return "fin";
@@ -145,7 +160,7 @@ const elex = {
   deployer: {},
   styleCompiler: new SassCompiler(),
   scriptCompiler: new Es6Compiler(),
-  htmlCompiler: {},
+  htmlCompiler: new NunjucksCompiler(),
   debug: true
 };
 
