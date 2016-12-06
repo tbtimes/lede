@@ -1,3 +1,6 @@
+import { PageContext } from "./interfaces";
+
+
 export const PAGE_TMPL = `
 <div id="ledeRoot">
   {% asyncAll $block in $BLOCKS %}
@@ -14,7 +17,7 @@ export const BLOCK_TMPL = `
 </div>
 `;
 
-export const PROJ_TMPL = function({styles, scripts, context}) {
+export const PROJ_TMPL = function({styles, scripts, context}: {styles: string, scripts: string, context: PageContext}) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>

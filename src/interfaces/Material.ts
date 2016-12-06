@@ -4,6 +4,12 @@ export interface MaterialRef {
   as?: string;
 }
 
+export interface CacheableMat {
+  globals: Material[];
+  bits: string[];
+  cache: Material[];
+}
+
 export interface Material {
   namespace: string;
   type: string;

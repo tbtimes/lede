@@ -94,9 +94,9 @@ export class ProjectFactory {
     return pm;
   };
 
-  private async getDepBits(): Promise<BitSettings[]> {
+  private async getDepBits(): Promise<Array<BitSettings[]>> {
     const depDirs = (await glob("*", {cwd: this.depCache})).map(x => Object.assign({}, {namespace: x, path: join(this.depCache, x)}));
-    return <BitSettings[]><any>Promise.all(
+    return <Array<BitSettings[]>><any>Promise.all(
       depDirs.map(p => {
         return new Promise((res, rej) => {
           glob("*", {cwd: join(p.path, "bits")})

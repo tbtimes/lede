@@ -2,9 +2,9 @@ import { Logger } from "bunyan";
 import { join, basename } from "path";
 const sander = require("sander");
 
-import { MaterialCompiler, CompiledMaterials, PageTree } from "../interfaces";
+import { MaterialCompiler, PageTree } from "../interfaces";
 import { mockLogger } from "../utils";
-import { Es6Failed } from "../errors/CompilerErrors";
+
 
 // Rollup stuff
 const rollup = require("rollup");
@@ -16,7 +16,7 @@ const includes = require("rollup-plugin-includepaths");
 const commonjs = require("rollup-plugin-commonjs");
 
 
-export class Es6Compiler {
+export class Es6Compiler implements MaterialCompiler {
   logger: Logger;
   cacheDir: string;
 
@@ -25,17 +25,17 @@ export class Es6Compiler {
     this.cacheDir = arg && arg.cacheDir ? arg.cacheDir : ".ledeCache";
   }
 
-  async compile(tree: PageTree) {
+  async compile(tree: PageTree): Promise<string> {
     const cachePath = join(tree.workingDir, this.cacheDir);
     try {
-      await this.buildCache(cachePath, tree);
+      await Es6Compiler.buildCache(cachePath, tree);
     } catch (err) {
       throw err;
     }
     try {
       const [globals, bits] = await Promise.all([
-        this.compileGlobals(cachePath, tree),
-        this.compileBits(cachePath, tree)
+        Es6Compiler.compileGlobals(cachePath, tree),
+        Es6Compiler.compileBits(cachePath, tree)
       ]);
       return `${globals}\n${bits}`;
     } catch (err) {
@@ -43,7 +43,7 @@ export class Es6Compiler {
     }
   }
 
-  compileBits(cachePath: string, tree: PageTree) {
+  private static compileBits(cachePath: string, tree: PageTree) {
     const pageCachePath = join(cachePath, tree.context.$PAGE.$name);
     return rollup.rollup({
       entry: join(pageCachePath, "bits", "**/*.js"),
@@ -58,7 +58,7 @@ export class Es6Compiler {
     }).then(bundle => bundle.generate({ format: "iife", exports: "none", sourcemap: true }).code);
   }
 
-  compileGlobals(cachePath: string, tree: PageTree) {
+  private static compileGlobals(cachePath: string, tree: PageTree) {
     const pageCachePath = join(cachePath, tree.context.$PAGE.$name);
     return rollup.rollup({
       entry: join(pageCachePath, "scripts", "**/*.js"),
@@ -73,7 +73,7 @@ export class Es6Compiler {
     }).then(bundle => bundle.generate({format: "iife", exports: "none", sourceMap: true}).code);
   }
 
-  buildCache(cachePath: string, tree: PageTree) {
+  private static buildCache(cachePath: string, tree: PageTree) {
     const pageCachePath = join(cachePath, tree.context.$PAGE.$name, "scripts");
 
     return Promise.all(

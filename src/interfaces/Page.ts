@@ -1,4 +1,4 @@
-import { Material, MaterialRef, MetaTag } from "./";
+import { Material, MaterialRef, MetaTag, CacheableMat } from "./";
 
 
 export interface PageSettings {
@@ -51,7 +51,11 @@ export interface PageContext {
 export interface PageTree {
   workingDir: string;
   context: PageContext;
-  styles: { globals: Material[], bits: string[], cache: Material[] };
-  scripts: { globals: Material[], bits: string[], cache: Material[] };
+  styles: CacheableMat;
+  scripts: CacheableMat;
   assets: Material[];
+}
+
+export interface AssetTree extends PageTree {
+  resources: { scripts: string, styles: string };
 }

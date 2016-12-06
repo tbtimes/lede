@@ -1,6 +1,6 @@
-import { Logger, createLogger } from "bunyan";
+import { Logger } from "bunyan";
 
-import { Deployer, MaterialCompiler, PageCompiler, CompiledMaterials, CompiledPage } from "./interfaces";
+import { Deployer, MaterialCompiler, PageCompiler, CompiledPage, AssetTree, PageTree } from "./interfaces";
 import { ProjectFactory } from "./ProjectFactory";
 import { ProjectModel } from "./ProjectModel";
 
@@ -38,7 +38,7 @@ export class ProjectDirector {
     this.debug = debug;
   }
 
-  async compile() {
+  async compile(): Promise<void> {
     this.logger.info("Assembling project dependencies");
     await this.initializeProjectModel();
     this.logger.debug({model: this.model}, "Project model");
@@ -59,22 +59,22 @@ export class ProjectDirector {
     await this.deployPages(compiledPages);
   }
 
-  private deployPages(compiledPages) {
+  private deployPages(compiledPages: CompiledPage[]): Promise<void> {
     return Promise.all(compiledPages.map(this.deployer.deploy.bind(this.deployer)))
       .catch(err => {
         this.logger.error({err});
       });
   }
 
-  private renderPages(assetTrees) {
+  private renderPages(assetTrees: AssetTree[]): Promise<CompiledPage[]> {
     return Promise.all(
       assetTrees.map(this.htmlCompiler.compile.bind(this.htmlCompiler)) // Binding or else "this" isn't properly set on htmlCompiler
     )
       .catch(err => this.logger.error({err}));
   }
 
-  private compileMaterials(trees) {
-    return Promise.all(
+  private compileMaterials(trees: PageTree[]): AssetTree[] {
+    return <AssetTree[]><any>Promise.all(
       trees.map(tree => {
         return Promise.all([
           this.scriptCompiler.compile(tree),
@@ -85,7 +85,8 @@ export class ProjectDirector {
           })
           .then(resources => {
             // attach compiled resources to tree
-            tree.resources = resources;
+            // noinspection JSPrimitiveTypeWrapperUsage
+            tree["resources"] = resources;
             return tree;
           });
       })
@@ -93,14 +94,14 @@ export class ProjectDirector {
       .catch(err => this.logger.error({err}));
   }
 
-  private buildPageTrees() {
+  private buildPageTrees(): Promise<PageTree[]> {
     return Promise.all(this.model.pages.map(page => {
       return this.model.getPageTree({name: page.name, debug: this.debug});
     }))
       .catch(err => this.logger.error({err}));
   }
 
-  private async initializeProjectModel() {
+  private async initializeProjectModel(): Promise<void> {
     this.model = await this.projectFactory.getProjectModel();
   }
 }

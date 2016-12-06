@@ -1,23 +1,16 @@
-import { Logger } from "bunyan";
-import { ProjectModel } from "../ProjectModel";
+import { PageTree, AssetTree } from "./";
+
 
 export interface PageCompiler {
-  configure(arg: {logger: Logger});
-  compile(arg: {tree: ProjectModel, styles: CompiledMaterials, scripts: CompiledMaterials}): Promise<CompiledPage[]>;
+  compile(arg: AssetTree): Promise<CompiledPage>;
 }
 
 export interface MaterialCompiler {
-  configure(arg: {logger: Logger});
-  compile(tree: ProjectModel): Promise<CompiledMaterials>;
+  compile(tree: PageTree): Promise<string>;
 }
 
 export interface CompiledPage {
   path: string;
   renderedPage: string;
   files: Array<{name: string, content?: string, path?: string, overridableName?: string}>;
-}
-
-export interface CompiledMaterials {
-  bits: {[pageName: string]: string};
-  globals: {[pageName: string]: string};
 }

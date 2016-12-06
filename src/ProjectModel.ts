@@ -1,7 +1,8 @@
 const sander = require("sander");
 import { basename } from "path";
 
-import { PageSettings, BitSettings, BlockSettings, ProjectSettings, Material, BitRef, PageTree, PageContext, BlockContext } from "./interfaces";
+import { PageSettings, BitSettings, BlockSettings, ProjectSettings, Material, BitRef, PageTree, PageContext, BlockContext, CacheableMat } from "./interfaces";
+import { flatten } from "./utils";
 
 
 export class ProjectModel {
@@ -29,7 +30,7 @@ export class ProjectModel {
     if (!page) throw new Error(`Page ${name} not found`);
 
     const context = await this.buildContext({page, blocks, debug});
-    const mats = await this.buildMats({scripts, styles, assets, blocks});
+    const mats = this.buildMats({scripts, styles, assets, blocks});
 
     return {
       workingDir: this.workingDir,
@@ -40,7 +41,7 @@ export class ProjectModel {
     };
   };
 
-  private assembleGlobalMats(mats, type) {
+  private assembleGlobalMats(mats, type): Material[] {
     return mats.reduce((state: Material[], mat: {id: string, as?: string}) => {
       const indexOfPresent = state.map(x => x.overridableName).indexOf(mat.as);
       let material;
@@ -58,13 +59,13 @@ export class ProjectModel {
     }, []);
   }
 
-  private retrieveMaterial({type, id, overridableName}: {type: string, id: string, overridableName?: string}) {
+  private retrieveMaterial({type, id, overridableName}: {type: string, id: string, overridableName?: string}): Material {
     const { name, namespace } = this.parseId(id);
     const mat = this.materials.find(m => m.namespace === namespace && m.name === name && m.type === type);
     return Object.assign({}, mat, {overridableName: overridableName || basename(mat.path)});
   }
 
-  private async buildMats({scripts, styles, assets, blocks}) {
+  private buildMats({scripts, styles, assets, blocks}): {scripts: CacheableMat, styles: CacheableMat, assets: Material[]} {
     const globalScripts = this.assembleGlobalMats(scripts, "script");
     const globalAssets = this.assembleGlobalMats(assets, "asset");
     const globalStyles = this.assembleGlobalMats(styles, "style");
@@ -79,7 +80,7 @@ export class ProjectModel {
     };
   }
 
-  private getMatCache({styles, scripts}) {
+  private getMatCache({styles, scripts}): { scriptCache: Material[], styleCache: Material[] } {
     // Using JSON here to clone by value, not reference
     const styleMats = JSON.parse(JSON.stringify(this.materials.filter(x => x.type === "style")));
     const scriptMats = JSON.parse(JSON.stringify(this.materials.filter(x => x.type === "script")));
@@ -99,7 +100,7 @@ export class ProjectModel {
     };
   }
 
-  private assembleBitMats(blocks) {
+  private assembleBitMats(blocks): { bitStyles: string[], bitScripts: string[] } {
     const bitsWithDupes = blocks.map(block => {
       try {
         block = this.parseId(block);
@@ -115,7 +116,6 @@ export class ProjectModel {
     });
 
     // Flatten and dedupe
-    const flatten = a => Array.isArray(a) ? [].concat(...a.map(flatten)) : a;
     const styles = flatten(bitsWithDupes).map(x => x.style);
     const scripts = flatten(bitsWithDupes).map(x => x.script);
 

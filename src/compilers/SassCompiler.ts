@@ -1,15 +1,14 @@
 import { Logger } from "bunyan";
 import { render, Options } from "node-sass";
-import { join, basename } from "path";
+import { join } from "path";
 const sander = require("sander");
 const csso = require("csso");
 
 import { MaterialCompiler, PageTree } from "../interfaces";
 import { mockLogger } from "../utils";
-import { SassFailed } from "../errors/CompilerErrors";
 
 
-export class SassCompiler {
+export class SassCompiler implements MaterialCompiler {
   logger: Logger;
   renderOpts: Options;
   cacheDir: string;
@@ -20,7 +19,7 @@ export class SassCompiler {
     this.cacheDir = arg && arg.cacheDir ? arg.cacheDir : ".ledeCache";
   }
 
-  async compile(tree: PageTree) {
+  async compile(tree: PageTree): Promise<string> {
     const cachePath = join(tree.workingDir, this.cacheDir);
     try {
       await this.buildCache(cachePath, tree);

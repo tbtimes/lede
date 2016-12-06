@@ -26,4 +26,6 @@ export function httpsGetProm(options: RequestOptions): Promise<string> {
   });
 }
 
-export const flatten = a => Array.isArray(a) ? [].concat(...a.map(flatten)) : a;
+export function flatten(a: Array<any[]>): any[] {
+  return Array.isArray(a) ? [].concat(...a.map(flatten)) : a;
+}

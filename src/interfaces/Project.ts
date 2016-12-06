@@ -1,11 +1,11 @@
-import { MaterialRef, MetaTag, CompiledMaterials } from "./";
+import { MaterialRef, MetaTag } from "./";
 
 
 export interface ProjectSettings {
   name: string;
   deployRoot: string;
   blocks: string[];
-  template({styles, scripts, context}: {styles: CompiledMaterials, scripts: CompiledMaterials, context: any}): string;
+  template({styles, scripts, context}: {styles: string, scripts: string, context: any}): string;
   defaults: {
     scripts: MaterialRef[],
     styles: MaterialRef[],
@@ -19,8 +19,3 @@ export interface ProjectSettings {
   };
   context: any;
 }
-
-// export interface ProjectModel {
-//   workingDir: string;
-//   pages: Array<PageModel>;
-// }

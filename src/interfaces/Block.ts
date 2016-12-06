@@ -9,10 +9,3 @@ export interface BlockSettings {
   template?: string;
   context?: any;
 }
-
-export interface Block {
-  name: string;
-  template: string;
-  context: any;
-  bits: BitRef[];
-}

@@ -3,7 +3,7 @@ import { Environment, FileSystemLoader, Extension } from "nunjucks";
 import * as slug from "slug";
 import { join } from "path";
 
-import { PageCompiler, CompiledMaterials, CompiledPage } from "../interfaces";
+import { PageCompiler } from "../interfaces";
 import { mockLogger } from "../utils";
 
 export class ComponentExtension implements Extension {
@@ -29,7 +29,7 @@ export class ComponentExtension implements Extension {
   }
 }
 
-export class NunjucksCompiler {
+export class NunjucksCompiler implements PageCompiler {
   env: Environment;
   logger: Logger;
 
