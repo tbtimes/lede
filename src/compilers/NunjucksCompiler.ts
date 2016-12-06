@@ -91,7 +91,6 @@ export class NunjucksCompiler {
     const assets = tree.assets;
 
     const shell = context.$PROJECT.$template({styles, scripts, context});
-    console.log(this);
     const rendered = await this.renderPage({shell, context});
 
     return {

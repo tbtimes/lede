@@ -10,29 +10,22 @@ export class FileSystemDeployer implements Deployer {
   deployDir: string;
   logger: Logger;
 
-  constructor({workingDir}) {
+  constructor({workingDir, logger}: {workingDir: string, logger?: Logger}) {
     this.deployDir = workingDir;
-    this.logger = <Logger><any>mockLogger;
+    this.logger = logger || <Logger>mockLogger;
   }
 
-  configure({logger}) {
-    this.logger = logger;
-  }
+  async deploy(page: CompiledPage): Promise<any> {
+    const files = page.files.map(f => {
+      if (f.content) {
+        return sander.writeFile(join(this.deployDir, page.path, f.name), f.content);
+      }
+      return sander.copyFile(f.path).to(join(this.deployDir, page.path, f.overridableName || f.name));
+    });
 
-  async deploy(pages: CompiledPage[]): Promise<any> {
-    // this.logger.info(`Deploying ${pages.length} pages to ${ this.deployDir }`);
-    // this.logger.debug({pages: pages});
-    return Promise.all(pages.map(p => {
-      const files = p.files.map(f => {
-        if (f.content) {
-          return sander.writeFile(join(this.deployDir, p.path, f.name), f.content);
-        }
-        return sander.copyFile(f.path).to(join(this.deployDir, p.path, f.overridableName || f.name ));
-      });
-      return Promise.all([
-        sander.writeFile(join(this.deployDir, p.path, "index.html"), p.renderedPage),
-        ...files
-      ]);
-    }));
+    return Promise.all([
+      sander.writeFile(join(this.deployDir, page.path, "index.html"), page.renderedPage),
+      ...files
+    ]);
   }
 }

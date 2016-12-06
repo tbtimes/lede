@@ -2,7 +2,6 @@ import { Logger, createLogger } from "bunyan";
 
 import { Deployer, MaterialCompiler, PageCompiler, CompiledMaterials, CompiledPage } from "./interfaces";
 import { ProjectFactory } from "./ProjectFactory";
-import { Es6Compiler, SassCompiler, NunjucksCompiler } from "./compilers";
 import { ProjectModel } from "./ProjectModel";
 
 
@@ -17,7 +16,7 @@ export interface ProjectDirectorArgs {
   debug: boolean;
 }
 
-export class PD {
+export class ProjectDirector {
   deployer: Deployer;
   logger: Logger;
   workingDir: string;
@@ -56,14 +55,15 @@ export class PD {
     const compiledPages = await this.renderPages(assetTrees);
     this.logger.debug({compiledPages}, "Pages compiled");
 
-
     this.logger.info("Deploying pages");
     await this.deployPages(compiledPages);
   }
 
   private deployPages(compiledPages) {
-    return Promise.all(compiledPages.map(this.deployer.deploy))
-      .catch(err => this.logger.error({err}));
+    return Promise.all(compiledPages.map(this.deployer.deploy.bind(this.deployer)))
+      .catch(err => {
+        this.logger.error({err});
+      });
   }
 
   private renderPages(assetTrees) {
@@ -104,35 +104,3 @@ export class PD {
     this.model = await this.projectFactory.getProjectModel();
   }
 }
-
-const logger = createLogger({
-  name: "boo",
-  streams: [{
-    level: "debug",
-    path: "boo.log"
-  }]
-});
-
-const elex = {
-  workingDir: "/Users/emurray/WebstormProjects/elections-page",
-  logger,
-  depCacheDir: "lede_modules",
-  deployer: {},
-  styleCompiler: new SassCompiler(),
-  scriptCompiler: new Es6Compiler(),
-  htmlCompiler: new NunjucksCompiler(),
-  debug: true
-};
-
-const p = new PD(elex);
-
-p.compile().then(console.log).catch(console.log);
-
-
-
-
-
-
-
-
-
