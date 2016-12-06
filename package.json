@@ -52,7 +52,6 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-tslint": "^6.1.1",
     "gulp-typescript": "^3.0.2",
-    "gulp-watch": "^4.3.9",
     "merge2": "^1.0.2",
     "nock": "^8.0.0",
     "nyc": "^7.0.0",

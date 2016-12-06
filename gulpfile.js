@@ -1,6 +1,5 @@
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
-const watch = require('gulp-watch');
 const srcmap = require('gulp-sourcemaps');
 const path = require('path');
 const merge = require('merge2');
@@ -32,13 +31,12 @@ gulp.task('lint', () => {
     .pipe(tslint({
       formatter: "verbose"
     }))
-    .pipe(tslint.report());
+    .pipe(tslint.report())
+    .on("error", () => {});
 });
 
 gulp.task('pub', ['lint', 'source']);
 
 gulp.task('dev', ['source'], () => {
-  watch('src/**/*.ts', () => {
-    gulp.start('source');
-  });
+  gulp.watch('src/**/*.ts', ["source", "lint"]);
 });
