@@ -42,105 +42,65 @@ export class PD {
   async compile() {
     this.logger.info("Assembling project dependencies");
     await this.initializeProjectModel();
-    this.logger.debug(this.model.project, "project");
-    this.logger.debug(this.model.pages, "pages");
-    this.logger.debug(this.model.materials, "materials");
-    this.logger.debug(this.model.blocks, "blocks");
-    this.logger.debug(this.model.bits, "bits");
+    this.logger.debug({model: this.model}, "Project model");
 
     this.logger.info("Building dependency graph");
-    const trees = await Promise.all(this.model.pages.map(page => {
-      return this.model.getPageTree({name: page.name, debug: this.debug});
-    }));
-    trees.forEach((t, i) => this.logger.debug(t));
-
-    require("fs").writeFileSync("tree0.json", JSON.stringify(trees[0], null, 2));
+    const trees = await this.buildPageTrees();
+    this.logger.debug({trees}, "Initial page trees");
 
     this.logger.info("Compiling assets");
-    let pageResources;
-    try {
-      pageResources = await Promise.all(
-        trees.map(tree => {
-          return Promise.all([
-            this.scriptCompiler.compile(tree),
-            this.styleCompiler.compile(tree)
-          ])
-            .then(([scripts, styles]) => {
-              return {scripts, styles};
-            });
-        })
-      );
-      trees.forEach((t, i) => t.resources = pageResources[i]);
-    } catch (err) {
-      this.logger.error({err});
-    }
-
-    // require("fs").writeFileSync("resources.json", JSON.stringify(pageResources, null, 2));
+    const assetTrees = await this.compileMaterials(trees);
+    this.logger.debug({assetTrees}, "Assets compiled and reattached to trees");
 
     this.logger.info("Rendering pages");
-    let compiledPages;
-    try {
-      compiledPages = await Promise.all(
-        trees.map(this.htmlCompiler.compile.bind(this.htmlCompiler)) // I have no idea why I have to bind here but if I don't, htmlCompiler has no this
-      );
-    } catch (err) {
-      console.log(err)
-      this.logger.error({err});
-    }
-
-    console.log(compiledPages);
-
-    require("fs").writeFileSync("page.json", JSON.stringify(compiledPages, null, 2));
+    const compiledPages = await this.renderPages(assetTrees);
+    this.logger.debug({compiledPages}, "Pages compiled");
 
 
-    return "fin";
-
-    // let tree: ProjectModel, renderedPages: CompiledPage[];
-    //
-    // this.logger.info("Assembling project dependencies.");
-    // try {
-    //   tree = await this.projectFactory.getProjectModel(this.debug);
-    //   this.tree = tree;
-    //   this.logger.debug({tree}, "Project model");
-    // } catch (err) {
-    //   this.logger.error({err}, "There was an error assembling dependencies");
-    //   return;
-    // }
-    //
-    // this.logger.info("Compiling styles and scripts.");
-    // let [scripts, styles] = <CompiledMaterials[]>(await Promise.all([
-    //   this.scriptCompiler.compile(tree),
-    //   this.styleCompiler.compile(tree)
-    // ]).catch(err => {
-    //   this.logger.error({err}, "An error occurred while compiling materials.");
-    //   return;
-    // }));
-    // this.logger.debug({scripts, styles}, "Compiled materials");
-    //
-    // this.logger.info("Rendering pages.");
-    // try {
-    //   renderedPages = await this.htmlCompiler.compile({tree, styles, scripts});
-    //   this.logger.debug({ renderedPages }, "Rendered pages");
-    // } catch (err) {
-    //   this.logger.error({err}, "An error occurred while rendering the pages.");
-    //   return;
-    // }
-    //
-    // this.logger.info("Deploying pages.");
-    // try {
-    //   await this.deployer.deploy(renderedPages);
-    // } catch (err) {
-    //   this.logger.error({err}, "An error occurred while deploying the pages.");
-    //   return;
-    // }
+    this.logger.info("Deploying pages");
+    await this.deployPages(compiledPages);
   }
 
-  private async compileMaterials() {
-    return await Promise.all([ this.scriptCompiler.compile(this.model)])
+  private deployPages(compiledPages) {
+    return Promise.all(compiledPages.map(this.deployer.deploy))
+      .catch(err => this.logger.error({err}));
+  }
+
+  private renderPages(assetTrees) {
+    return Promise.all(
+      assetTrees.map(this.htmlCompiler.compile.bind(this.htmlCompiler)) // Binding or else "this" isn't properly set on htmlCompiler
+    )
+      .catch(err => this.logger.error({err}));
+  }
+
+  private compileMaterials(trees) {
+    return Promise.all(
+      trees.map(tree => {
+        return Promise.all([
+          this.scriptCompiler.compile(tree),
+          this.styleCompiler.compile(tree)
+        ])
+          .then(([scripts, styles]) => {
+            return {scripts, styles};
+          })
+          .then(resources => {
+            // attach compiled resources to tree
+            tree.resources = resources;
+            return tree;
+          });
+      })
+    )
+      .catch(err => this.logger.error({err}));
+  }
+
+  private buildPageTrees() {
+    return Promise.all(this.model.pages.map(page => {
+      return this.model.getPageTree({name: page.name, debug: this.debug});
+    }))
+      .catch(err => this.logger.error({err}));
   }
 
   private async initializeProjectModel() {
-    this.logger.info("Assembling project dependencies");
     this.model = await this.projectFactory.getProjectModel();
   }
 }
