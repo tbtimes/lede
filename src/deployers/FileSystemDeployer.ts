@@ -12,7 +12,7 @@ export class FileSystemDeployer implements Deployer {
 
   constructor({workingDir, logger}: {workingDir: string, logger?: Logger}) {
     this.deployDir = workingDir;
-    this.logger = logger || <Logger>mockLogger;
+    this.logger = logger || mockLogger;
   }
 
   async deploy(page: CompiledPage): Promise<any> {

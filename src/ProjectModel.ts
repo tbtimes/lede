@@ -1,7 +1,7 @@
 const sander = require("sander");
 import { basename } from "path";
 
-import { PageSettings, BitSettings, BlockSettings, ProjectSettings, Material, BitRef, PageTree } from "interfaces";
+import { PageSettings, BitSettings, BlockSettings, ProjectSettings, Material, BitRef, PageTree, PageContext, BlockContext } from "./interfaces";
 
 
 export class ProjectModel {
@@ -122,7 +122,7 @@ export class ProjectModel {
     return { bitStyles: [... new Set([...styles])], bitScripts: [... new Set([...scripts])] };
   }
 
-  private async buildContext({page, blocks, debug}) {
+  private async buildContext({page, blocks, debug}): Promise<PageContext> {
     const pageCtx = {
       $name: page.name,
       $meta: [...this.project.defaults.metaTags, ...page.meta],
@@ -141,7 +141,7 @@ export class ProjectModel {
       $debug: debug || false
     };
 
-    const pageBlox = await Promise.all(
+    const pageBlox = <BlockContext[]><any>await Promise.all(
       blocks.map(b => {
         try {
           b = this.parseId(b);
@@ -162,7 +162,7 @@ export class ProjectModel {
               const bit = this.bits.find(x => {
                 return x.namespace === parsedB.namespace && x.name === parsedB.name;
               });
-              if (!bit) throw new Error(`Bit ${b.bit} not found`);
+              if (!bit) throw new Error(`Bit ${b.bit} not found (from block ${block.namespace}/${block.name})`);
               return new Promise((resolve, reject) => {
                 sander.readFile(bit.html, { encoding: "utf-8" }).then($template => {
                   resolve(Object.assign({}, bit.context, b.context, {$name: bit.name, $template}));

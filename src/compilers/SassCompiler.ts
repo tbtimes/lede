@@ -15,7 +15,7 @@ export class SassCompiler {
   cacheDir: string;
 
   constructor(arg?) {
-    this.logger = arg && arg.logger ? arg.logger : <Logger><any>mockLogger;
+    this.logger = arg && arg.logger ? arg.logger : mockLogger;
     this.renderOpts = Object.assign({}, {outputStyle: "compressed", sourceComments: false}, arg && arg.opts ? arg.opts : {});
     this.cacheDir = arg && arg.cacheDir ? arg.cacheDir : ".ledeCache";
   }

@@ -1,7 +1,8 @@
+import { Logger } from "bunyan";
 import { request, RequestOptions } from "https";
 
 
-export const mockLogger = {
+export const mockLogger: Logger = <any>{
   info: function() {},
   warn: function() {},
   error: console.log,
@@ -24,3 +25,5 @@ export function httpsGetProm(options: RequestOptions): Promise<string> {
     }).end();
   });
 }
+
+export const flatten = a => Array.isArray(a) ? [].concat(...a.map(flatten)) : a;

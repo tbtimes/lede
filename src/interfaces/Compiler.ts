@@ -1,5 +1,5 @@
 import { Logger } from "bunyan";
-import { ProjectModel } from "./";
+import { ProjectModel } from "../ProjectModel";
 
 export interface PageCompiler {
   configure(arg: {logger: Logger});

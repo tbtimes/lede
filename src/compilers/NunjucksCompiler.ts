@@ -41,7 +41,7 @@ export class NunjucksCompiler {
     loaderPaths?: string[],
     logger?: Logger
   }) {
-    this.logger = arg && arg.logger || <Logger>mockLogger;
+    this.logger = arg && arg.logger || mockLogger;
     const loaderOptions = Object.assign({watch: false, noCache: true}, arg && arg.loaderOptions ? arg.loaderOptions : {});
     const envOptions = Object.assign({autoescape: false, watch: false, noCache: true}, arg && arg.envOptions ? arg.envOptions : {});
 

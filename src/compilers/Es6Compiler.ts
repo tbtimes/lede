@@ -21,7 +21,7 @@ export class Es6Compiler {
   cacheDir: string;
 
   constructor(arg?) {
-    this.logger = arg && arg.logger || <Logger><any>mockLogger;
+    this.logger = arg && arg.logger || mockLogger;
     this.cacheDir = arg && arg.cacheDir ? arg.cacheDir : ".ledeCache";
   }
 

@@ -1,5 +1,5 @@
 import { Logger } from "bunyan";
-import { join, basename } from "path";
+import { join } from "path";
 const glob = require("glob-promise");
 const sander = require("sander");
 
@@ -13,6 +13,7 @@ import {
   Material,
 } from "./interfaces";
 import { BLOCK_TMPL, PAGE_TMPL, PROJ_TMPL } from "./DefaultTemplates";
+import { flatten } from "./utils";
 
 
 export enum SettingsType {
@@ -30,8 +31,6 @@ export interface Mats {
   assets: Material[];
 }
 
-const flatten = a => Array.isArray(a) ? [].concat(...a.map(flatten)) : a;
-
 export class ProjectFactory {
   logger: Logger;
   workingDir: string;
@@ -44,7 +43,7 @@ export class ProjectFactory {
   };
   async getProject(): Promise<ProjectSettings> {
     const settings = <ProjectSettings>(await this.loadSettingsFile(SettingsType.Project, this.workingDir))[0];
-    return this.initializeProject(settings);
+    return ProjectFactory.initializeProject(settings);
   };
 
   async getBits(): Promise<BitSettings[]> {
@@ -55,7 +54,7 @@ export class ProjectFactory {
 
   async getPages(): Promise<PageSettings[]> {
     const settings = <PageSettings[]>(await this.loadSettingsFile(SettingsType.Page, join(this.workingDir, "pages")));
-    return settings.map(this.initializePage);
+    return settings.map(ProjectFactory.initializePage);
   };
 
   async getBlocks(): Promise<BlockSettings[]> {
@@ -63,7 +62,7 @@ export class ProjectFactory {
       this.getLocalBlocks(),
       this.getDepBlocks()
     ]);
-    return await Promise.all([...localBlocks, ...depBlocks].map(this.initializeBlock));
+    return await Promise.all([...localBlocks, ...depBlocks].map(ProjectFactory.initializeBlock));
   };
 
   async getMaterials(): Promise<Mats> {
@@ -97,7 +96,7 @@ export class ProjectFactory {
 
   private async getDepBits(): Promise<BitSettings[]> {
     const depDirs = (await glob("*", {cwd: this.depCache})).map(x => Object.assign({}, {namespace: x, path: join(this.depCache, x)}));
-    return Promise.all(
+    return <BitSettings[]><any>Promise.all(
       depDirs.map(p => {
         return new Promise((res, rej) => {
           glob("*", {cwd: join(p.path, "bits")})
@@ -109,7 +108,7 @@ export class ProjectFactory {
                 bitPaths.map(path => this.loadSettingsFile(SettingsType.Bit, path))
               );
             }).then(settings => {
-              res(flatten(settings).map(this.initializeBit).map(x => Object.assign(x, {namespace: p.namespace})));
+              res(flatten(settings).map(ProjectFactory.initializeBit).map(x => Object.assign(x, {namespace: p.namespace})));
           })
             .catch(rej);
         });
@@ -124,11 +123,11 @@ export class ProjectFactory {
 
     // Flatten nested arrays
     return [].concat.apply([], settings)
-      .map(this.initializeBit)
+      .map(ProjectFactory.initializeBit)
       .map(x => Object.assign(x, {namespace: localNamespace}));
   };
 
-  private initializeBit(settings: BitSettings): BitSettings {
+  private static initializeBit(settings: BitSettings): BitSettings {
     settings.context = settings.context || {};
 
     return settings;
@@ -201,7 +200,7 @@ export class ProjectFactory {
     };
   };
 
-  private initializePage(settings: PageSettings): PageSettings {
+  private static initializePage(settings: PageSettings): PageSettings {
     settings.context = settings.context || {};
     settings.blocks = settings.blocks || [];
     settings.meta = settings.meta || [];
@@ -223,7 +222,7 @@ export class ProjectFactory {
     return settings;
   };
 
-  private async initializeBlock(settings: BlockSettings) {
+  private static async initializeBlock(settings: BlockSettings) {
     settings.bits = settings.bits || [];
     settings.source = settings.source || null;
     settings.context = settings.context || {};
@@ -236,9 +235,9 @@ export class ProjectFactory {
     return settings;
   };
 
-  private async getDepBlocks(): Promise<BlockSettings> {
+  private async getDepBlocks(): Promise<BlockSettings[]> {
     const deps = await glob("*", {cwd: this.depCache});
-    return Promise.all(
+    return <BlockSettings[]><any>Promise.all(
       deps.map(dep => {
         const p = join(this.depCache, dep, "blocks");
         return this.loadSettingsFile(SettingsType.Block, p)
@@ -258,13 +257,13 @@ export class ProjectFactory {
   /**
    *  This method is useful for getting a project name for automatically namespacing local bits/blocks/materials without loading the file.
    */
-  private async getProjectName(): string {
-    const projNameRegex = this.getNameRegex(SettingsType.Project);
+  private async getProjectName(): Promise<string> {
+    const projNameRegex = ProjectFactory.getNameRegex(SettingsType.Project);
     const projFile = (await glob("*.projectSettings.js", {cwd: this.workingDir}))[0];
     return projFile.match(projNameRegex)[1];
   };
 
-  private initializeProject(settings: ProjectSettings): ProjectSettings {
+  private static initializeProject(settings: ProjectSettings): ProjectSettings {
     // Set up template
     if (!settings.template) {
       settings.template = PROJ_TMPL;
@@ -286,7 +285,7 @@ export class ProjectFactory {
 
   private async loadSettingsFile(type: SettingsType, workingDir: string): Promise<SETTINGS[]> {
     let settingsFiles: string[];
-    const nameRegex = this.getNameRegex(type);
+    const nameRegex = ProjectFactory.getNameRegex(type);
 
     // Search for settings
     switch (type) {
@@ -335,6 +334,8 @@ export class ProjectFactory {
     return settingsFiles.map(x => {
       let cfg: any;
       try {
+        // The following line is suppressing a WebStorm warning about constructors with lowercase names.
+        // noinspection TypeScriptValidateJSTypes,JSPotentiallyInvalidConstructorUsage
         cfg = new (require(join(workingDir, x))).default();
       } catch (e) {
         throw new LoadFile({file: x, dir: workingDir, detail: e});
@@ -344,7 +345,7 @@ export class ProjectFactory {
     });
   };
 
-  private getNameRegex(type): RegExp {
+  private static getNameRegex(type): RegExp {
     let settingsFileName: string;
 
     switch (type) {
