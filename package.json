@@ -4,7 +4,7 @@
   "description": "A tool for building and deploying static article pages.",
   "repository": "https://github.com/tbtimes/lede",
   "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "typings": "defs/index.d.ts",
   "ava": {
     "files": [
       "test/**/*.js"
@@ -14,49 +14,54 @@
     ]
   },
   "scripts": {
-    "test": "typings install && gulp source && nyc ava",
+    "test": "npm build && nyc ava",
     "build": "typings install && gulp source",
     "dev": "typings install && gulp dev",
-    "prepublishOnly": "npm test"
+    "prepublishOnly": "typings install && gulp pub && uglify dist/index.js -c -o dist/index.js"
   },
   "author": "Tampa Bay Times Data Team",
   "license": "MIT",
   "engines": {
     "node": "^6.3.0"
   },
-  "dependencies": {
-    "archieml": "^0.3.1",
-    "babel-preset-es2015-rollup": "^1.2.0",
-    "bunyan": "^1.8.1",
-    "csso": "^2.3.0",
-    "glob-promise": "^1.0.6",
-    "node-sass": "^3.9.3",
-    "nunjucks": "^2.4.2",
-    "rollup": "^0.36.3",
-    "rollup-plugin-babel": "^2.6.1",
-    "rollup-plugin-commonjs": "^5.0.5",
-    "rollup-plugin-includepaths": "0.1.6",
-    "rollup-plugin-multi-entry": "^2.0.1",
-    "rollup-plugin-node-resolve": "^2.0.0",
-    "sander": "^0.5.1",
-    "slug": "^0.9.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/bunyan": "0.0.30",
     "@types/node": "^6.0.42",
     "@types/node-sass": "0.0.29",
     "@types/nunjucks": "0.0.32",
+    "archieml": "^0.3.1",
     "ava": "^0.16.0",
+    "babel-preset-es2015-rollup": "^1.2.0",
+    "bunyan": "^1.8.1",
     "coveralls": "^2.11.11",
+    "csso": "^2.3.0",
+    "glob-promise": "^1.0.6",
     "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-rollup": "^2.5.1",
     "gulp-sourcemaps": "^1.6.0",
-    "gulp-tslint": "^6.1.1",
+    "gulp-tslint": "^7.0.1",
     "gulp-typescript": "^3.0.2",
     "merge2": "^1.0.2",
     "nock": "^8.0.0",
+    "node-sass": "^3.9.3",
+    "nunjucks": "^2.4.2",
     "nyc": "^7.0.0",
-    "tslint": "^3.15.1",
-    "typescript": "^2.1.0-dev.20161007",
-    "typings": "^1.3.2"
+    "rimraf": "^2.5.4",
+    "rollup": "^0.36.4",
+    "rollup-plugin-babel": "^2.6.1",
+    "rollup-plugin-commonjs": "^5.0.5",
+    "rollup-plugin-includepaths": "0.1.6",
+    "rollup-plugin-json": "^2.0.2",
+    "rollup-plugin-multi-entry": "^2.0.1",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-plugin-typescript": "^0.8.1",
+    "sander": "^0.5.1",
+    "slug": "^0.9.1",
+    "tslint": "^4.0.2",
+    "typescript": "^2.0.10",
+    "typings": "^1.3.2",
+    "uglify-js": "^2.7.5"
   }
 }

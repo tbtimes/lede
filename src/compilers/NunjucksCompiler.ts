@@ -1,6 +1,6 @@
 import { Logger } from "bunyan";
 import { Environment, FileSystemLoader, Extension } from "nunjucks";
-import * as slug from "slug";
+import slug from "slug";
 import { join } from "path";
 
 import { PageCompiler } from "../interfaces";

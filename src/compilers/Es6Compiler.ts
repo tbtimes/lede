@@ -51,7 +51,7 @@ export class Es6Compiler implements MaterialCompiler {
       plugins: [
         includes({paths: [join(pageCachePath, "scripts")] }),
         multientry({exports: false}),
-        nodeResolve({ jsnext: true }),
+        nodeResolve({ jsnext: true, main: true }),
         commonjs({}),
         babel({ presets: [rollupPreset], exclude: "node_modules/**" })
       ]
