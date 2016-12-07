@@ -42,8 +42,12 @@ export class ProjectFactory {
     this.depCache = join(workingDir, depCacheDir);
   };
   async getProject(): Promise<ProjectSettings> {
-    const settings = <ProjectSettings>(await this.loadSettingsFile(SettingsType.Project, this.workingDir))[0];
-    return ProjectFactory.initializeProject(settings);
+    try {
+      const settings = <ProjectSettings>(await this.loadSettingsFile(SettingsType.Project, this.workingDir))[0];
+      return ProjectFactory.initializeProject(settings);
+    } catch (err) {
+      throw err;
+    }
   };
 
   async getBits(): Promise<BitSettings[]> {

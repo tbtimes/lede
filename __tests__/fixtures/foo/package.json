@@ -1,0 +1,16 @@
+{
+  "name": "foo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "foo.projectSettings.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lede": "^1.3.16",
+    "slug": "^0.9.1"
+  }
+}

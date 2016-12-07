@@ -1,8 +1,17 @@
-const resolvers = require("../../../../dist/resolvers/AmlResolver");
 
 class SettingsConfig {
   constructor() {
-    this.source = new resolvers.AmlResolver("1yET-AtSiVJ1L3R0YVt50GfBJHsq242-oltepsxO6FXQ", process.env.GAPI_KEY);
+    this.deployRoot = "test";
+    this.defaults = {
+      scripts: [],
+      assets: [],
+      styles: [],
+      blocks: [],
+      metaTags: []
+    };
+    this.context = {
+      foo: "bar"
+    };
   }
 }
 
