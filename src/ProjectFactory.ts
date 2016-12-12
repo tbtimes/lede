@@ -66,6 +66,8 @@ export class ProjectFactory {
       this.getLocalBlocks(),
       this.getDepBlocks()
     ]);
+    console.log(localBlocks);
+    console.log(depBlocks);
     return await Promise.all([...localBlocks, ...depBlocks].map(ProjectFactory.initializeBlock));
   };
 
@@ -189,11 +191,11 @@ export class ProjectFactory {
   };
 
   private async getDepMaterials(): Promise<Mats> {
-    const deps = await glob("*", {cwd: this.workingDir});
+    const deps = await glob("*", {cwd: this.depCache});
     const [scripts, styles, assets] = await Promise.all([
-      Promise.all(deps.map(namespace => this.getScripts(join(this.workingDir, namespace, "scripts"), namespace))),
-      Promise.all(deps.map(namespace => this.getStyles(join(this.workingDir, namespace, "styles"), namespace))),
-      Promise.all(deps.map(namespace => this.getAssets(join(this.workingDir, namespace, "assets"), namespace)))
+      Promise.all(deps.map(namespace => this.getScripts(join(this.depCache, namespace, "scripts"), namespace))),
+      Promise.all(deps.map(namespace => this.getStyles(join(this.depCache, namespace, "styles"), namespace))),
+      Promise.all(deps.map(namespace => this.getAssets(join(this.depCache, namespace, "assets"), namespace)))
     ]);
 
     // Flatten material arrays
