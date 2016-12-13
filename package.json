@@ -1,6 +1,6 @@
 {
   "name": "lede",
-  "version": "1.3.10",
+  "version": "2.0.0",
   "description": "A tool for building and deploying static article pages.",
   "repository": "https://github.com/tbtimes/lede",
   "main": "dist/index.js",
@@ -45,8 +45,7 @@
   "engines": {
     "node": "^6.3.0"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/bunyan": "0.0.30",
     "@types/node": "^6.0.42",
