@@ -33,15 +33,7 @@
       "<rootDir>/__tests__/fixtures"
     ],
     "testResultsProcessor": "<rootDir>/node_modules/ts-jest/coverageprocessor.js",
-    "testEnvironment": "node",
-    "coverageThreshold": {
-      "global": {
-        "branches": 50,
-        "functions": 50,
-        "lines": 50,
-        "statements": 50
-      }
-    }
+    "testEnvironment": "node"
   },
   "scripts": {
     "test": "jest --coverage --no-cache",
