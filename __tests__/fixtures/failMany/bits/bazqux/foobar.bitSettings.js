@@ -1,9 +1,12 @@
 
-const AmlResolver = require("../../../../__mocks__/AmlResolver").default;
+const join = require("path").join;
 
 class SettingsConfig {
   constructor() {
-    this.source = new AmlResolver();
+    this.context = {};
+    this.script = join(__dirname, "foobar.js");
+    this.style = join(__dirname, "foobar.scss");
+    this.html = join(__dirname, "foobar.html");
   }
 }
 

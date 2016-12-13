@@ -66,9 +66,8 @@ export class ProjectFactory {
       this.getLocalBlocks(),
       this.getDepBlocks()
     ]);
-    console.log(localBlocks);
-    console.log(depBlocks);
-    return await Promise.all([...localBlocks, ...depBlocks].map(ProjectFactory.initializeBlock));
+
+    return await Promise.all([...localBlocks, ...flatten(depBlocks)].map(ProjectFactory.initializeBlock));
   };
 
   async getMaterials(): Promise<Mats> {
@@ -309,6 +308,7 @@ export class ProjectFactory {
         break;
     }
 
+
     // Check for errors in number of settings found
     switch (type) {
       case SettingsType.Project:
@@ -328,12 +328,16 @@ export class ProjectFactory {
         }
         break;
       default:
-        if (!settingsFiles) {
-          throw new MissingFile({
-            file: (type === SettingsType.Block) ? "blockSettings.js" : "pageSettings.js",
-            dir: workingDir
-          });
-        }
+        // Do we want to throw an error if there are no pages or blocks?
+        // console.log(settingsFiles)
+        // console.log(settingsFiles === [])
+        // if (settingsFiles === []) {
+        //   throw new MissingFile({
+        //     file: (type === SettingsType.Block) ? "blockSettings.js" : "pageSettings.js",
+        //     dir: workingDir
+        //   });
+        // }
+        // break;
         break;
     }
     // Finally, load the user module and check for errors

@@ -21,12 +21,13 @@ describe("ProjectFactory", () => {
     expect(proj.context["foo"]).toBe("bar");
   });
 
-  it("should error if there are multiple projectSettings files in a project", async () => {
-    try {
-      await manyFilesPF.getProject();
-    } catch (e) {
-      expect(e).toBeInstanceOf(ManyFiles);
-    }
+  it("should error if there are multiple projectSettings files in a project", (cb) => {
+    manyFilesPF.getProject()
+               .then(x => fail()) // Get bits should error, this should be unreachable
+               .catch(e => {
+                 expect(e).toBeInstanceOf(ManyFiles);
+                 cb();
+               });
   });
 
   it("should fetch and instantiate pages", async () => {
@@ -38,10 +39,17 @@ describe("ProjectFactory", () => {
 
   it("should fetch and instantiate blocks", async () => {
     const localBlocks = await (pf as any).getLocalBlocks();
-    const depBlocks = flatten(await (pf as any).getDepBlocks());
+    const depBlocks = [ ...flatten(await (pf as any).getDepBlocks())];
     const allBlocks = await pf.getBlocks();
 
-    console.log(allBlocks)
+    for (let b of allBlocks) {
+      expect(b.source["called"]).toBe(1);
+      expect(b.bits).toEqual([{ bit: "foo/foobar", context: {foo: "bar"}}]);
+    }
+    expect(depBlocks[0].namespace).toBe("test-dep");
+    expect(depBlocks[0].name).toBe("tronc");
+    expect(localBlocks[0].namespace).toBe("foo");
+    expect(localBlocks[0].name).toBe("chorp");
   });
 
   it("should fetch and instantiate materials", async () => {
@@ -82,5 +90,16 @@ describe("ProjectFactory", () => {
 
     // All bits expectations
     expect(allBits).toEqual([...localBits, ...depBits]);
+
+
+  });
+
+  it("should error if there are multiple bitSettings files in a bit", (cb) => {
+    manyFilesPF.getBits()
+               .then(x => fail()) // Get bits should error, this should be unreachable
+               .catch(e => {
+                 expect(e).toBeInstanceOf(ManyFiles);
+                 cb();
+               });
   });
 });

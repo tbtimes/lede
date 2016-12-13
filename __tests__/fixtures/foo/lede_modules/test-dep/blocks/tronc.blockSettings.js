@@ -1,9 +1,9 @@
 
-const AmlResolver = require("lede").resolvers.AmlResolver;
+const AmlResolver = require("../../../../../../__mocks__/AmlResolver").default;
 
 class SettingsConfig {
   constructor() {
-    this.source = new AmlResolver("1kWvwZivR81oIid4aNTAs54r7LlbJ6dS5UPxVqA_UDS8", process.env.GAPI_KEY);
+    this.source = new AmlResolver();
   }
 }
 
