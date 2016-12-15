@@ -1,5 +1,5 @@
 import { Logger } from "bunyan";
-import { join, basename } from "path";
+import { join, basename, dirname } from "path";
 const sander = require("sander");
 
 import { MaterialCompiler, CompiledMaterials, ProjectModel, PageModel } from "../interfaces";
@@ -128,7 +128,7 @@ export class Es6Compiler implements MaterialCompiler {
           // Write bits
           Promise.all(page.scripts.bits.map(mat => {
             return sander.copyFile(mat)
-                         .to(join(pageCachePath, "bits", mat.match(bitPathRegex)[1]));
+                         .to(join(pageCachePath, "bits", basename(dirname(mat)), basename(mat)));
           }))
         ]);
       })

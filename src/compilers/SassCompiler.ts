@@ -1,6 +1,6 @@
 import { Logger } from "bunyan";
 import { render, Options } from "node-sass";
-import { join, basename } from "path";
+import { join, basename, dirname } from "path";
 const sander = require("sander");
 
 import { MaterialCompiler, ProjectModel, PageModel } from "../interfaces";
@@ -111,8 +111,9 @@ export class SassCompiler implements MaterialCompiler {
             }));
           }),
           Promise.all(page.styles.bits.map(mat => {
+
             return sander.copyFile(mat)
-                         .to(join(pageCachePath, "bits", mat.match(bitPathRegex)[1]));
+                         .to(join(pageCachePath, "bits", basename(dirname(mat)), basename(mat)));
           }))
         ]);
       })
