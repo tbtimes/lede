@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "archieml": "^0.3.1",
-    "babel-preset-es2015-rollup": "^1.2.0",
+    "babel-preset-es2015-rollup": "^3.0.0",
     "bunyan": "^1.8.1",
     "glob-promise": "^1.0.6",
     "node-sass": "^3.9.3",
