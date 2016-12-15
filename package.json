@@ -16,8 +16,7 @@
   "scripts": {
     "test": "typings install && gulp source && nyc ava",
     "build": "typings install && gulp source",
-    "dev": "typings install && gulp dev",
-    "prepublishOnly": "npm test"
+    "dev": "typings install && gulp dev"
   },
   "author": "Tampa Bay Times Data Team",
   "license": "MIT",
