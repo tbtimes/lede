@@ -177,7 +177,28 @@ export class ProjectFactory {
     settings.template = settings.template || BLOCK_TMPL;
 
     if (settings.source) {
-      settings.bits = await settings.source.fetch();
+      settings.bits = await fetchGDOC({tries: 0, settings});
+    }
+
+    // Implements exponential backoff
+    function fetchGDOC({tries, settings}) {
+      return new Promise((resolve, reject) => {
+        if (tries < 5) {
+          settings.sources.fetch().then(resolve)
+            .catch(err => {
+              if (err.message !== "Rate limit") {
+                return reject(err);
+              } else {
+                tries += 1;
+                setTimeout(() => {
+                  return fetchGDOC({tries, settings}).then(resolve).catch(reject);
+                });
+              }
+            });
+        } else {
+          return reject(new Error("Gdocs rate limit exceeded. Try again in a few minutes."));
+        }
+      });
     }
 
     return settings;
