@@ -3,6 +3,7 @@ import { basename } from "path";
 
 import { PageSettings, BitSettings, BlockSettings, ProjectSettings, Material, BitRef, PageTree, PageContext, BlockContext, CacheableMat } from "./interfaces";
 import { flatten } from "./utils";
+import { ProjectFactory } from "./ProjectFactory";
 
 
 export class ProjectModel {
@@ -19,6 +20,36 @@ export class ProjectModel {
     this.bits = [];
     this.project = null;
   };
+
+  async remove({type, path}) {
+
+  }
+
+  async add({type, path}) {
+    let collection;
+    switch (type) {
+      case "block":
+        collection = this.blocks;
+        break;
+      case "bit":
+        collection = this.bits;
+        break;
+      case "page":
+        collection = this.pages;
+        break;
+      case "material":
+        collection = this.materials;
+        break;
+      default:
+        throw new Error(`Cannot add new ${type} (${path}) to project`);
+        break;
+    }
+    const item = ProjectFactory.instantiate({type, path});
+  }
+
+  async refresh({type, path}) {
+
+  }
 
   async getPageTree({name, debug}: {name: string, debug?: boolean}): Promise<PageTree> {
     const page = this.pages.find(x => x.name === name);

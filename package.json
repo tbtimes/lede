@@ -38,7 +38,7 @@
   "scripts": {
     "test": "jest --coverage --no-cache",
     "dev": "typings install && gulp dev",
-    "prepublishOnly": "typings install && gulp pub && uglify dist/index.js -c -o dist/index.js && npm test"
+    "prepublishOnly": "typings install && gulp pub && uglifyjs dist/index.js -c -o dist/index.js && npm test"
   },
   "author": "Tampa Bay Times Data Team",
   "license": "MIT",
@@ -54,6 +54,7 @@
     "archieml": "^0.3.1",
     "babel-preset-es2015-rollup": "^1.2.0",
     "bunyan": "^1.8.1",
+    "chokidar": "^1.6.1",
     "coveralls": "^2.11.11",
     "csso": "^2.3.0",
     "glob-promise": "^1.0.6",

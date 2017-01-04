@@ -38,6 +38,41 @@ export class ProjectDirector {
     this.debug = debug;
   }
 
+  watch({ blocks, materials, pages, bits, project}): void {
+    this.addWatcherCallbacks("block", blocks);
+    this.addWatcherCallbacks("page", pages);
+    this.addWatcherCallbacks("material", materials);
+    this.addWatcherCallbacks("bit", bits);
+    this.addWatcherCallbacks("project", project);
+  }
+
+  private addWatcherCallbacks(type, watcher) {
+    watcher.on("change", path => {
+      this.logger.info(`Detected change to ${path}`);
+      if (require.cache[require.resolve(path)]) delete require.cache[require.resolve(path)];
+      this.model.refresh({ type, path });
+    });
+    watcher.on("add", path => {
+      this.logger.info(`Detected change to ${path}`);
+      watcher.add(path);
+      this.model.add({ type, path });
+    });
+    watcher.on("unlink", path => {
+      this.logger.info(`Detected change to ${path}`);
+      if (require.cache[require.resolve(path)]) delete require.cache[require.resolve(path)];
+      watcher.unwatch(path);
+      this.model.remove({ type, path });
+    });
+    // watcher.on("addDir", path => {
+    //   this.logger.info(`Detected change to ${path}`);
+    //   watcher.add(path);
+    // });
+    // watcher.on("unlinkDir", path => {
+    //   this.logger.info(`Detected change to ${path}`);
+    //   watcher.unwatch(path);
+    // });
+  }
+
   async compile(): Promise<void> {
     this.logger.info("Assembling project dependencies");
     await this.initializeProjectModel();

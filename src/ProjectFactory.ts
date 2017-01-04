@@ -41,6 +41,11 @@ export class ProjectFactory {
     this.workingDir = workingDir;
     this.depCache = join(workingDir, depCacheDir);
   };
+
+  static async instantiate({type, path}) {
+
+  }
+
   async getProject(): Promise<ProjectSettings> {
     try {
       const settings = <ProjectSettings>(await this.loadSettingsFile(SettingsType.Project, this.workingDir))[0];
