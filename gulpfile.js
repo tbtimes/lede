@@ -36,6 +36,9 @@ gulp.task("prepare", () => {
       entry: "./src/index.ts",
       format: "cjs",
       external: [
+        "node-sass",
+        "slug",
+        "chokidar"
       ],
       plugins: [
         tscript({ typescript: require("typescript") }),
