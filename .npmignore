@@ -117,3 +117,5 @@ typings
 .coveralls.yml
 .idea
 src
+__tests__
+__mocks__
