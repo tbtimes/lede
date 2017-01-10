@@ -238,8 +238,34 @@ export class ProjectFactory {
     settings.context = settings.context || {};
     settings.template = settings.template || BLOCK_TMPL;
 
+    settings.bits = settings.bits || [];
+    settings.source = settings.source || null;
+    settings.context = settings.context || {};
+    settings.template = settings.template || BLOCK_TMPL;
+
     if (settings.source) {
-      settings.bits = await settings.source.fetch();
+      settings.bits = await fetchGDOC({tries: 0, settings});
+    }
+
+    // Implements exponential backoff
+    function fetchGDOC({tries, settings}) {
+      return new Promise((resolve, reject) => {
+        if (tries < 5) {
+          settings.sources.fetch().then(resolve)
+                  .catch(err => {
+                    if (err.code !== 403) { // Code 403: Rate limit exceeded
+                      return reject(err);
+                    } else {
+                      tries += 1;
+                      setTimeout(() => {
+                        return fetchGDOC({tries, settings}).then(resolve).catch(reject);
+                      }, Math.pow(2, tries) + Math.random() * 100);
+                    }
+                  });
+        } else {
+          return reject(new Error("Gdocs rate limit exceeded. Try again in a few minutes."));
+        }
+      });
     }
 
     return settings;

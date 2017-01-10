@@ -18,6 +18,9 @@ export class AmlResolver implements Resolver {
     };
     const descriptor: string = await httpsGetProm(descriptorOpts);
     const parsedDescriptor: GoogleRestAPI = JSON.parse(descriptor);
+    if (parsedDescriptor.error) {
+      throw parsedDescriptor.error;
+    }
     const plainUrl = parsedDescriptor.exportLinks["text/plain"].slice(8);
     const fileOpts = {
       hostname: plainUrl.split("/")[0],

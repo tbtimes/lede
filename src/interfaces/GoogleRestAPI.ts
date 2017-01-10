@@ -18,6 +18,7 @@ export interface GoogleRestAPI {
   thumbnailLink: string;
   title: string;
   mimeType: string;
+  error?: Error;
   labels: {
     starred: boolean;
     hidden: boolean;
