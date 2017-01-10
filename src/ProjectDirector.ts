@@ -38,39 +38,49 @@ export class ProjectDirector {
     this.debug = debug;
   }
 
-  watch({ blocks, materials, pages, bits, project}): void {
+  watch({ blocks, scripts, styles, assets, pages, bits, project}): void {
     this.addWatcherCallbacks("block", blocks);
     this.addWatcherCallbacks("page", pages);
-    this.addWatcherCallbacks("material", materials);
+    this.addWatcherCallbacks("script", scripts);
+    this.addWatcherCallbacks("style", styles);
+    this.addWatcherCallbacks("asset", assets);
     this.addWatcherCallbacks("bit", bits);
     this.addWatcherCallbacks("project", project);
   }
 
   private addWatcherCallbacks(type, watcher) {
+    const factory = this.projectFactory;
     watcher.on("change", path => {
       this.logger.info(`Detected change to ${path}`);
       if (require.cache[require.resolve(path)]) delete require.cache[require.resolve(path)];
-      this.model.refresh({ type, path });
+      this.model.refresh({ type, path, factory })
+          .then(this.recompile)
+        .catch(e => { throw e; });
     });
     watcher.on("add", path => {
       this.logger.info(`Detected change to ${path}`);
       watcher.add(path);
-      this.model.add({ type, path });
+      this.model.add({ type, path, factory })
+        .then(this.recompile)
+        .catch(e => { throw e; });
     });
     watcher.on("unlink", path => {
       this.logger.info(`Detected change to ${path}`);
       if (require.cache[require.resolve(path)]) delete require.cache[require.resolve(path)];
       watcher.unwatch(path);
-      this.model.remove({ type, path });
+      this.model.remove({ type, path, factory })
+          .then(this.recompile)
+        .catch(e => { throw e; });
     });
-    // watcher.on("addDir", path => {
-    //   this.logger.info(`Detected change to ${path}`);
-    //   watcher.add(path);
-    // });
-    // watcher.on("unlinkDir", path => {
-    //   this.logger.info(`Detected change to ${path}`);
-    //   watcher.unwatch(path);
-    // });
+  }
+
+  async recompile(pageNames) {
+    this.logger.info(`Recompiling the following pages: ${pageNames.join(", ")}`);
+    const trees = await <PageTree[]><any>Promise.all(pageNames.map(name => this.model.getPageTree({name, debug: this.debug})));
+    const assetTrees = await this.compileMaterials(trees);
+    const compiledPages = await this.renderPages(assetTrees);
+    this.logger.info("Deploying pages");
+    await this.deployPages(compiledPages);
   }
 
   async compile(): Promise<void> {

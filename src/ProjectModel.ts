@@ -1,7 +1,7 @@
 const sander = require("sander");
 import { basename } from "path";
 
-import { PageSettings, BitSettings, BlockSettings, ProjectSettings, Material, BitRef, PageTree, PageContext, BlockContext, CacheableMat } from "./interfaces";
+import { PageSettings, BitSettings, BlockSettings, ProjectSettings, Material, BitRef, PageTree, PageContext, BlockContext, CacheableMat, SettingsType } from "./interfaces";
 import { flatten } from "./utils";
 import { ProjectFactory } from "./ProjectFactory";
 
@@ -21,11 +21,77 @@ export class ProjectModel {
     this.project = null;
   };
 
-  async remove({type, path}) {
+  // Here we are removing a file, need to find it in the array and take it out.
+  async remove({type, path, factory}): Promise<string[]> {
+    let collection;
+    let item;
+    let affectedPages: string[];
+    switch (type) {
+      case "project":
+        throw new Error("Missing projectSettings file");
+      case "block":
+      {
+        const namespace = await factory.getProjectName();
+        const name = path.match(ProjectFactory.getNameRegex(SettingsType.Block))[0];
+        collection = this.blocks;
+        item = collection.find(x => x.name === name && x.namespace === namespace);
+        affectedPages = this.pages
+                            .filter(p => p.blocks.indexOf(`${namespace}/${name}`) > -1)
+                            .map(p => p.name);
+        break;
+      }
+      case "bit":
+      {
+        const namespace = await factory.getProjectName();
+        const name = path.match(ProjectFactory.getNameRegex(SettingsType.Bit))[0];
+        collection = this.blocks;
+        item = collection.find(x => x.name === name && x.namespace === namespace);
+        const affectedBlocks = this.blocks
+                                   .filter(b => b.bits.map(x => x.bit).indexOf(`${namespace}/${name}`) > -1);
+        affectedPages = this.pages
+                            .filter(p => {
+                              let isAffected = false;
+                              affectedBlocks.forEach(bl => {
+                                if (p.blocks.indexOf(`${bl.namespace}/${bl.name}`) > -1) isAffected = true;
+                              });
+                              return isAffected;
+                            })
+                            .map(p => p.name);
+        break;
+      }
+      case "page":
+      {
+        const namespace = await factory.getProjectName();
+        const name = path.match(ProjectFactory.getNameRegex(SettingsType.Page))[0];
+        collection = this.blocks;
+        item = collection.find(x => x.name === name && x.namespace === namespace);
+        affectedPages = [name];
+        break;
+      }
+      default:
+      {
+        const namespace = await factory.getProjectName();
+        const name = basename(path);
+        collection = this.materials;
+        item = collection.find(x => x.name === name && x.namespace === namespace && x.type === type);
+        affectedPages = this.pages.map(p => p.name);
+        break;
+      }
+    }
 
+    // remove item from collection
+    const idx = collection.indexOf(item);
+    collection.splice(idx, 1);
+
+    return affectedPages;
   }
 
-  async add({type, path}) {
+  // Here we are getting a new file. Need to instantiate it via ProjectFactory and then add it to the proper array
+  async add({type, path, factory}): Promise<string[]> {
+    if (type === "project") {
+      this.project = await factory.instantiate({type, path});
+      return this.pages.map(p => p.name);
+    }
     let collection;
     switch (type) {
       case "block":
@@ -37,18 +103,28 @@ export class ProjectModel {
       case "page":
         collection = this.pages;
         break;
-      case "material":
+      default:
         collection = this.materials;
         break;
-      default:
-        throw new Error(`Cannot add new ${type} (${path}) to project`);
-        break;
     }
-    const item = ProjectFactory.instantiate({type, path});
+    const item = await factory.instantiate({type, path});
+    collection.push(item);
+    if (type === "page") {
+      return [item.name];
+    }
+    return [];
   }
 
-  async refresh({type, path}) {
+  // Updating a component. First instantiate it with ProjectFactory and then find the old component and replace it.
+  async refresh({type, path, factory}): Promise<string[]> {
+    if (type === "project") {
+      this.project = await factory.instantiate({type, path});
+      return this.pages.map(p => p.name);
+    }
 
+    const affectedPages = await this.remove({type, path, factory});
+    await this.add({type, path, factory});
+    return affectedPages;
   }
 
   async getPageTree({name, debug}: {name: string, debug?: boolean}): Promise<PageTree> {

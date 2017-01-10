@@ -1,27 +1,21 @@
 import { Logger } from "bunyan";
-import { join } from "path";
+import { join, basename } from "path";
 const glob = require("glob-promise");
 const sander = require("sander");
 
 import { ProjectModel } from "./ProjectModel";
-import { ManyFiles, MissingFile, LoadFile } from "./errors/ProjectFactoryErrors";
+import { ManyFiles, MissingFile } from "./errors/ProjectFactoryErrors";
 import {
   BitSettings,
   BlockSettings,
   PageSettings,
   ProjectSettings,
   Material,
+  SettingsType,
+  BitRef
 } from "./interfaces";
 import { BLOCK_TMPL, PAGE_TMPL, PROJ_TMPL } from "./DefaultTemplates";
 import { flatten } from "./utils";
-
-
-export enum SettingsType {
-  Project,
-  Page,
-  Bit,
-  Block
-}
 
 export type SETTINGS = BitSettings | BlockSettings | PageSettings | ProjectSettings;
 
@@ -42,8 +36,62 @@ export class ProjectFactory {
     this.depCache = join(workingDir, depCacheDir);
   };
 
-  static async instantiate({type, path}) {
+  async instantiate({type, path}) {
+    if (type === "script" || type === "asset" || type === "style") {
+      const namespace = this.getProjectName();
+      return {
+        namespace,
+        type,
+        path,
+        name: basename(path)
+      };
+    }
 
+    let cfg: any;
+
+    try {
+      // The following line is suppressing a WebStorm warning about constructors with lowercase names.
+      // noinspection TypeScriptValidateJSTypes,JSPotentiallyInvalidConstructorUsage
+      cfg = new (require(path)).default();
+    } catch (e) {
+      throw e;
+    }
+
+
+    switch (type) {
+      case "block":
+      {
+        const nameType = SettingsType.Block;
+        cfg.name = path.match(ProjectFactory.getNameRegex(nameType))[1];
+        cfg = ProjectFactory.initializeBlock(cfg);
+        break;
+      }
+      case "project":
+      {
+        const nameType = SettingsType.Project;
+        cfg.name = path.match(ProjectFactory.getNameRegex(nameType))[1];
+        cfg = ProjectFactory.initializeProject(cfg);
+        break;
+      }
+      case "page":
+      {
+        const nameType = SettingsType.Page;
+        cfg.name = path.match(ProjectFactory.getNameRegex(nameType))[1];
+        cfg = ProjectFactory.initializePage(cfg);
+        break;
+      }
+      case "bit":
+      {
+        const nameType = SettingsType.Bit;
+        cfg.name = path.match(ProjectFactory.getNameRegex(nameType))[1];
+        cfg = ProjectFactory.initializeBit(cfg);
+        break;
+      }
+      default:
+        throw new Error(`Cannot process type ${type}`);
+    }
+
+    return cfg;
   }
 
   async getProject(): Promise<ProjectSettings> {
@@ -248,7 +296,7 @@ export class ProjectFactory {
     }
 
     // Implements exponential backoff
-    function fetchGDOC({tries, settings}) {
+    function fetchGDOC({tries, settings}): Promise<BitRef[]> {
       return new Promise((resolve, reject) => {
         if (tries < 5) {
           settings.sources.fetch().then(resolve)
@@ -379,14 +427,14 @@ export class ProjectFactory {
         // noinspection TypeScriptValidateJSTypes,JSPotentiallyInvalidConstructorUsage
         cfg = new (require(join(workingDir, x))).default();
       } catch (e) {
-        throw new LoadFile({file: x, dir: workingDir, detail: e});
+        throw e;
       }
       cfg.name = x.match(nameRegex)[1];
       return cfg;
     });
   };
 
-  private static getNameRegex(type): RegExp {
+  static getNameRegex(type): RegExp {
     let settingsFileName: string;
 
     switch (type) {

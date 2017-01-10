@@ -7,3 +7,4 @@ export * from "./Bit";
 export * from "./Resolver";
 export * from "./Block";
 export * from "./Deployer";
+export * from "./SettingsType";
