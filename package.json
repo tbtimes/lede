@@ -38,7 +38,7 @@
   "scripts": {
     "test": "jest --coverage --no-cache",
     "dev": "typings install && gulp dev",
-    "prepublishOnly": "typings install && gulp pub && uglifyjs dist/index.js -c -o dist/index.js && npm test"
+    "prepublishOnly": "typings install && gulp pub && npm test"
   },
   "author": "Tampa Bay Times Data Team",
   "license": "MIT",
