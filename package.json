@@ -1,6 +1,6 @@
 {
   "name": "lede",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "A tool for building and deploying static article pages.",
   "repository": "https://github.com/tbtimes/lede",
   "main": "dist/index.js",
@@ -48,7 +48,9 @@
   "dependencies": {
     "chokidar": "^1.6.1",
     "node-sass": "^3.13.1",
-    "slug": "^0.9.1"
+    "slug": "^0.9.1",
+    "sander": "^0.5.1",
+    "glob-promise": "^1.0.6"
   },
   "devDependencies": {
     "@types/bunyan": "0.0.30",
@@ -60,7 +62,6 @@
     "bunyan": "^1.8.1",
     "coveralls": "^2.11.11",
     "csso": "^2.3.0",
-    "glob-promise": "^1.0.6",
     "gulp": "^3.9.1",
     "gulp-rename": "^1.2.2",
     "gulp-rollup": "^2.5.1",
@@ -81,7 +82,6 @@
     "rollup-plugin-multi-entry": "^2.0.1",
     "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-typescript": "^0.8.1",
-    "sander": "^0.5.1",
     "ts-jest": "^17.0.3",
     "tslint": "^4.0.2",
     "typescript": "^2.1.4",
