@@ -1,6 +1,6 @@
 {
   "name": "lede",
-  "version": "1.3.17",
+  "version": "1.3.20",
   "description": "A tool for building and deploying static article pages.",
   "repository": "https://github.com/tbtimes/lede",
   "main": "dist/index.js",
@@ -16,8 +16,7 @@
   "scripts": {
     "test": "typings install && gulp source && nyc ava",
     "build": "typings install && gulp source",
-    "dev": "typings install && gulp dev",
-    "prepublishOnly": "npm test"
+    "dev": "typings install && gulp dev"
   },
   "author": "Tampa Bay Times Data Team",
   "license": "MIT",
@@ -26,7 +25,7 @@
   },
   "dependencies": {
     "archieml": "^0.3.1",
-    "babel-preset-es2015-rollup": "^1.2.0",
+    "babel-preset-es2015-rollup": "^3.0.0",
     "bunyan": "^1.8.1",
     "glob-promise": "^1.0.6",
     "node-sass": "^3.9.3",
@@ -34,7 +33,7 @@
     "rollup": "^0.36.3",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-commonjs": "^5.0.5",
-    "rollup-plugin-includepaths": "^0.1.6",
+    "rollup-plugin-includepaths": "0.1.6",
     "rollup-plugin-multi-entry": "^2.0.1",
     "rollup-plugin-node-resolve": "^2.0.0",
     "sander": "^0.5.1",
