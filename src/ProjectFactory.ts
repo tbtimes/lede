@@ -299,7 +299,7 @@ export class ProjectFactory {
     function fetchGDOC({tries, settings}): Promise<BitRef[]> {
       return new Promise((resolve, reject) => {
         if (tries < 5) {
-          settings.sources.fetch().then(resolve)
+          settings.source.fetch().then(resolve)
                   .catch(err => {
                     if (err.code !== 403) { // Code 403: Rate limit exceeded
                       return reject(err);
