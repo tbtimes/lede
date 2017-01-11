@@ -238,7 +238,7 @@ export class ProjectModel {
         body: [...this.project.defaults.resources.body, ...page.resources.body]
       },
       $template: page.template,
-      $deployPath: page.deployPath
+      $deployPath: page.deployPath,
     };
 
     const projCtx = {

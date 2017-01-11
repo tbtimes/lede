@@ -73,7 +73,7 @@ export class Es6Compiler implements MaterialCompiler {
   private static compileGlobals(cachePath: string, tree: PageTree) {
     const pageCachePath = join(cachePath, tree.context.$PAGE.$name);
     return rollup.rollup({
-      entry: join(pageCachePath, "scripts", "**/*.js"),
+      entry: tree.scripts.globals.map(x => x.path),
       context: "window",
       plugins: [
         includes({ paths: [ join(pageCachePath, "scripts")] }),
