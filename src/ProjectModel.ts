@@ -23,6 +23,8 @@ export class ProjectModel {
 
   // Here we are removing a file, need to find it in the array and take it out.
   async remove({type, path, factory}): Promise<string[]> {
+    console.log(path)
+    console.log(type)
     let collection;
     let item;
     let affectedPages: string[];
