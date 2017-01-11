@@ -84,7 +84,8 @@ export class NunjucksCompiler implements PageCompiler {
     extensions.forEach(ext => this.env.addExtension(ext.name, ext.ext));
   }
 
-  async compile(tree) {
+  async compile(tree, debug?) {
+    debug = !debug ? false : true;
     const context = tree.context;
     const styles = tree.resources.styles;
     const scripts = tree.resources.scripts;
@@ -95,7 +96,7 @@ export class NunjucksCompiler implements PageCompiler {
 
     return {
       renderedPage: rendered,
-      path: join(context.$PROJECT.$deployRoot, context.$PAGE.$deployPath),
+      path: debug ? join(context.$PROJECT.$name, context.$PAGE.$dname) : join(context.$PROJECT.$deployRoot, context.$PAGE.$deployPath),
       files: [
         {name: "scripts.js", content: scripts},
       ].concat(assets)

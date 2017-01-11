@@ -362,6 +362,9 @@ export class ProjectFactory {
     settings.defaults.styles = settings.defaults.styles || [];
     settings.defaults.metaTags = settings.defaults.metaTags || [];
     settings.defaults.blocks = settings.defaults.blocks || [];
+    settings.defaults.resources = settings.defaults.resources || { head: [], body: [] };
+    settings.defaults.resources.head = settings.defaults.resources.head || [];
+    settings.defaults.resources.body = settings.defaults.resources.body || [];
     settings.context = settings.context || {};
 
     return settings;

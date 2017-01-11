@@ -113,7 +113,9 @@ export class ProjectDirector {
 
   private renderPages(assetTrees: AssetTree[]): Promise<CompiledPage[]> {
     return Promise.all(
-      assetTrees.map(this.htmlCompiler.compile.bind(this.htmlCompiler)) // Binding or else "this" isn't properly set on htmlCompiler
+      assetTrees.map( t => {
+        return this.htmlCompiler.compile.bind(this.htmlCompiler)(t, this.debug); // Binding or else "this" isn't properly set on htmlCompiler
+      })
     )
       .catch(err => this.logger.error({err}));
   }
