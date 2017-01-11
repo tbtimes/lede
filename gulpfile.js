@@ -88,17 +88,24 @@ gulp.task('source', () => {
     .pipe(srcmap.init())
     .pipe(projectOpts());
 
-  return merge([
-    result.js
-      .pipe(srcmap.write({sourceRoot: path.resolve(__dirname, "src")}))
-      .pipe(gulp.dest('dist/')),
-    result.dts.pipe(gulp.dest('dist/'))
-  ]);
+  result.js
+    .pipe(srcmap.write({sourceRoot: path.resolve(__dirname, "src")}))
+    .pipe(gulp.dest("dist/"));
+
+  result.dts.pipe(gulp.dest("defs/"));
+
+  // return merge([
+  //   result.js
+  //     .pipe(srcmap.write({sourceRoot: path.resolve(__dirname, "src")}))
+  //     .pipe(gulp.dest('dist/')),
+  //   result.dts.pipe(gulp.dest('dist/'))
+  // ]);
 });
 
 // Clean out the dist/ directory
 gulp.task("clean", () => {
-  rmrf.sync("dist/")
+  rmrf.sync("dist/");
+  rmrf.sync("defs/");
 });
 
 // This will throw on errors. For publishing.
@@ -120,7 +127,7 @@ gulp.task("gen-dt", () => {
 });
 
 // Run tasks before publishing to npm. Will throw on errors.
-gulp.task('pub', ["clean", 'lint', "gen-dt", 'prepare']);
+gulp.task('pub', ["clean", 'lint', 'source']);
 
 // This will report errors and swallow them so that dev doesn't restart
 gulp.task('dev', ["clean", 'source'], () => {
