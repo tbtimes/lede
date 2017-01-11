@@ -11,7 +11,6 @@ const rollup = require("rollup");
 const babel = require("rollup-plugin-babel");
 const multientry = require("rollup-plugin-multi-entry");
 const nodeResolve = require("rollup-plugin-node-resolve");
-const rollupPreset = require("babel-preset-es2015-rollup");
 const includes = require("rollup-plugin-includepaths");
 const commonjs = require("rollup-plugin-commonjs");
 
@@ -68,7 +67,20 @@ export class Es6Compiler implements MaterialCompiler {
         multientry({ exports: false }),
         nodeResolve({ jsnext: true }),
         commonjs({}),
-        babel({ presets: [rollupPreset], exclude: "node_modules/**" })
+        babel({
+          presets: [
+            [
+              "es2015",
+              {
+                "modules": false
+              }
+            ]
+          ],
+          "plugins": [
+            "external-helpers"
+          ],
+          exclude: "node_modules/**"
+        })
       ]
     }).then(bundle => bundle.generate({format: "iife", exports: "none", sourceMap: true}).code);
   }
