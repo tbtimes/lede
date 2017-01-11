@@ -45,7 +45,7 @@ export class Es6Compiler implements MaterialCompiler {
   private static compileBits(cachePath: string, tree: PageTree) {
     const pageCachePath = join(cachePath, tree.context.$PAGE.$name);
     return rollup.rollup({
-      entry: join(pageCachePath, "bits", "**/*.js"),
+      entry: tree.scripts.bits,
       context: "window",
       plugins: [
         includes({paths: [join(pageCachePath, "scripts")] }),
