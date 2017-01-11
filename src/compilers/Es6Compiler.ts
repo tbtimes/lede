@@ -52,7 +52,20 @@ export class Es6Compiler implements MaterialCompiler {
         multientry({exports: false}),
         nodeResolve({ jsnext: true, main: true }),
         commonjs({}),
-        babel({ presets: [rollupPreset], exclude: "node_modules/**" })
+        babel({
+          presets: [
+            [
+              "es2015",
+              {
+                "modules": false
+              }
+            ]
+          ],
+          "plugins": [
+            "external-helpers"
+          ],
+          exclude: "node_modules/**"
+        })
       ]
     }).then(bundle => bundle.generate({ format: "iife", exports: "none", sourcemap: true }).code);
   }

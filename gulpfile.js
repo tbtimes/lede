@@ -2,13 +2,9 @@ const gulp = require('gulp');
 const ts = require('gulp-typescript');
 const srcmap = require('gulp-sourcemaps');
 const path = require('path');
-const merge = require('merge2');
 const tslint = require('gulp-tslint');
 const rmrf = require("rimraf");
 const rollup = require("gulp-rollup");
-const tscript = require("rollup-plugin-typescript");
-const nodeResolve = require("rollup-plugin-node-resolve");
-const rollupPreset = require("babel-preset-es2015-rollup");
 const commonjs = require("rollup-plugin-commonjs");
 const json = require("rollup-plugin-json");
 const rename = require("gulp-rename");
@@ -22,64 +18,6 @@ const projectOpts = ts.createProject({
   declaration: true,
   noResolve: true,
   allowSyntheticDefaultImports: true
-});
-
-// This is for publishing, it throws on error
-gulp.task("prepare", () => {
-
-  // Bundle code with rollup
-  return gulp.src("src/**/*.ts")
-    .pipe(rollup({
-      allowRealFiles: true,
-      rollup: require("rollup"),
-      dest: "index.js",
-      entry: "./src/index.ts",
-      format: "cjs",
-      external: [
-        "node-sass",
-        "slug",
-        "chokidar",
-        "sander",
-        "glob-promise",
-        "assert",
-        "buffer",
-        "child_process",
-        "cluster",
-        "console",
-        "constants",
-        "crypto",
-        "dgram",
-        "dns",
-        "fs",
-        "http",
-        "https",
-        "net",
-        "os",
-        "path",
-        "process",
-        "stream",
-        "domain",
-        "module",
-        "url",
-        "util",
-        "vm"
-      ],
-      plugins: [
-        tscript({ typescript: require("typescript") }),
-        json(),
-        babel({ presets: [rollupPreset], exclude: "node_modules/**" }),
-        nodeResolve({ jsnext: true, main: true, extensions: [".js", ".json"] }),
-        commonjs({
-          sourceMap: false,
-          namedExports: {
-            "node_modules/archieml/archieml.js": ["load"]
-          }
-        }),
-      ]
-    }))
-    .pipe(rename({extname: ".js"}))
-    .pipe(gulp.dest("dist/"))
-    .on("error", (e) => {throw e});
 });
 
 // This will not throw on errors, just report them. For developing.

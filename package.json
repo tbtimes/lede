@@ -5,14 +5,6 @@
   "repository": "https://github.com/tbtimes/lede",
   "main": "dist/index.js",
   "typings": "defs/index.d.ts",
-  "ava": {
-    "files": [
-      "test/**/*.js"
-    ],
-    "source": [
-      "src/**/*.ts"
-    ]
-  },
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.ts"
@@ -64,12 +56,12 @@
     "slug": "^0.9.1"
   },
   "devDependencies": {
-    "chokidar": "^1.6.1",
     "@types/bunyan": "0.0.30",
     "@types/node": "^6.0.42",
     "@types/node-sass": "0.0.29",
     "@types/nunjucks": "0.0.32",
     "bunyan": "^1.8.1",
+    "chokidar": "^1.6.1",
     "coveralls": "^2.11.11",
     "gulp": "^3.9.1",
     "gulp-rename": "^1.2.2",
@@ -77,6 +69,7 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-tslint": "^7.0.1",
     "gulp-typescript": "^3.0.2",
+    "jest": "^18.1.0",
     "jest-cli": "^17.0.3",
     "merge2": "^1.0.2",
     "nock": "^8.0.0",
