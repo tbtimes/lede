@@ -1,5 +1,6 @@
 const sander = require("sander");
-import { basename } from "path";
+import { basename, dirname, join } from "path";
+const glob = require("glob-promise");
 
 import { PageSettings, BitSettings, BlockSettings, ProjectSettings, Material, BitRef, PageTree, PageContext, BlockContext, CacheableMat, SettingsType } from "./interfaces";
 import { flatten } from "./utils";
@@ -23,8 +24,6 @@ export class ProjectModel {
 
   // Here we are removing a file, need to find it in the array and take it out.
   async remove({type, path, factory}): Promise<string[]> {
-    console.log(path);
-    console.log(type);
     let collection;
     let item;
     let affectedPages: string[];
@@ -45,8 +44,8 @@ export class ProjectModel {
       case "bit":
       {
         const namespace = await factory.getProjectName();
-        const name = path.match(ProjectFactory.getNameRegex(SettingsType.Bit))[0];
-        collection = this.blocks;
+        const name = dirname(path);
+        collection = this.bits;
         item = collection.find(x => x.name === name && x.namespace === namespace);
         const affectedBlocks = this.blocks
                                    .filter(b => b.bits.map(x => x.bit).indexOf(`${namespace}/${name}`) > -1);
@@ -101,6 +100,8 @@ export class ProjectModel {
         break;
       case "bit":
         collection = this.bits;
+        const file = await glob("*.bitSettings.js", {cwd: dirname(path)});
+        path = join(dirname(path), file);
         break;
       case "page":
         collection = this.pages;
