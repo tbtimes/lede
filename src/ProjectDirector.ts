@@ -76,7 +76,6 @@ export class ProjectDirector {
 
   async recompile(pageNames) {
     this.logger.info(`Recompiling the following pages: ${pageNames.join(", ")}`);
-    console.log(this.model.bits.map(x => x.name));
     const trees = await <PageTree[]><any>Promise.all(pageNames.map(name => this.model.getPageTree({name, debug: this.debug})));
     const assetTrees = await this.compileMaterials(trees);
     const compiledPages = await this.renderPages(assetTrees);
