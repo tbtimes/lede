@@ -285,6 +285,7 @@ export class ProjectFactory {
   };
 
   private static async initializeBlock(settings: BlockSettings) {
+    const self = this;
     settings.bits = settings.bits || [];
     settings.source = settings.source || null;
     settings.context = settings.context || {};
@@ -294,9 +295,13 @@ export class ProjectFactory {
     settings.source = settings.source || null;
     settings.context = settings.context || {};
     settings.template = settings.template || BLOCK_TMPL;
+
+    if (settings.source) {
+      settings.bits = await fetchGDOC({tries: 0, settings});
+    }
 
     // Implements exponential backoff
-    const fetchGDOC = ({tries, settings}): Promise<BitRef[]> => {
+    function fetchGDOC({tries, settings}): Promise<BitRef[]> {
       return new Promise((resolve, reject) => {
         if (tries < 5) {
           settings.source.fetch().then(resolve)
@@ -306,7 +311,7 @@ export class ProjectFactory {
                     } else {
                       tries += 1;
                       const timer = Math.pow(2, tries) * 1000 + Math.random() * 100;
-                      this.logger.info(`Hit google rate limit, automatically trying again in ${timer / 1000} seconds`);
+                      self.logger.info(`Hit google rate limit, automatically trying again in ${timer / 1000} seconds`);
                       setTimeout(() => {
                         return fetchGDOC({tries, settings}).then(resolve).catch(reject);
                       }, timer);
@@ -316,10 +321,6 @@ export class ProjectFactory {
           return reject(new Error("Gdocs rate limit exceeded. Try again in a few minutes."));
         }
       });
-    };
-
-    if (settings.source) {
-      settings.bits = await fetchGDOC({tries: 0, settings});
     }
 
     return settings;
