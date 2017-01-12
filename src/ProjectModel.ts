@@ -101,7 +101,7 @@ export class ProjectModel {
       case "bit":
         collection = this.bits;
         const file = await glob("*.bitSettings.js", {cwd: dirname(path)});
-        path = join(dirname(path), file);
+        path = join(dirname(path), file[0]);
         break;
       case "page":
         collection = this.pages;
