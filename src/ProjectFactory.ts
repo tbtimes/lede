@@ -64,7 +64,7 @@ export class ProjectFactory {
         const nameType = SettingsType.Block;
         cfg.name = basename(path).match(ProjectFactory.getNameRegex(nameType))[1];
         cfg.namespace = await this.getProjectName();
-        cfg = this.initializeBlock(cfg);
+        cfg = await this.initializeBlock(cfg);
         break;
       }
       case "project":
@@ -124,7 +124,7 @@ export class ProjectFactory {
       this.getDepBlocks()
     ]);
 
-    return await Promise.all([...localBlocks, ...flatten(depBlocks)].map(this.initializeBlock));
+    return await Promise.all([...localBlocks, ...flatten(depBlocks)].map(this.initializeBlock.bind(this)));
   };
 
   async getMaterials(): Promise<Mats> {
@@ -285,7 +285,7 @@ export class ProjectFactory {
   };
 
   private async initializeBlock(settings: BlockSettings) {
-    const self: any = this;
+    const logger = this.logger;
     settings.bits = settings.bits || [];
     settings.source = settings.source || null;
     settings.context = settings.context || {};
@@ -311,7 +311,7 @@ export class ProjectFactory {
                     } else {
                       tries += 1;
                       const timer = Math.pow(2, tries) * 1000 + Math.random() * 100;
-                      self.logger.info(`Hit google rate limit, automatically trying again in ${timer / 1000} seconds`);
+                      logger.info(`Hit google rate limit, automatically trying again in ${timer / 1000} seconds`);
                       setTimeout(() => {
                         return fetchGDOC({tries, settings}).then(resolve).catch(reject);
                       }, timer);
