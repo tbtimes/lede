@@ -33,7 +33,7 @@ export class ProjectModel {
       case "block":
       {
         const namespace = await factory.getProjectName();
-        const name = path.match(ProjectFactory.getNameRegex(SettingsType.Block))[0];
+        const name = path.match(ProjectFactory.getNameRegex(SettingsType.Block))[1];
         collection = this.blocks;
         item = collection.find(x => x.name === name && x.namespace === namespace);
         affectedPages = this.pages
@@ -63,7 +63,7 @@ export class ProjectModel {
       case "page":
       {
         const namespace = await factory.getProjectName();
-        const name = path.match(ProjectFactory.getNameRegex(SettingsType.Page))[0];
+        const name = path.match(ProjectFactory.getNameRegex(SettingsType.Page))[1];
         collection = this.blocks;
         item = collection.find(x => x.name === name && x.namespace === namespace);
         affectedPages = [name];
