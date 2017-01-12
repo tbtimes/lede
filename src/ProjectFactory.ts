@@ -64,7 +64,7 @@ export class ProjectFactory {
         const nameType = SettingsType.Block;
         cfg.name = basename(path).match(ProjectFactory.getNameRegex(nameType))[1];
         cfg.namespace = await this.getProjectName();
-        cfg = ProjectFactory.initializeBlock(cfg);
+        cfg = this.initializeBlock(cfg);
         break;
       }
       case "project":
@@ -72,7 +72,7 @@ export class ProjectFactory {
         const nameType = SettingsType.Project;
         cfg.name = basename(path).match(ProjectFactory.getNameRegex(nameType))[1];
         cfg.namespace = await this.getProjectName();
-        cfg = ProjectFactory.initializeProject(cfg);
+        cfg = this.initializeProject(cfg);
         break;
       }
       case "page":
@@ -80,7 +80,7 @@ export class ProjectFactory {
         const nameType = SettingsType.Page;
         cfg.name = basename(path).match(ProjectFactory.getNameRegex(nameType))[1];
         cfg.namespace = await this.getProjectName();
-        cfg = ProjectFactory.initializePage(cfg);
+        cfg = this.initializePage(cfg);
         break;
       }
       case "bit":
@@ -88,7 +88,7 @@ export class ProjectFactory {
         const nameType = SettingsType.Bit;
         cfg.name = basename(path).match(ProjectFactory.getNameRegex(nameType))[1];
         cfg.namespace = await this.getProjectName();
-        cfg = ProjectFactory.initializeBit(cfg);
+        cfg = this.initializeBit(cfg);
         break;
       }
       default:
@@ -101,7 +101,7 @@ export class ProjectFactory {
   async getProject(): Promise<ProjectSettings> {
     try {
       const settings = <ProjectSettings>(await this.loadSettingsFile(SettingsType.Project, this.workingDir))[0];
-      return ProjectFactory.initializeProject(settings);
+      return this.initializeProject(settings);
     } catch (err) {
       throw err;
     }
@@ -115,7 +115,7 @@ export class ProjectFactory {
 
   async getPages(): Promise<PageSettings[]> {
     const settings = <PageSettings[]>(await this.loadSettingsFile(SettingsType.Page, join(this.workingDir, "pages")));
-    return settings.map(ProjectFactory.initializePage);
+    return settings.map(this.initializePage);
   };
 
   async getBlocks(): Promise<BlockSettings[]> {
@@ -124,7 +124,7 @@ export class ProjectFactory {
       this.getDepBlocks()
     ]);
 
-    return await Promise.all([...localBlocks, ...flatten(depBlocks)].map(ProjectFactory.initializeBlock));
+    return await Promise.all([...localBlocks, ...flatten(depBlocks)].map(this.initializeBlock));
   };
 
   async getMaterials(): Promise<Mats> {
@@ -170,7 +170,7 @@ export class ProjectFactory {
                 bitPaths.map(path => this.loadSettingsFile(SettingsType.Bit, path))
               );
             }).then(settings => {
-              res(flatten(settings).map(ProjectFactory.initializeBit).map(x => Object.assign(x, {namespace: p.namespace})));
+              res(flatten(settings).map(this.initializeBit).map(x => Object.assign(x, {namespace: p.namespace})));
           })
             .catch(rej);
         });
@@ -185,11 +185,11 @@ export class ProjectFactory {
 
     // Flatten nested arrays
     return [].concat.apply([], settings)
-      .map(ProjectFactory.initializeBit)
+      .map(this.initializeBit)
       .map(x => Object.assign(x, {namespace: localNamespace}));
   };
 
-  private static initializeBit(settings: BitSettings): BitSettings {
+  private initializeBit(settings: BitSettings): BitSettings {
     settings.context = settings.context || {};
 
     return settings;
@@ -262,7 +262,7 @@ export class ProjectFactory {
     };
   };
 
-  private static initializePage(settings: PageSettings): PageSettings {
+  private initializePage(settings: PageSettings): PageSettings {
     settings.context = settings.context || {};
     settings.blocks = settings.blocks || [];
     settings.meta = settings.meta || [];
@@ -284,7 +284,7 @@ export class ProjectFactory {
     return settings;
   };
 
-  private static async initializeBlock(settings: BlockSettings) {
+  private async initializeBlock(settings: BlockSettings) {
     const self: any = this;
     settings.bits = settings.bits || [];
     settings.source = settings.source || null;
@@ -354,7 +354,7 @@ export class ProjectFactory {
     return projFile.match(projNameRegex)[1];
   };
 
-  private static initializeProject(settings: ProjectSettings): ProjectSettings {
+  private initializeProject(settings: ProjectSettings): ProjectSettings {
     // Set up template
     if (!settings.template) {
       settings.template = PROJ_TMPL;
