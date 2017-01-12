@@ -309,9 +309,11 @@ export class ProjectFactory {
                       return reject(err);
                     } else {
                       tries += 1;
+                      const timer = Math.pow(2, tries) * 1000 + Math.random() * 100;
+                      this.logger.info(`Hit google rate limit, automatically trying again in ${timer / 1000} seconds`);
                       setTimeout(() => {
                         return fetchGDOC({tries, settings}).then(resolve).catch(reject);
-                      }, Math.pow(2, tries) + Math.random() * 100);
+                      }, timer);
                     }
                   });
         } else {

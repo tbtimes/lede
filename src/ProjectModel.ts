@@ -259,7 +259,7 @@ export class ProjectModel {
           throw new Error(`Cannot parse block ${b}`);
         }
         const block = Object.assign({}, this.blocks.find(x => x.namespace === b.namespace && x.name === b.name));
-        if (!block.name && block.namespace) throw new Error(`Block ${b.namespace}/${b.name} not found`);
+        if (!block.name && !block.namespace) throw new Error(`Block ${b.namespace}/${b.name} not found`);
         return new Promise((resolve, reject) => {
           Promise.all(
             block.bits.map(b => {
