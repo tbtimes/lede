@@ -63,6 +63,7 @@ export class ProjectFactory {
       {
         const nameType = SettingsType.Block;
         cfg.name = basename(path).match(ProjectFactory.getNameRegex(nameType))[1];
+        cfg.namespace = await this.getProjectName();
         cfg = ProjectFactory.initializeBlock(cfg);
         break;
       }
@@ -70,6 +71,7 @@ export class ProjectFactory {
       {
         const nameType = SettingsType.Project;
         cfg.name = basename(path).match(ProjectFactory.getNameRegex(nameType))[1];
+        cfg.namespace = await this.getProjectName();
         cfg = ProjectFactory.initializeProject(cfg);
         break;
       }
@@ -77,6 +79,7 @@ export class ProjectFactory {
       {
         const nameType = SettingsType.Page;
         cfg.name = basename(path).match(ProjectFactory.getNameRegex(nameType))[1];
+        cfg.namespace = await this.getProjectName();
         cfg = ProjectFactory.initializePage(cfg);
         break;
       }
@@ -84,6 +87,7 @@ export class ProjectFactory {
       {
         const nameType = SettingsType.Bit;
         cfg.name = basename(path).match(ProjectFactory.getNameRegex(nameType))[1];
+        cfg.namespace = await this.getProjectName();
         cfg = ProjectFactory.initializeBit(cfg);
         break;
       }
