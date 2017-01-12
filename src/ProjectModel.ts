@@ -44,7 +44,7 @@ export class ProjectModel {
       case "bit":
       {
         const namespace = await factory.getProjectName();
-        const name = dirname(path);
+        const name = basename(dirname(path));
         collection = this.bits;
         item = collection.find(x => x.name === name && x.namespace === namespace);
         const affectedBlocks = this.blocks
@@ -110,6 +110,7 @@ export class ProjectModel {
         collection = this.materials;
         break;
     }
+    console.log(path);
     const item = await factory.instantiate({type, path});
     collection.push(item);
     if (type === "page") {
