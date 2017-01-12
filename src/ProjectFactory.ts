@@ -62,28 +62,28 @@ export class ProjectFactory {
       case "block":
       {
         const nameType = SettingsType.Block;
-        cfg.name = path.match(ProjectFactory.getNameRegex(nameType))[1];
+        cfg.name = basename(path).match(ProjectFactory.getNameRegex(nameType))[1];
         cfg = ProjectFactory.initializeBlock(cfg);
         break;
       }
       case "project":
       {
         const nameType = SettingsType.Project;
-        cfg.name = path.match(ProjectFactory.getNameRegex(nameType))[1];
+        cfg.name = basename(path).match(ProjectFactory.getNameRegex(nameType))[1];
         cfg = ProjectFactory.initializeProject(cfg);
         break;
       }
       case "page":
       {
         const nameType = SettingsType.Page;
-        cfg.name = path.match(ProjectFactory.getNameRegex(nameType))[1];
+        cfg.name = basename(path).match(ProjectFactory.getNameRegex(nameType))[1];
         cfg = ProjectFactory.initializePage(cfg);
         break;
       }
       case "bit":
       {
         const nameType = SettingsType.Bit;
-        cfg.name = path.match(ProjectFactory.getNameRegex(nameType))[1];
+        cfg.name = basename(path).match(ProjectFactory.getNameRegex(nameType))[1];
         cfg = ProjectFactory.initializeBit(cfg);
         break;
       }

@@ -110,7 +110,6 @@ export class ProjectModel {
         collection = this.materials;
         break;
     }
-    console.log(path);
     const item = await factory.instantiate({type, path});
     collection.push(item);
     if (type === "page") {
