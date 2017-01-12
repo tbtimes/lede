@@ -54,14 +54,14 @@ export class ProjectDirector {
       this.logger.info(`Detected change to ${path}`);
       if (require.cache[require.resolve(path)]) delete require.cache[require.resolve(path)];
       this.model.refresh({ type, path, factory })
-          .then(this.recompile)
+          .then(this.recompile.bind(this))
         .catch(e => { throw e; });
     });
     watcher.on("add", path => {
       this.logger.info(`Detected change to ${path}`);
       watcher.add(path);
       this.model.add({ type, path, factory })
-        .then(this.recompile)
+        .then(this.recompile.bind(this))
         .catch(e => { throw e; });
     });
     watcher.on("unlink", path => {
@@ -69,7 +69,7 @@ export class ProjectDirector {
       if (require.cache[require.resolve(path)]) delete require.cache[require.resolve(path)];
       watcher.unwatch(path);
       this.model.remove({ type, path, factory })
-          .then(this.recompile)
+          .then(this.recompile.bind(this))
         .catch(e => { throw e; });
     });
   }
