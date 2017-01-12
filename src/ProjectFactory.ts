@@ -285,7 +285,7 @@ export class ProjectFactory {
   };
 
   private static async initializeBlock(settings: BlockSettings) {
-    const self = this;
+    const self: any = this;
     settings.bits = settings.bits || [];
     settings.source = settings.source || null;
     settings.context = settings.context || {};
