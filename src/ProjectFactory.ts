@@ -295,12 +295,8 @@ export class ProjectFactory {
     settings.context = settings.context || {};
     settings.template = settings.template || BLOCK_TMPL;
 
-    if (settings.source) {
-      settings.bits = await fetchGDOC({tries: 0, settings});
-    }
-
     // Implements exponential backoff
-    function fetchGDOC({tries, settings}): Promise<BitRef[]> {
+    const fetchGDOC = ({tries, settings}): Promise<BitRef[]> => {
       return new Promise((resolve, reject) => {
         if (tries < 5) {
           settings.source.fetch().then(resolve)
@@ -320,6 +316,10 @@ export class ProjectFactory {
           return reject(new Error("Gdocs rate limit exceeded. Try again in a few minutes."));
         }
       });
+    };
+
+    if (settings.source) {
+      settings.bits = await fetchGDOC({tries: 0, settings});
     }
 
     return settings;
