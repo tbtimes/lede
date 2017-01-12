@@ -64,7 +64,7 @@ export class ProjectModel {
       {
         const namespace = await factory.getProjectName();
         const name = basename(path).match(ProjectFactory.getNameRegex(SettingsType.Page))[1];
-        collection = this.blocks;
+        collection = this.pages;
         item = collection.find(x => x.name === name && x.namespace === namespace);
         affectedPages = [name];
         break;
