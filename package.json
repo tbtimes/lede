@@ -1,6 +1,6 @@
 {
   "name": "lede",
-  "version": "2.0.42",
+  "version": "2.0.43",
   "description": "A tool for building and deploying static article pages.",
   "repository": "https://github.com/tbtimes/lede",
   "main": "dist/index.js",
@@ -44,7 +44,7 @@
     "glob-promise": "^1.0.6",
     "node-sass": "^3.13.1",
     "nunjucks": "^2.4.2",
-    "rollup": "^0.36.4",
+    "rollup": "^0.41.4",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-commonjs": "^5.0.5",
     "rollup-plugin-includepaths": "0.1.8",

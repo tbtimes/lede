@@ -1,7 +1,6 @@
 import { Logger } from "bunyan";
 import { join, basename, dirname } from "path";
 const sander = require("sander");
-// import includes from "rollup-plugin-includepaths";
 
 import { MaterialCompiler, PageTree } from "../interfaces";
 import { mockLogger } from "../utils";

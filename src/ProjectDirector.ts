@@ -112,6 +112,7 @@ export class ProjectDirector {
   }
 
   private renderPages(assetTrees: AssetTree[]): Promise<CompiledPage[]> {
+    if (!assetTrees) process.exit(1); // Something errored before here and has already been logged.
     return Promise.all(
       assetTrees.map( t => {
         return this.htmlCompiler.compile.bind(this.htmlCompiler)(t, this.debug); // Binding or else "this" isn't properly set on htmlCompiler
