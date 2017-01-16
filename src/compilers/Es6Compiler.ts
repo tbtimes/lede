@@ -12,7 +12,7 @@ const rollup = require("rollup");
 const babel = require("rollup-plugin-babel");
 const multientry = require("rollup-plugin-multi-entry");
 const nodeResolve = require("rollup-plugin-node-resolve");
-const includes = require("rollup-plugin-includepaths");
+import * as includes from "rollup-plugin-includepaths";
 const commonjs = require("rollup-plugin-commonjs");
 
 
