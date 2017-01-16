@@ -38,7 +38,7 @@ export class ProjectFactory {
 
   async instantiate({type, path}) {
     if (type === "script" || type === "asset" || type === "style") {
-      const namespace = this.getProjectName();
+      const namespace = await this.getProjectName();
       return {
         namespace,
         type,
