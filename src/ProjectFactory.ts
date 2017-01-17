@@ -124,7 +124,7 @@ export class ProjectFactory {
       this.getDepBlocks()
     ]);
 
-    return await Promise.all([...localBlocks, ...flatten(depBlocks)].map(this.initializeBlock.bind(this)));
+    return await <BlockSettings[]><any>Promise.all([...localBlocks, ...flatten(depBlocks)].map(this.initializeBlock.bind(this)));
   };
 
   async getMaterials(): Promise<Mats> {

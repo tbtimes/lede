@@ -90,6 +90,7 @@ export class ProjectModel {
   // Here we are getting a new file. Need to instantiate it via ProjectFactory and then add it to the proper array
   async add({type, path, factory}): Promise<string[]> {
     if (type === "project") {
+      await Promise.all(this.blocks.map(this.updateAml));
       this.project = await factory.instantiate({type, path});
       return this.pages.map(p => p.name);
     }
@@ -116,6 +117,34 @@ export class ProjectModel {
       return [item.name];
     }
     return [];
+  }
+
+  async updateAml(block) {
+    if (block.source) {
+      block.bits = await fetchGDOC({tries: 0, settings: block});
+    }
+    // Implements exponential backoff
+    function fetchGDOC({tries, settings}): Promise<BitRef[]> {
+      return new Promise((resolve, reject) => {
+        if (tries < 5) {
+          settings.source.fetch().then(resolve)
+                  .catch(err => {
+                    if (err.code !== 403) { // Code 403: Rate limit exceeded
+                      return reject(err);
+                    } else {
+                      tries += 1;
+                      const timer = Math.pow(2, tries) * 1000 + Math.random() * 100;
+                      logger.info(`Hit google rate limit, automatically trying again in ${timer / 1000} seconds`);
+                      setTimeout(() => {
+                        return fetchGDOC({tries, settings}).then(resolve).catch(reject);
+                      }, timer);
+                    }
+                  });
+        } else {
+          return reject(new Error("Gdocs rate limit exceeded. Try again in a few minutes."));
+        }
+      });
+    }
   }
 
   // Updating a component. First instantiate it with ProjectFactory and then find the old component and replace it.
