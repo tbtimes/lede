@@ -134,7 +134,7 @@ export class ProjectModel {
                     } else {
                       tries += 1;
                       const timer = Math.pow(2, tries) * 1000 + Math.random() * 100;
-                      logger.info(`Hit google rate limit, automatically trying again in ${timer / 1000} seconds`);
+                      console.log(`Hit google rate limit, automatically trying again in ${timer / 1000} seconds`);
                       setTimeout(() => {
                         return fetchGDOC({tries, settings}).then(resolve).catch(reject);
                       }, timer);
@@ -330,7 +330,8 @@ export class ProjectModel {
       namespace = this.project.name;
       name = id;
     } else if (splitId.length > 2) {
-      throw new Error(`Cannot parse ${id}`);
+      namespace = splitId[0];
+      name = splitId.slice(1).join("/");
     } else {
       namespace = splitId[0];
       name = splitId[1];

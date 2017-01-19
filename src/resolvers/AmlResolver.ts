@@ -27,6 +27,14 @@ export class AmlResolver implements Resolver {
       path: `/${plainUrl.split("/").slice(1).join("/")}`
     };
     const file = await httpsGetProm(fileOpts);
+    const loadedFile = load(file);
+    if (!loadedFile.CONTENT) {
+      throw new Error(`Cannot find CONTENT array in AML document. AML files should look like this:
+[CONTENT]
+// bits go here
+[]
+`);
+    }
     const bitRefs = load(file).CONTENT;
 
     return bitRefs.map(b => {
