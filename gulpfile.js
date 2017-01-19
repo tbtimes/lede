@@ -4,11 +4,11 @@ const srcmap = require('gulp-sourcemaps');
 const path = require('path');
 const tslint = require('gulp-tslint');
 const rmrf = require("rimraf");
-const rollup = require("gulp-rollup");
-const commonjs = require("rollup-plugin-commonjs");
-const json = require("rollup-plugin-json");
-const rename = require("gulp-rename");
-const babel = require("rollup-plugin-babel");
+// const rollup = require("gulp-rollup");
+// const commonjs = require("rollup-plugin-commonjs");
+// const json = require("rollup-plugin-json");
+// const rename = require("gulp-rename");
+// const babel = require("rollup-plugin-babel");
 
 
 const projectOpts = ts.createProject({

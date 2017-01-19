@@ -33,10 +33,11 @@ export class SassCompiler implements MaterialCompiler {
       ]);
 
       // Compress and dedupe css
-      const styles = [...bits, ...globals].join("\n");
-      let ast = csso.parse(styles);
-      ast = csso.compress(ast).ast;
-      return csso.translate(ast);
+      const styles = [...globals, ...bits].join("\n");
+      // let ast = csso.parse(styles);
+      // ast = csso.compress(ast).ast;
+      // return csso.translate(ast);
+      return styles;
     } catch (err) {
       throw err;
     }
