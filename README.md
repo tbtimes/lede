@@ -10,4 +10,5 @@ This branch is a starting point for the 4.0 release of lede.
 * Write. Tests.
 
 ### Issues to consider for future releases:
-* Make a GUI for client with electron
+* Make a GUI for client with electron.
+* Source maps for Martin 😎

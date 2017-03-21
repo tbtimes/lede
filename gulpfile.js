@@ -14,7 +14,7 @@ const rmrf = require("rimraf");
 const projectOpts = ts.createProject({
   target: "es6",
   module: "commonjs",
-  noImplicitAny: false,
+  noImplicitAny: true,
   declaration: true,
   noResolve: true,
   allowSyntheticDefaultImports: true
