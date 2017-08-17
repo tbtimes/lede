@@ -1,69 +1,17 @@
 {
   "name": "lede",
-  "version": "3.0.3",
+  "version": "4.0.0",
   "description": "A tool for building and deploying static article pages.",
   "repository": "https://github.com/tbtimes/lede",
   "main": "dist/index.js",
-  "typings": "defs/index.d.ts",
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "transform": {
-      ".ts": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-    },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "testPathIgnorePatterns": [
-      "<rootDir>/node_modules",
-      "<rootDir>/__tests__/fixtures"
-    ],
-    "testResultsProcessor": "<rootDir>/node_modules/ts-jest/coverageprocessor.js",
-    "testEnvironment": "node"
-  },
-  "scripts": {
-    "test": "jest --coverage --no-cache",
-    "dev": "typings install && gulp dev"
-  },
   "author": "Tampa Bay Times Data Team",
   "license": "MIT",
   "engines": {
-    "node": "^6.3.0"
-  },
-  "dependencies": {
-    "archieml": "^0.4.2",
-    "csso": "^3.0.1",
-    "fb-watchman": "^2.0.0",
-    "glob-promise": "^3.1.0",
-    "node-sass": "^4.5.1",
-    "nunjucks": "^3.0.0",
-    "rollup": "^0.41.6",
-    "rollup-plugin-babel": "^2.7.1",
-    "rollup-plugin-commonjs": "^8.0.2",
-    "rollup-plugin-includepaths": "^0.2.2",
-    "rollup-plugin-json": "^2.1.0",
-    "rollup-plugin-multi-entry": "^2.0.1",
-    "rollup-plugin-node-resolve": "^2.0.0",
-    "rxdb": "^3.0.5",
-    "rxjs": "^5.2.0",
-    "sander": "^0.6.0",
-    "slug": "^0.9.1"
+    "node": "^8.0.0"
   },
   "devDependencies": {
-    "@types/node": "^7.0.8",
-    "@types/node-sass": "^3.10.32",
-    "@types/nunjucks": "0.0.32",
-    "gulp": "^3.9.1",
-    "gulp-sourcemaps": "^2.4.1",
-    "gulp-tslint": "^7.1.0",
-    "gulp-typescript": "^3.1.6",
-    "jest": "^19.0.2",
-    "jest-cli": "^19.0.2",
+    "@types/node": "^8.0.24",
     "rimraf": "^2.6.1",
-    "tslint": "^4.5.1",
-    "typescript": "^2.2.1"
+    "typescript": "^2.4.2"
   }
 }

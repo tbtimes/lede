@@ -49,5 +49,6 @@ const isWindows = require("os").platform() === "win32";
 
 installWatchman(isWindows)
   .catch(e => {
-    console.log("there was a error installing stuff")
+    console.log("there was a error installing stuff");
+    console.log(e);
   });
