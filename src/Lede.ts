@@ -4,19 +4,37 @@ import { LedeBlock } from "./lib/LedeBlock";
 import { LedeBit } from "./lib/LedeBit";
 import { LogService } from "./services/LogService";
 import { LedePage } from "./lib/LedePage";
+import { WatcherService } from "./services/WatcherService";
 
 
 class Lede {
   projectService: ProjectService;
   logService: LogService;
-
+  watcherService: WatcherService;
   projects: Array<LedeProject> = [];
 
-
-
-  constructor(logService: LogService, projectService: ProjectService) {
+  constructor(logService: LogService, projectService: ProjectService, watcherService: WatcherService) {
     this.logService = logService;
     this.projectService = projectService;
+    this.watcherService = watcherService;
+  }
+
+  public watchProject(prjName: string): void {
+    const project = this.findProjectByName(prjName);
+    if (!project) {
+      this.logService.error(`Could not find project: ${prjName}`);
+      return;
+    }
+    return this.watcherService.watch(project);
+  }
+
+  public buildProject(prjName: string, outPath: string, dev: boolean): void {
+    const project = this.findProjectByName(prjName);
+    if (!project) {
+      this.logService.error(`Could not find project: ${prjName}`);
+      return;
+    }
+    return project.build(outPath, dev);
   }
 
   public createProject(prjName: string, path: string): LedeProject | null {
@@ -29,27 +47,30 @@ class Lede {
       return null;
     }
   }
-  public createBlockInProject(prjName: string, blockName: string): LedeBlock | null {
+
+  public createBlockInProject(prjName: string, blockName: string): void {
     const project = this.findProjectByName(prjName);
     if (!project) {
-      this.logService.warn(`Could not find project: ${prjName}`);
-      return null;
+      this.logService.error(`Could not find project: ${prjName}`);
+      return;
     }
     return project.createBlock(blockName);
   }
-  public createBitInProject(prjName: string, bitName: string): LedeBit | null {
+
+  public createBitInProject(prjName: string, bitName: string): void {
     const project = this.findProjectByName(prjName);
     if (!project) {
-      this.logService.warn(`Could not find project: ${prjName}`);
-      return null;
+      this.logService.error(`Could not find project: ${prjName}`);
+      return;
     }
     return project.createBit(bitName)
   }
-  public createPageInProject(prjName: string, pageName: string): LedePage | null {
+
+  public createPageInProject(prjName: string, pageName: string): void {
     const project = this.findProjectByName(prjName);
     if (!project) {
-      this.logService.warn(`Could not find project: ${prjName}`);
-      return null;
+      this.logService.error(`Could not find project: ${prjName}`);
+      return;
     }
     return project.createPage(pageName);
   }
