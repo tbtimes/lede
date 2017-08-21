@@ -113,6 +113,5 @@ Temporary Items
 dist/
 .idea/
 typings/
-docs/
 .ledeCache/
 defs

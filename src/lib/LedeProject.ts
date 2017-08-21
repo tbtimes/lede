@@ -4,8 +4,18 @@ import { LedePage } from "./LedePage";
 import { BitService } from "../services/BitService";
 import { BlockService } from "../services/BlockService";
 import { PageService } from "../services/PageService";
-import { join } from "path";
+import { basename, dirname, join } from "path";
+import { PROJECT_TEMPLATE_FUNCTION } from "./DefaultTemplates";
 
+
+export interface ProjectDefaults {
+  scripts: any;
+  styles: any;
+  assets: any;
+  metaTags: any;
+  blocks: any;
+  resources: any;
+}
 
 export class LedeProject {
   name: string;
@@ -14,17 +24,29 @@ export class LedeProject {
   blockRoot: string;
   pageRoot: string;
   context: any;
-  bitService: BitService;
-  blockService: BlockService;
-  pageService: PageService;
+  defaults: ProjectDefaults;
+  template: (styles: string, scripts: string, context: any) => string;
+  deployRoot: string;
+  version: number;
   bits: Array<LedeBit>;
   blocks: Array<LedeBlock>;
   pages: Array<LedePage>;
 
-  constructor(name: string, rootPath: string, blockService: BlockService, bitService: BitService, pageService: PageService) {
+  bitService: BitService;
+  blockService: BlockService;
+  pageService: PageService;
+
+
+  constructor(name: string, rootPath: string, defaults: ProjectDefaults, context: any,
+              template: (styles: string, scripts: string, context: any) => string, deployRoot: string, version: number,
+              blockService: BlockService, bitService: BitService, pageService: PageService) {
     this.name = name;
     this.rootPath = rootPath;
-    this.context = {};
+    this.context = context;
+    this.defaults = defaults;
+    this.template = template;
+    this.deployRoot = deployRoot;
+    this.version = version;
     this.blockService = blockService;
     this.pageService = pageService;
     this.bitService = bitService;

@@ -4,7 +4,7 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "strictNullChecks": true,
-    "module": "es2015",
+    "module": "commonjs",
     "outDir": "dist",
     "target": "es2017",
     "declaration": false,

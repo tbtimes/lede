@@ -10,11 +10,15 @@
     "node": "^8.0.0"
   },
   "devDependencies": {
+    "@types/glob": "^5.0.31",
     "@types/node": "^8.0.24",
     "rimraf": "^2.6.1",
     "typescript": "^2.4.2"
   },
   "scripts": {
     "dev": "tsc -w"
+  },
+  "dependencies": {
+    "glob": "^7.1.2"
   }
 }
