@@ -2,7 +2,7 @@
 Make pretty story pages
 
 ## Documentation
-Lede is a static page build tool designed to make it relatively simple create pretty web pages. Lede uses two special ingredients to hasten page design – it comes with a command line interface, or CLI, for quickly scaffolding projects and creating the necessary files and it also allows the page designer to reuse design elements from other pages.
+Lede is a static page build tool designed to make it relatively simple to create pretty web pages. Lede uses two special ingredients to hasten page design – it comes with a command line interface, or CLI, for quickly scaffolding projects and creating the necessary files and it also allows the page designer to reuse design elements from other projects.
 
 ## Table of contents
 1. [Overview of Lede](#overview-of-lede)
@@ -18,11 +18,11 @@ Lede is a static page build tool designed to make it relatively simple create pr
 
 ## Overview of Lede
 ### The project model
-Lede uses a specific model for generating pages and it’s important to understand these basic basic building blocks before anything else.
+Lede uses a specific model for generating pages and it’s important to understand these basic building blocks before anything else.
 
-The most basic building block in Lede is a _project_. A project has a one-to-many relationship with pages (see below), that is, a project can have multiple pages but a page must belong to only one project. Everything you create in Lede will belong to a project. __A project simply allows you to define elements that are common across pages__. Examples of things that might be common across a set of pages include meta tags and seo information for a reporting package.
+The most basic building block in Lede is a _project_. A project has a one-to-many relationship with pages (see below), that is, a project can have multiple pages but a page must belong to only one project. Everything you create in Lede will belong to a project. __A project simply allows you to define elements that are common across pages__. Examples of things that might be common across a set of pages include meta tags and SEO information for a reporting package.
 
-After a project comes a _page_. Pages are conceptually simple, they __encapsulate all the content that will be massaged into a working web page__. One thing to note is that every page must belong to a project. For a one off story page, this means you will create a project and then create a page within a project. For a bigger journalism package with multiple stories you may find yourself creating a project that has multiple pages.
+After a project comes a _page_. Pages are conceptually simple, they __encapsulate all the content that will be massaged into a working web page__. One thing to note is that every page must belong to a project. For a one-off story page, this means you will create a project and then create a page within a project. For a bigger journalism package with multiple stories you may find yourself creating a project that has multiple pages.
 
 ![Project/page diagram](./images/page-project.png)
 
@@ -34,11 +34,11 @@ In modern-day web development, it is common for developers to compile css and js
 
 ![Page/materials diagram](./images/page-materials.jpg)
 
-Aside from materials, pages in Lede also contain blocks. __Blocks are essentially wrappers for chunks of html__ (which come in the form of bits, but more on that next). Organizing pages into blocks has two benefits – the first is that blocks are reusable. You can create a standard header block and then include it on multiple pages so that the pages are use the same header. If you need to update the header, making a change to the block will automatically propagate that change to every page that uses the header!
+Aside from materials, pages in Lede also contain blocks. __Blocks are essentially wrappers for chunks of html__ (which come in the form of bits, but more on that next). Organizing pages into blocks has two benefits – the first is that blocks are reusable. You can create a standard header block and then include it on multiple pages so that the pages use the same header. If you need to update the header, making a change to the block will automatically propagate that change to every page that uses the header!
 
 The second benefit to using blocks is that the content of the block can be fetched from somewhere else using a concept called a resolver. Resolvers are an advanced concept that we won’t get into here. By default, Lede uses a resolver that can pull content in from Google Docs and put it on the page.
 
-The final concept integral to Lede are bits. __Bits are templated chunks of html__. Because bits are templated, you can make generic bits and feed them different content. For example, you could make a full screen image bit and then use it multiple times on a page, and even on multiple pages. Additionally, bits can specify scripts and styles that should be included on the page with them. By default, Lede uses [nunjucks](https://mozilla.github.io/nunjucks/) to create the html templates. Bits are inserted onto a page within blocks. For example, a header block might include a top bar, some social share buttons, and a customizeable text block. These three bits would be included in the header block and any page that uses that header block would automatically get those three bits.
+The final concept integral to Lede are bits. __Bits are templated chunks of html__. Because bits are templated, you can make generic bits and feed them different content. For example, you could make a full screen image bit and then use it multiple times on a page, and even on multiple pages. Additionally, bits can specify scripts and styles that should be included on the page with them. By default, Lede uses [nunjucks](https://mozilla.github.io/nunjucks/) to create the html templates. Bits are inserted onto a page within blocks. For example, a header block might include a top bar, some social share buttons, and a customizable text block. These three bits would be included in the header block and any page that uses that header block would automatically get those three bits.
 
 ![Bit/block diagram](./images/bit-block.png)
 
