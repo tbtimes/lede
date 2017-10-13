@@ -93,7 +93,8 @@ CLI commands can be found in the [CLI documentation](https://github.com/tbtimes/
     * `export GAPI_KEY=<your google apis key>`
 4. If you have a previous version of lede installed, rename the binary. You can find it with `which lede` and rename it with ``mv `which lede` <new path>``.
 5. Install the latest version of the cli with `npm install -g lede-cli`. During the install process, it may prompt you to overwrite some configuration files if they exist. If you are prompted, you should answer `y`.
-6. Finally, install the Tampa Bay Times' project config with `lede config <your github user>/<config repo name>`.
+6. Change into the lede directory with `cd ~/ledeConfig` and then run `npm install`.
+7. Finally, install the Tampa Bay Times' project config with `lede config <your github user>/<config repo name>`.
 
 
 ### Windows install
