@@ -24,7 +24,7 @@ The most basic building block in Lede is a _project_. A project has a one-to-man
 
 After a project comes a _page_. Pages are conceptually simple, they __encapsulate all the content that will be massaged into a working web page__. One thing to note is that every page must belong to a project. For a one off story page, this means you will create a project and then create a page within a project. For a bigger journalism package with multiple stories you may find yourself creating a project that has multiple pages.
 
-![Project/page diagram](./images/page-project.png)
+![Project/page diagram](doc/images/page-project.png)
 
 A page itself is made up of many different assets, which we will dive into later, but for now we’ll focus on two – _materials_, and _blocks_. Let’s look at materials first.
 
@@ -32,7 +32,7 @@ Anyone who is familiar building webpages knows that a website consists of html f
 
 In modern-day web development, it is common for developers to compile css and js from other languages. Lede accounts for this by running scripts and styles through compilers which will transpile them into plain javascript and css. By default, Lede compiles [sass](http://sass-lang.com/) into css and the latest version of javascript, [ES6](http://es6-features.org/#Constants), into a version of javascript that can be run by older browsers (ES5). In the case of both, you can just write plain css or js because the sass and ES6 are supersets of the language and will transpile without error.
 
-![Page/materials diagram](./images/page-materials.jpg)
+![Page/materials diagram](doc/images/page-materials.jpg)
 
 Aside from materials, pages in Lede also contain blocks. __Blocks are essentially wrappers for chunks of html__ (which come in the form of bits, but more on that next). Organizing pages into blocks has two benefits – the first is that blocks are reusable. You can create a standard header block and then include it on multiple pages so that the pages are use the same header. If you need to update the header, making a change to the block will automatically propagate that change to every page that uses the header!
 
@@ -40,7 +40,7 @@ The second benefit to using blocks is that the content of the block can be fetch
 
 The final concept integral to Lede are bits. __Bits are templated chunks of html__. Because bits are templated, you can make generic bits and feed them different content. For example, you could make a full screen image bit and then use it multiple times on a page, and even on multiple pages. Additionally, bits can specify scripts and styles that should be included on the page with them. By default, Lede uses [nunjucks](https://mozilla.github.io/nunjucks/) to create the html templates. Bits are inserted onto a page within blocks. For example, a header block might include a top bar, some social share buttons, and a customizeable text block. These three bits would be included in the header block and any page that uses that header block would automatically get those three bits.
 
-![Bit/block diagram](./images/bit-block.png)
+![Bit/block diagram](doc/images/bit-block.png)
 
 Confused yet? We'll walk through some example workflows next. Later on, we will go through some in-depth tutorials.
 
@@ -99,11 +99,11 @@ CLI commands can be found in the [CLI documentation](https://github.com/tbtimes/
 ### Windows install
 1. Install [nvm-windows](https://github.com/coreybutler/nvm-windows/releases) by following the link and choosing `nvm-setup.zip` under downloads. Also, install [Git](https://git-scm.com/download/win).
 2. Open the start menu, right click on "computer", and select "properties" from the drop down.
-    1. ![open properties](./images/windows_open_props.png)
+    1. ![open properties](doc/images/windows_open_props.png)
 3. Click on "Advanced system settings" and then "Environment Variables" in the bottom right corner under the "Advanced" tab of the dialog.
-    1. ![advanced settings](./images/windows_advanced_settings.png)
+    1. ![advanced settings](doc/images/windows_advanced_settings.png)
 4. Now, on the top half of the dialog, click "New...".
-    1. ![new button](./images/windows_new_button.png)
+    1. ![new button](doc/images/windows_new_button.png)
 5. In the "Variable name" field, enter `GH_TOKEN`; in the "Variable value" field, enter `<your github user token>` and click "Ok".
 6. Click again on the "New..." button on the top half of the dialog. In the "Variable name" field, enter `GAPI_KEY`; in the "Variable value" field, enter `<your google apis key>` and click "Ok".
 7. Click "Ok" to close the "Environment Variables" dialog and "Ok" again to close the "System Properties" dialog.

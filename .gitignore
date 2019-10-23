@@ -116,3 +116,4 @@ typings/
 docs/
 .ledeCache/
 defs
+lerna-debug.log

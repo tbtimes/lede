@@ -1,33 +1,10 @@
 {
+  "extends": "./tsconfig.build.json",
+  "files": [],
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "noImplicitAny": false,
-    "declaration": true,
-    "allowSyntheticDefaultImports": true
-  },
-  "files": [
-    "typings/index.d.ts",
-    "src/index.ts",
-    "src/utils.ts",
-    "src/lede/index.ts",
-    "src/lede/Lede.ts",
-    "src/lede/DependencyAssembler.ts",
-    "src/lede/CacheBuilder.ts",
-    "src/interfaces/index.ts",
-    "src/interfaces/CompiledPage.ts",
-    "src/interfaces/ContentResolver.ts",
-    "src/interfaces/Dependency.ts",
-    "src/interfaces/ProjectReport.ts",
-    "src/errors/index.ts",
-    "src/errors/NotAFile.ts",
-    "src/errors/CircularDepError.ts",
-    "src/deployers/index.ts",
-    "src/deployers/S3Deployer.ts",
-    "src/deployers/FileSystemDeployer.ts",
-    "src/compilers/index.ts",
-    "src/compilers/Es6Compiler.ts",
-    "src/compilers/NunjucksCompiler.ts",
-    "src/compilers/SassCompiler.ts"
-  ]
+    "baseUrl": "./",
+    "paths": {
+      "@lede/*": ["packages/*/src"]
+    }
+  }
 }

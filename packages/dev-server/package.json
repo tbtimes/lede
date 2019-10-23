@@ -1,0 +1,35 @@
+{
+  "name": "@lede/dev-server",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "ejmurra2 <ejmurra2@bitbucket.org>",
+  "homepage": "https://github.com/tbtimes/lede#readme",
+  "license": "ISC",
+  "main": "dist/index",
+  "types": "dist/index",
+  "directories": {
+    "test": "__tests__"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tbtimes/lede.git"
+  },
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rimraf ./dist && rimraf tsconfig.build.tsbuildinfo",
+    "compile": "tsc -b tsconfig.build.json",
+    "prepublishOnly": "npm run build"
+  },
+  "bugs": {
+    "url": "https://github.com/tbtimes/lede/issues"
+  },
+  "devDependencies": {
+    "typescript": "^3.6.4"
+  }
+}
