@@ -29,7 +29,9 @@
   "bugs": {
     "url": "https://github.com/tbtimes/lede/issues"
   },
-  "devDependencies": {
+  "devDependencies": {},
+  "dependencies": {
+    "murmurhash3js-revisited": "^3.0.0",
     "typescript": "^3.6.4"
   }
 }
