@@ -14,5 +14,6 @@ export const DEFAULT_TS_COMPILER_OPTS: CompilerOptions = {
   // lib: ,
   rootDirs: ["scripts"],
   moduleResolution: ModuleResolutionKind.NodeJs,
-  module: ModuleKind.ESNext
+  module: ModuleKind.ESNext,
+
 };

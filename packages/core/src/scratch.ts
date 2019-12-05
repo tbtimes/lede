@@ -145,7 +145,7 @@ export class Bit implements Cacheable {
     private templateCompiler: Compiler,
   ) {}
 
-  async render(matCache: Cache<RenderedMaterial>): Promise<RenderedBit> {
+  async render(matCache: Cache<RenderedMaterial>): Promise<any> {
     const r: RenderedMaterial[] = [];
     for (let mat of this.mats) {
       let rm: RenderedMaterial;
