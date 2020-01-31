@@ -1,0 +1,7 @@
+{%- if $bit.class -%}
+<div class="{{ $bit.class }}">
+  {{ $bit.text | linebreaks | safe }}
+</div>
+{%- else -%}
+{{ $bit.text | linebreaks | safe }}
+{%- endif -%}

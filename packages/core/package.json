@@ -38,6 +38,7 @@
     "rimraf": "^3.0.0"
   },
   "dependencies": {
+    "archieml": "^0.4.2",
     "murmurhash3js-revisited": "^3.0.0",
     "tslib": "^1.10.0",
     "typescript": "^3.6.4"
