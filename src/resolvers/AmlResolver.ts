@@ -26,7 +26,17 @@ export class AmlResolver implements Resolver {
       hostname: plainUrl.split("/")[0],
       path: `/${plainUrl.split("/").slice(1).join("/")}`
     };
-    const file = await httpsGetProm(fileOpts);
+    let file = await httpsGetProm(fileOpts);
+    if (file.includes('<TITLE>Temporary Redirect</TITLE>')) {
+        const redirectBefore = 'The document has moved <A HREF="https://';
+        const redirectAfter = '">here</A>'
+        const redirectUrl = file.split(redirectBefore)[1].split(redirectAfter)[0].replace('&amp;', '&');
+        const redirectFileOpts = {
+            hostname: redirectUrl.split("/")[0],
+            path: `/${redirectUrl.split("/").slice(1).join("/")}`
+        }
+        file = await httpsGetProm(redirectFileOpts);
+    }
     const loadedFile = load(file);
     if (!loadedFile.CONTENT) {
       throw new Error(`Cannot find CONTENT array in AML document. AML files should look like this:
